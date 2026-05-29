@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xovis-sdk"
+version = "0.0.1"
+description = "Unofficial community SDK for Xovis Hardware and HUB"
+authors = [
+  { name="Xovis Open SDK Team", email="xovis.sdk@proton.me" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+    "orjson>=3.9.0",
+    "tenacity>=8.2.0",
+    "redis>=5.0.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/xovis-sdk-team/xovis-sdk"
