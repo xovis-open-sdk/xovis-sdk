@@ -1,0 +1,15 @@
+# xovis-sdk - High-Level Summary
+
+## Purpose
+Universal Translator for Xovis hardware (Sensors, Spiders, HUB).
+
+## Planes
+1. Data Plane: 12.5Hz telemetry.
+2. Control Plane: REST API management.
+3. Topology Plane: Fleet orchestration.
+4. Agentic Layer: MCP/Tool support.
+
+## Key Classes
+- `DeviceClient`: IP-based control.
+- `HubClient`: Cloud-based control.
+- `XovisAIToolkit`: AI/LLM tool mapping.

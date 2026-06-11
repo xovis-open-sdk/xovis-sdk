@@ -1,0 +1,14 @@
+# .github/CODEOWNERS
+# This file defines the owners of various paths in the repository.
+
+# Default owners
+*       @xovis-dev
+
+# Core SDK Planes
+/src/xovis/datapush/    @xovis-dev
+/src/xovis/api/         @xovis-dev
+/src/xovis/fleet/       @xovis-dev
+
+# Infrastructure & Configuration
+/pyproject.toml         @xovis-dev
+/.github/workflows/     @xovis-dev

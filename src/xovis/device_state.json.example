@@ -1,0 +1,27 @@
+{
+  "checksum": "placeholder",
+  "contexts": {
+    "singlesensor": {
+      "agents": [],
+      "connections": [],
+      "zones": [],
+      "lines": [],
+      "logics": [],
+      "modifiers": [],
+      "counters": [],
+      "masks": [],
+      "layers": []
+    },
+    "multisensor": {
+      "agents": [],
+      "connections": [],
+      "zones": [],
+      "lines": [],
+      "logics": [],
+      "modifiers": [],
+      "counters": [],
+      "masks": [],
+      "layers": []
+    }
+  }
+}

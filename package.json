@@ -1,0 +1,21 @@
+{
+  "name": "xovis-sdk",
+  "version": "1.0.0-rc1",
+  "description": "Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB.",
+  "keywords": [
+    "xovis",
+    "api",
+    "retail",
+    "analytics",
+    "sensors",
+    "telemetry"
+  ],
+  "license": "MIT",
+  "author": "Xovis Open SDK Team",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sync-docs": "python scripts/sync_project_structure.py"
+  }
+}

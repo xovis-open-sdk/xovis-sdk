@@ -1,0 +1,174 @@
+"""
+Xovis SDK - Data Plane UDP Server
+
+This module implements a high-performance UDP ingestion engine for Xovis
+telemetry. It utilizes `asyncio.DatagramProtocol` for low-latency ingestion
+of discrete JSON packets, residing strictly within the Data Plane.
+"""
+
+import asyncio
+import json
+import logging
+from typing import Optional
+
+from xovis.datapush.sinks import XovisSink
+
+logger = logging.getLogger("xovis_sdk.udp")
+
+
+class XovisUDPProtocol(asyncio.DatagramProtocol):
+    """
+    Protocol implementation for high-speed UDP ingestion.
+
+    Handles incoming datagrams from Xovis sensors. Each datagram is expected
+    to be a complete JSON frame. This class operates in the hot path and
+    dispatches telemetry to sinks with minimal overhead.
+    """
+
+    def __init__(self, sinks: list[XovisSink]):
+        """
+        Initializes the UDP protocol.
+
+        Args:
+            sinks (List[XovisSink]): A list of attached telemetry sinks.
+        """
+        self.sinks = sinks
+        self.transport: Optional[asyncio.DatagramTransport] = None
+
+    def connection_made(self, transport: asyncio.DatagramTransport):
+        """
+        Called when the UDP socket is ready.
+
+        Args:
+            transport (asyncio.DatagramTransport): The transport for the socket.
+        """
+        self.transport = transport
+        peer = transport.get_extra_info("peername")
+        logger.debug(f"UDP socket ready: {peer}")
+
+    def datagram_received(self, data: bytes, addr: tuple):
+        """
+        Hot path ingestion for UDP datagrams.
+
+        Parses the incoming byte packet as a JSON object and routes it to
+        the attached sinks.
+
+        Args:
+            data (bytes): The raw packet data.
+            addr (tuple): The source address of the packet.
+        """
+        # Check if we should log to studio debug log
+        studio_debug = False
+        if hasattr(self, "sinks"):
+            for sink in self.sinks:
+                if hasattr(sink, "debug") and sink.debug:
+                    studio_debug = True
+                    break
+
+        if studio_debug:
+            try:
+                with open("xovis_studio_debug.log", "a", encoding="utf-8") as f:
+                    f.write(f"--- UDP datagram received from {addr}: {len(data)} bytes ---\n")
+            except Exception:
+                pass
+
+        try:
+            body = data.decode("utf-8", errors="ignore")
+            logger.debug(f"Received UDP datagram from {addr}: {body}")
+            frame = json.loads(body)
+
+            if "connection_test" in frame:
+                logger.debug("Received connection test")
+                return
+
+            asyncio.create_task(self._route_to_sinks(frame))
+
+        except json.JSONDecodeError as e:
+            logger.error(f"Malformed UDP JSON received from {addr}: {e}")
+        except Exception as e:
+            logger.error(f"UDP stream error from {addr}: {e}")
+
+    async def _route_to_sinks(self, frame: dict):
+        """
+        Broadcasts the parsed payload to all attached sinks.
+
+        Args:
+            frame (dict): The parsed JSON frame containing telemetry data.
+        """
+        events = frame.get("events", [])
+        tasks = []
+        for sink in self.sinks:
+            try:
+                tasks.append(sink.on_frame(frame))
+                if events:
+                    tasks.append(sink.on_events(events))
+            except Exception as e:
+                logger.error(f"Sink dispatch error: {e}")
+
+        if tasks:
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            for res in results:
+                if isinstance(res, Exception):
+                    logger.error(f"Sink execution error: {res}")
+
+
+class XovisUDPServer:
+    """
+    High-performance UDP Ingestion Engine for Xovis Telemetry.
+
+    Operates within the Data Plane to provide low-latency telemetry ingestion.
+    Coordinates the lifecycle of the UDP socket and the underlying protocol.
+    """
+
+    def __init__(self):
+        """
+        Initializes the XovisUDPServer.
+        """
+        self.sinks: list[XovisSink] = []
+        self.transport: Optional[asyncio.DatagramTransport] = None
+        self.protocol: Optional[XovisUDPProtocol] = None
+
+    def attach_sink(self, sink: XovisSink) -> "XovisUDPServer":
+        """
+        Attaches a telemetry consumer to the server.
+
+        Args:
+            sink (XovisSink): An object implementing the XovisSink protocol.
+
+        Returns:
+            XovisUDPServer: The server instance for method chaining.
+        """
+        self.sinks.append(sink)
+        return self
+
+    async def stop(self):
+        """
+        Gracefully tears down the UDP server.
+        """
+        if self.transport:
+            self.transport.close()
+            self.transport = None
+            logger.info("Xovis UDP Server stopped")
+
+    async def start(self, host: str = "0.0.0.0", port: int = 9002):  # nosec B104
+        """
+        Starts the UDP server and begins listening for datagrams.
+
+        Args:
+            host (str, optional): The network interface to bind to. Defaults to "0.0.0.0".
+            port (int, optional): The UDP port to listen on. Defaults to 9002.
+
+        Raises:
+            OSError: If binding fails.
+        """
+        loop = asyncio.get_running_loop()
+        self.transport, self.protocol = await loop.create_datagram_endpoint(lambda: XovisUDPProtocol(self.sinks), local_addr=(host, port))
+        logger.info(f"Xovis UDP Server listening on {host}:{port}")
+
+        try:
+            while True:
+                await asyncio.sleep(3600)
+        except asyncio.CancelledError:
+            if self.transport:
+                self.transport.close()
+            logger.info("Xovis UDP Server stopped")

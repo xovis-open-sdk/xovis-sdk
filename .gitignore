@@ -1,15 +1,54 @@
-# Byte-compiled / optimized / DLL files
+# === Environments & Secrets ===
+.env
+.venv
+env/
+venv/
+ENV/
+.xovis_hub_token.json
+
+# === Xovis SDK Generated State ===
+device_state_export.json
+*.state.json
+src/xovis/device_state.json
+src/xovis/models/xovis_types.py
+/xovis_studio_debug.log
+/.xovis_ai_privacy.json
+/_local_ressources/
+/docs/assets/openapi/
+# === Internal Tooling & AI Agent Context ===
+!/scripts/
+!/scripts/*.py
+/scripts/langchain_diagnostic_report.py
+/scripts/local_overrides.py
+/scripts/check_quality.py
+/scripts/diagnostic_report_*.md
+/scripts/mock_sensor.py
+/scripts/verify_probing.py
+
+/docs/llms-full.txt
+/DOC_COMPLIANCE.md
+/private_examples/
+/src/xovis/api/device/resources/images_private.py
+/tests/streams/test_compliance.py
+/src/xovis/skills/discovery.py
+# === Project Identity & Agent Workspace ===
+# The .Redacted folder is the agent's private workspace and MUST NOT be committed.
+/.Redacted/
+
+# Publicly shared architectural and agentic documentation.
+!/docs/architecture/engineering_guidelines.md
+!/docs/ai/agent_instructions.md
+!/docs/project_structure.md
+
+.windsurf_rules
+.cursorrules
+
+# === Python Build & Runtime ===
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
-.Python
 build/
-develop-eggs/
 dist/
 downloads/
 eggs/
@@ -26,18 +65,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so may be deleted later.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
+# === Testing & Coverage ===
+.pytest_cache/
 .tox/
 .nox/
 .coverage
@@ -46,115 +75,20 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.stackdump
-.pytest_cache/
 .hypothesis/
-.pytest_cache/
+test_results.log
+.output.txt
 
-# Translations
-*.mo
-*.pot
+# === Docs & Output ===
+/site/
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-#   For a library or package, you might want to ignore these files since the Python version
-#   is usually managed by the user.
-# .python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or even
-#   fail to install them.
-# Pipfile.lock
-
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-# poetry.lock
-
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-# pdm.lock
-
-# PEP 582; used by e.g. github.com/pdm-project/pdm
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# PyCharm / IntelliJ
+# === IDEs & Editors ===
 .idea/
-cmake-build-*/
-out/
-
-# VS Code
 .vscode/
-
-# Project specific
+*.swp
 *.bak
 *.tmp
-*.swp
+
+# === OS Files ===
 .DS_Store
 Thumbs.db

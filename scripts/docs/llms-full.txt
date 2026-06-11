@@ -1,0 +1,7 @@
+# xovis-sdk - Full Agentic Context
+
+## SDK Structure
+
+## Key Models & Protocols
+- See `src/xovis/models/` for Pydantic V2 schemas.
+- See `src/xovis/datapush/sinks.py` for the `XovisSink` protocol.

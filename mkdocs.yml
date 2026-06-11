@@ -1,0 +1,117 @@
+site_name: xovis-sdk
+site_description: Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB.
+site_author: Xovis Open SDK Team
+
+theme:
+  name: material
+  logo: assets/images/logo.jpg
+  favicon: assets/images/logo.jpg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - md_in_html
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid ""
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_category_heading: true
+            import_outline_sidebar: true
+            filters:
+              - "!^xovis\\.models\\.device_auto\\.versions\\..*"
+              - "!^xovis\\.models\\.hub_auto.*"
+              - "!^xovis\\.models\\.hub_license_auto.*"
+              - "!^xovis\\.models\\.xovis_types.*"
+  - mermaid2:
+      arguments:
+        theme: dark
+        themeVariables:
+          fontFamily: "Inter, Roboto, sans-serif"
+          primaryColor: "#1e293b"
+          primaryTextColor: "#f1f5f9"
+          primaryBorderColor: "#334155"
+          lineColor: "#64748b"
+          secondaryColor: "#0f172a"
+          tertiaryColor: "#1e293b"
+          mainBkg: "#0f172a"
+          nodeBorder: "#334155"
+          clusterBkg: "#1e293b"
+          clusterBorder: "#475569"
+          defaultLinkColor: "#94a3b8"
+          titleColor: "#38bdf8"
+          edgeLabelBackground: "#1e293b"
+          nodeTextColor: "#f1f5f9"
+      javascript: https://unpkg.com/mermaid@10.4.0/dist/mermaid.min.js
+
+nav:
+  - Overview: index.md
+  - Architecture: architecture.md
+  - API Reference:
+      - Introduction: api/index.md
+      - REST API (Scalar):
+          - Edge API: api/reference.md
+          - Hub Device API: api/hub_device_ref.md
+          - Hub License API: api/hub_license_ref.md
+      - Python SDK:
+          - Core: api/python/core.md
+          - Device: api/python/device.md
+          - Hub: api/python/hub.md
+          - Streams: api/python/datapush.md
+          - Skills: api/python/skills.md
+  - CLI: cli.md
+  - Project Structure: project_structure.md
+  - AI & Agents:
+      - Introduction: ai/agentic_layer.md
+      - Model Context Protocol: ai/mcp.md
+      - Troubleshooting: troubleshooting_ai.md
+  - Recipes:
+      - LangGraph Congestion Control: recipes/langgraph_congestion_control.md
+  - Contributing:
+      - Engineering Guidelines: contributing/engineering_guidelines.md
+      - Agent Instructions: contributing/agent_instructions.md
+  - AI Context (llms.txt): llms.txt
+
+extra:
+  social:
+    - icon: material/robot
+      link: llms.txt
+      name: AI-Only Gateway (llms.txt)

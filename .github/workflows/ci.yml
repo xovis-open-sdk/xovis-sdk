@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Ruff
+        run: pip install ruff
+      - name: Run Ruff Check
+        run: ruff check .
+      - name: Run Ruff Format Check
+        run: ruff format --check .
+
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    env:
+      XOVIS_TEST_HOST: ${{ secrets.XOVIS_TEST_HOST }}
+      XOVIS_TEST_USER: ${{ secrets.XOVIS_TEST_USER }}
+      XOVIS_TEST_PASS: ${{ secrets.XOVIS_TEST_PASS }}
+      XOVIS_HUB_CLIENT_ID: ${{ secrets.XOVIS_HUB_CLIENT_ID }}
+      XOVIS_HUB_CLIENT_SECRET: ${{ secrets.XOVIS_HUB_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Package
+        run: pip install -e ".[test,tui]"
+      - name: Run Non-Destructive Tests
+        run: pytest tests/ -m "not destructive"
+      - name: Run Destructive Tests (Mocked)
+        run: pytest tests/ -m "destructive"
+
+  cli-dry-run:
+    name: CLI Dry-Run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Package
+        run: pip install -e .
+      - name: CLI Help Check
+        run: xovis-cli --help
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Bandit
+        run: pip install bandit
+      - name: Run Bandit Scan
+        run: bandit -r src/ -ll
