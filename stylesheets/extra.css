@@ -1,0 +1,107 @@
+:root {
+  --md-primary-fg-color: #00828c; /* Xovis Corporate Teal */
+  --md-accent-fg-color: #00bcd4;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #1e293b;
+  --md-primary-fg-color--transparent: rgba(30, 41, 59, 0.1);
+  --md-primary-bg-color: #f1f5f9;
+  --md-primary-bg-color--light: #cbd5e1;
+  --md-default-bg-color: #0f172a;
+  --md-default-bg-color--light: #1e293b;
+  --md-default-fg-color: #f1f5f9;
+  --md-default-fg-color--light: #cbd5e1;
+  --md-default-fg-color--lighter: #94a3b8;
+  --md-default-fg-color--lightest: #64748b;
+}
+
+/* Ensure navbar text is readable in dark mode */
+[data-md-color-scheme="slate"] .md-header {
+  color: #f1f5f9;
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link {
+  color: #cbd5e1;
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link--active {
+  color: #f1f5f9;
+}
+
+/* Logo Styling */
+.md-logo img {
+  border-radius: 50%;
+  width: 42px !important;
+  height: 42px !important;
+  object-fit: cover;
+  border: 2px solid var(--md-accent-fg-color);
+  transition: transform 0.2s ease;
+}
+
+.md-logo:hover img {
+  transform: scale(1.1);
+}
+
+/* Setup Instructions Styling */
+.setup-instructions-container {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.setup-instructions-container h4 {
+  margin-top: 1.5rem;
+  color: var(--md-accent-fg-color);
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  padding-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.setup-instructions-container ol {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+}
+
+.setup-instructions-container ol li {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.setup-instructions-container ol li strong {
+  color: var(--md-accent-fg-color);
+}
+
+/* High-Density Typography */
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif; }
+code, kbd, pre { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+/* Refined Scalar UI Integration */
+.scalar-api-reference {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  margin: 2em 0;
+  border: 1px solid rgba(0, 130, 140, 0.2);
+  min-height: 800px; /* Prevent layout shift */
+  background: #0f172a; /* Match deepSpace theme background */
+}
+
+/* Adjust Scalar typography to match SDK docs */
+.scalar-api-reference [data-scalar-theme] {
+  --scalar-font-header: 'Inter', sans-serif;
+  --scalar-font-code: 'JetBrains Mono', monospace;
+}
+
+/* "The Receipt" Style Terminal Outputs */
+.terminal-output {
+  background: #1e1e1e;
+  color: #00ffcc;
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid #00828c;
+  font-size: 0.85em;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: var(--md-primary-fg-color); border-radius: 10px; }

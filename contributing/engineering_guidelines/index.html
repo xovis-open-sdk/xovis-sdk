@@ -1,0 +1,1824 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB.">
+      
+      
+        <meta name="author" content="Xovis Open SDK Team">
+      
+      
+      
+        <link rel="prev" href="../../recipes/langgraph_congestion_control/">
+      
+      
+        <link rel="next" href="../agent_instructions/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/logo.jpg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Engineering Guidelines - xovis-sdk</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#xovis-sdk-architecture-engineering-guidelines" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="xovis-sdk" class="md-header__button md-logo" aria-label="xovis-sdk" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            xovis-sdk
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Engineering Guidelines
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../cli/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  CLI
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../project_structure/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Project Structure
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ai/agentic_layer/" class="md-tabs__link">
+          
+  
+  
+  AI & Agents
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../recipes/langgraph_congestion_control/" class="md-tabs__link">
+          
+  
+  
+  Recipes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../llms.txt" class="md-tabs__link">
+        
+  
+  
+    
+  
+  AI Context (llms.txt)
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="xovis-sdk" class="md-nav__button md-logo" aria-label="xovis-sdk" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.jpg" alt="logo">
+
+    </a>
+    xovis-sdk
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API (Scalar)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    REST API (Scalar)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Edge API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/hub_device_ref/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub Device API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/hub_license_ref/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub License API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python SDK
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Python SDK
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/python/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/python/device/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/python/hub/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/python/datapush/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/python/skills/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skills
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project_structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI & Agents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AI & Agents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai/agentic_layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai/mcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Context Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting_ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Recipes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/langgraph_congestion_control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangGraph Congestion Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engineering Guidelines
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engineering Guidelines
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-philosophy-the-quadrifurcated-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Philosophy: The Quadrifurcated Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Philosophy: The Quadrifurcated Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-data-plane-high-frequency-telemetry-ingestion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Data Plane (High-Frequency Telemetry Ingestion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-the-control-plane-low-frequency-rest-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The Control Plane (Low-Frequency REST API)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-the-state-topology-plane-fleet-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The State &amp; Topology Plane (Fleet Engine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-the-agentic-layer-universal-tool-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The Agentic Layer (Universal Tool Adapter)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-hyper-optimized-developer-experience-dx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Hyper-Optimized Developer Experience (DX)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-the-open-core-boundary-sink-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The Open Core Boundary (Sink Protocol)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-enterprise-coding-documentation-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Enterprise Coding &amp; Documentation Standards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-enterprise-testing-standards-sdet-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Enterprise Testing Standards (SDET Rules)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent_instructions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../llms.txt" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Context (llms.txt)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-philosophy-the-quadrifurcated-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Philosophy: The Quadrifurcated Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Philosophy: The Quadrifurcated Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-data-plane-high-frequency-telemetry-ingestion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Data Plane (High-Frequency Telemetry Ingestion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-the-control-plane-low-frequency-rest-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The Control Plane (Low-Frequency REST API)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-the-state-topology-plane-fleet-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The State &amp; Topology Plane (Fleet Engine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-the-agentic-layer-universal-tool-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The Agentic Layer (Universal Tool Adapter)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-hyper-optimized-developer-experience-dx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Hyper-Optimized Developer Experience (DX)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-the-open-core-boundary-sink-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The Open Core Boundary (Sink Protocol)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-enterprise-coding-documentation-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Enterprise Coding &amp; Documentation Standards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-enterprise-testing-standards-sdet-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Enterprise Testing Standards (SDET Rules)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="xovis-sdk-architecture-engineering-guidelines">xovis-sdk - Architecture &amp; Engineering Guidelines</h1>
+<p>This document defines the architectural principles, boundaries, and hard-learned technical rules for the <code>xovis-sdk</code>. It acts as the definitive Universal Translator for Xovis hardware, cleanly decoupling raw edge data from downstream enterprise software.</p>
+<h2 id="core-philosophy-the-quadrifurcated-architecture">Core Philosophy: The Quadrifurcated Architecture</h2>
+<p>To handle 12.5Hz DataPushes without destabilizing, while simultaneously orchestrating complex multisensor graph topologies and cloud fleets, we cannot rely on a single monolithic framework. Standard synchronous libraries block the event loop, and Pydantic introduces crippling serialization overhead if used in high-frequency ingestion loops.</p>
+<p>Therefore, the <code>xovis-sdk</code> architecture is strictly quadrifurcated into four distinct operational planes. <strong>Never mix the design patterns of these planes.</strong></p>
+<hr />
+<h3 id="1-the-data-plane-high-frequency-telemetry-ingestion">1. The Data Plane (High-Frequency Telemetry Ingestion)</h3>
+<p><strong>Path:</strong> <code>src/xovis/streams/</code>
+For raw TCP, HTTP Webhook, and UDP DataPush streams (e.g., <code>LIVE_DATA</code> running an <code>IMMEDIATE</code> scheduler), the objective is zero-copy, non-blocking maximum throughput.</p>
+<ul>
+<li><strong>Core Engine:</strong> We use pure native asyncio (<code>asyncio.start_server</code>, <code>asyncio.DatagramProtocol</code>) enhanced by <code>uvloop</code> (where available on Linux/macOS) or <code>WindowsProactorEventLoopPolicy</code> to manage raw sockets and datagrams via <code>XovisTCPServer</code>, <code>XovisHTTPServer</code>, and <code>XovisUDPServer</code>.</li>
+<li><strong>Parsing Strategy:</strong> Xovis streams raw concatenated JSON objects without newlines or length prefixes. You MUST maintain a sliding string buffer combined with the standard library's <code>json.JSONDecoder().raw_decode()</code>. This safely slices frames out of the continuous stream without crashing on incomplete fragments. Do NOT use <code>orjson</code> for this specific extraction step.</li>
+<li><strong>Data Packing:</strong> STRICTLY NO Pydantic validation is allowed in this hot path. High-performance data structures and optimized serialization are used to prepare payloads for downstream sinks.</li>
+<li><strong>Network I/O:</strong> Telemetry frames are delivered to attached sinks in real-time. Lock-free archiving and efficient batching are strictly enforced to prevent data loss or ingestion delays.</li>
+</ul>
+<hr />
+<h3 id="2-the-control-plane-low-frequency-rest-api">2. The Control Plane (Low-Frequency REST API)</h3>
+<p><strong>Path:</strong> <code>src/xovis/api/</code>
+For configuring the Xovis HUB Cloud and local sensors, the priority flips from raw speed to structural robustness, strict schema adherence, strict authentication rules, and network resilience.</p>
+<ul>
+<li><strong>Networking:</strong> We use <code>httpx</code> for asynchronous HTTP connection pooling, strict redirect handling (essential for navigating Hub domain migrations from <code>.com</code> to <code>.cloud</code>), and supporting NTLM authentication for local sensor Windows SSO.</li>
+<li><strong>Token Resilience:</strong> Auth0 aggressively rate-limits token requests. The SDK implements an authoritative <code>HubAuth</code> manager that handles stateful token caching (saving valid JWTs to disk and memory for 24 hours) and utilizes an <code>asyncio.Lock()</code> to autonomously intercept and refresh tokens.</li>
+<li><strong>Error State Resolution:</strong> Code must gracefully differentiate operational failures. <code>HTTP 401 Unauthorized</code> triggers an automatic token refresh. <code>HTTP 403 Forbidden</code> indicates a strict privilege constraint (user role lacks permission) or a hardware-level tenant boundary; this must be gracefully surfaced to the user or agent, not brute-forced. <code>HTTP 404 Not Found</code> indicates a privacy mode mismatch or unavailable endpoint.</li>
+<li><strong>Proactive Hardware Probing:</strong> Do not rely on brittle <code>try...except 403/404</code> blocks for missing hardware features. The SDK utilizes a lazy, asynchronous <code>_probe_capability</code> cache (e.g., <code>client.has_wifi</code>, <code>client.has_analytics</code>, <code>client.has_itxpt</code>) to proactively handle hardware constraints.</li>
+<li><strong>Time Normalization (XovisTime):</strong> The SDK implements a unified time parser (<code>src/xovis/utils/time.py</code>) that normalizes all time-sensitive inputs. It supports relative strings (e.g., <code>"-1h"</code>, <code>"now"</code>), ISO 8601 strings (including timezone offsets like <code>"+02:00"</code>), and native <code>datetime</code> objects. All inputs are converted to UTC Unix milliseconds to ensure consistent hardware querying regardless of the sensor's local timezone configuration.</li>
+<li><strong>Data Validation:</strong> We employ Pydantic v2 heavily here. The massive OpenAPI YAMLs are generated into strict <code>RootModels</code> using alias mapping.</li>
+<li><strong>DataPush Configuration Nuances:</strong> In <code>DataPushConnection</code> configurations (specifically <code>HTTPConfig</code>), the <code>uri</code> must exclude the port (e.g., <code>http://10.0.0.1/webhook</code>), which must be provided in the separate <code>port</code> field. For <code>TCPConfig</code> and <code>UDPConfig</code>, the <code>uri</code> must include the protocol prefix (e.g., <code>tcp://10.0.0.1</code> or <code>udp://10.0.0.1</code>) to satisfy strict validation. Furthermore, <code>DataPushAgent</code> instances MUST have <code>enabled=True</code> explicitly set; otherwise, Pydantic's <code>exclude_unset=True</code> will strip the field, leaving the agent deactivated on the sensor.</li>
+<li><strong>DataPush Trigger Boundaries:</strong> DataPush agents for <code>STATUS</code> and <code>VALIDATION_RECORDING</code> do NOT support manual retriggering via the <code>/trigger</code> endpoint. Logic must skip trigger calls for these types.</li>
+<li><strong>The Bridge Layer:</strong> Implements a version-agnostic manual bridge layer (<code>src/xovis/models/device.py</code>) that abstracts firmware-specific JSON variations into stable SDK properties. Supports complex Custom Logic (RPN filters, age histograms), spatial entities (Lines, Masks, Blocked Spaces), core business logic (Logics, Layers, ObjectTypes), and high-frequency DataPush pipelines (Agents, Connections, manual triggers).</li>
+<li><strong>Pushing Configurations:</strong> When pushing configs back to the device or hub, you MUST strictly enforce <code>.model_dump(mode="json", exclude_unset=True)</code> to ensure enumerations and <code>AnyUrl</code> objects serialize cleanly over the wire to prevent HTTP 400 rejections.</li>
+</ul>
+<hr />
+<h3 id="3-the-state-topology-plane-fleet-engine">3. The State &amp; Topology Plane (Fleet Engine)</h3>
+<p><strong>Path:</strong> <code>src/xovis/api/device/</code> and <code>src/xovis/api/hub/</code>
+The SDK goes beyond stateless HTTP requests by maintaining graph-aware context, stateful caching, and Desired State Configuration (DSC) workflows, empowering developers to orchestrate entire fleets natively.</p>
+<ul>
+<li><strong>Ecosystem Topology:</strong> An IP address represents a <strong>Host</strong>. A host runs isolated <strong>Contexts</strong>. SDK namespacing MUST reflect this strict segregation (e.g., <code>device.singlesensor.datapush</code> vs <code>device.multisensors.by_name.Terminal_A.scene</code>).</li>
+<li><strong>Singlesensor (SS):</strong> The context representing a physical edge device equipped with optical lenses. Responsible for raw localized telemetry and optical imagery.</li>
+<li><strong>Multisensor (MS):</strong> The context representing a virtual, stitched tracking environment spanning 0..N physical sensors seamlessly combined into a unified trackable area.</li>
+<li><strong>Spider Nodes:</strong> High-compute, lensless processing devices (SPI-PU1/PU2). Spiders <em>only</em> run Multisensor contexts and bridge telemetry. The SDK MUST gracefully intercept physical lens requests (e.g., fetching <code>/images/raw_left.jpg</code>) and raise a <code>HardwareNotSupportedError</code> when communicating with a Spider.</li>
+<li><strong>Stateful Caching (<code>ConfigCacheManager</code> &amp; <code>HubCacheManager</code>):</strong> Maintains RAM-cached configurations. The <code>ConfigCacheManager</code> enforces strict context-isolated persistence by rooting multisensor contexts into the <code>HostStateBucket</code> via a dedicated setter. This prevents "ghost" state updates where resources are added to temporary facades instead of the authoritative bucket.</li>
+<li><strong>String-Normalized ID Resolution:</strong> All cache lookups and resource managers MUST use string normalization for IDs. This guarantees consistency between the SDK's internal dictionary keys and the hardware's variable JSON types (int/str).</li>
+<li><strong>The GC Trap:</strong> If <code>BACKGROUND_WATCHER</code> is active, the <code>asyncio.create_task</code> polling loop MUST be stored in a hard-referenced <code>Set</code> (<code>_background_tasks.add()</code>). This prevents Python 3.11+ aggressive Garbage Collection from deleting the task mid-execution.</li>
+<li><strong>Lifecycle Teardown:</strong> Background tasks must be cleanly cancelled during the client's <code>__aexit__</code> context closure to prevent memory leaks and "Event loop closed" crashes.</li>
+<li><strong>Offline-First Persistence:</strong> The <code>ConfigCacheManager</code> supports auto-persistence via <code>auto_persist_path</code>. Disk serialization and deserialization of the <code>HostStateBucket</code> are safely offloaded using <code>asyncio.to_thread</code> to guarantee zero blocking of the async event loop during disk I/O.</li>
+<li><strong>Edge Topology Synthesis:</strong> The <code>TopologyManager</code> synthesizes directed graphs (<code>StitchGraph</code>) by concurrently cross-referencing multisensor child clusters with physical local network nodes (mapping MACs to local IPs).</li>
+<li><strong>Firmware Autonomy:</strong> Includes a passive <code>DiscoveryManager</code> that identifies unknown hardware API fields during synchronization.</li>
+<li><strong>Internal Agentic Loop:</strong> Leverages an internal <code>SchemaAnalyst</code> skill (Gemini-powered) to perform semantic structural analysis on discovered firmware deltas, proposing bridge model updates to maintain "Universal Translator" status without breaking production stability.</li>
+<li><strong>The Dynamic Hub-to-Edge Bridge:</strong> <code>HubClient.connect_device()</code> securely intercepts OAuth2 tokens to dynamically spawn <code>DeviceClient</code> instances routed through the Cloud HUB. The SDK absolutely MUST use the dynamic OpenAPI standard route: <code>f"{base_url}/devices/{mac_address}/tunnel"</code>. Hardcoded fallback proxy strings are strictly forbidden.</li>
+<li><strong>Fleet Bulk Execution:</strong> Operations on Hub fleets or Multisensor stitched children utilize <code>bulk_execute</code>. This leverages <code>asyncio.gather(return_exceptions=True)</code> and strict context management to ensure that offline devices return isolated exceptions mapped within a <code>BulkResult[T]</code> object, preventing a single offline camera from crashing the orchestration pipeline.</li>
+<li><strong>Hub Tunnel Concurrency &amp; Serialization:</strong> Parallel operations targeting a specific device through the Hub tunnel (e.g., via LangChain tools) MUST be serialized using a per-device <code>asyncio.Lock</code> keyed by MAC address. This lock must wrap the <em>entire</em> connection lifecycle (<code>connect_device</code>) and any internal context aggregation loops to prevent Hub reverse proxy saturation (HTTP 503).</li>
+<li><strong>Tunnel Resilience &amp; Connection Pooling:</strong> Tunneled <code>DeviceClient</code> instances MUST enforce a 60-second timeout for heavy edge aggregations and use strict <code>httpx.Limits(max_connections=2, max_keepalive_connections=1)</code> to recycle sockets cleanly and prevent proxy exhaustion.</li>
+</ul>
+<h3 id="4-the-agentic-layer-universal-tool-adapter">4. The Agentic Layer (Universal Tool Adapter)</h3>
+<p><strong>Path:</strong> <code>src/xovis/skills/</code>
+The "Universal Translator" for autonomous agents and LLMs, providing safe, pseudonymized, and strictly validated hardware orchestration.</p>
+<ul>
+<li><strong>Privacy First:</strong> The <code>AIPrivacyEngine</code> handles two-way mapping of sensitive identifiers (MAC addresses, Customer names) to format-preserving hashes, ensuring zero-trust boundaries when interacting with external LLMs.</li>
+<li><strong>Safety Guardrails:</strong> Every tool is assigned a <code>SafetyLevel</code> (OPEN, RESTRICTED, CRITICAL, BLOCKED). CRITICAL operations (e.g., factory reset) require explicit human-in-the-loop confirmation.</li>
+<li><strong>Strict Operational Constraints:</strong> The toolkit uses a strictly defined mapping of SDK methods to tools. It does not automatically expose the entire underlying REST API or SDK.</li>
+<li><strong>Agentic Discovery:</strong> Leverages the <code>SchemaAnalyst</code> (internal) to autonomously propose code-level updates to the bridge layer when new hardware features are detected in the wild.</li>
+</ul>
+<hr />
+<h3 id="5-hyper-optimized-developer-experience-dx">5. Hyper-Optimized Developer Experience (DX)</h3>
+<p>We prioritize human-centric API design without sacrificing static type safety. Auto-completion and resource resolution are treated as core native features.</p>
+<ul>
+<li><strong>Smart Resolvers &amp; Conflict Handling:</strong> Configuration methods (e.g., <code>delete_geometry</code>) accept <code>id_or_name: Union[str, int]</code>. They use a fast-path for exact IDs (bypassing network lookups) and fall back to context-aware RAM cache lookups for human-readable string names. Conflicting names raise a <code>MultipleResourcesFoundError</code> explicitly detailing the MAC addresses and Customer context to aid immediate script correction.</li>
+<li><strong>Runtime Autocomplete (Jupyter/IPython):</strong> Standard collections are wrapped in a <code>REPLAccessor</code> (<code>CacheCollection</code>). This exposes dynamic <code>.by_name.</code> and <code>.by_mac.</code> dot-notation tailored to the specific context. Interactive environments will generate instant, live autocomplete dropdowns (e.g., <code>device.multisensors.by_name.Terminal_A.scene.zones.by_name.[TAB]</code>).</li>
+<li><strong>Static Autocomplete (VS Code/PyCharm):</strong> The SDK provides an offline <code>xovis.cli</code> sync script that crawls a serialized cache graph to generate a local <code>xovis_types.py</code> file. It partitions <code>Literal</code> strings (e.g., <code>SinglesensorZoneName = Literal[...]</code>) to prevent context-bleeding. The CLI features zero-dependency ANSI color outputs, generation analytics ("the receipt"), <code>--dry-run</code> safety, dynamic path resolution anchoring (<code>Path(__file__)</code>), and leverages native <code>subprocess.run(["ruff", "format", ...])</code> to ensure compliance.</li>
+</ul>
+<hr />
+<h3 id="6-the-open-core-boundary-sink-protocol">6. The Open Core Boundary (Sink Protocol)</h3>
+<p>This architectural separation enforces the "Open Core" boundary. The open-source SDK acts as an incredibly fast universal translator, cleanly exposing the <code>XovisSink</code> Protocol (<code>src/xovis/streams/sinks.py</code>). External developer logic is injected via this protocol, passing processed telemetry data up to proprietary downstream engines (e.g., Kafka, Redis Streams) without bottlenecking the real-time VMS requirements.</p>
+<hr />
+<h3 id="7-enterprise-coding-documentation-standards">7. Enterprise Coding &amp; Documentation Standards</h3>
+<ul>
+<li><strong>Zero-Inline-Comment, Max-Docstring:</strong> The SDK enforces the "Clean Code" philosophy. Inline developer chatter (e.g., <code># create the connection</code>) is strictly forbidden. The code must explain itself. Architectural intent, Pydantic constraints, and plane boundaries MUST be formalized into rigorous, maxed-out Google-style docstrings for every module, class, and method. (Exception: compiler/linter directives like <code># type: ignore</code> are permitted).</li>
+</ul>
+<hr />
+<h3 id="8-enterprise-testing-standards-sdet-rules">8. Enterprise Testing Standards (SDET Rules)</h3>
+<p><strong>Path:</strong> <code>tests/</code>
+We use <code>pytest</code>, <code>pytest-asyncio</code>, and <code>respx</code> to test against live hardware. Testing is strictly organized into four execution tiers:</p>
+<ul>
+<li><strong>Tier 1 (Smoke &amp; Stateless):</strong> Validates baseline connectivity, API routing, utility normalization (e.g., <code>XovisTime</code> unit tests), and read-only operations.</li>
+<li><strong>Tier 2 (Stateful Configuration):</strong> Validates Desired State Configuration (DSC) and CRUD operations (e.g., Geometries, Logics, DataPush).</li>
+<li><strong>Tier 3 (Data Plane):</strong> Validates high-frequency telemetry pipelines, TCP/UDP/HTTP stream parsing, and standard <code>XovisSink</code> protocol compliance.</li>
+<li><strong>Tier 4 (Endurance/Integrity):</strong> Cross-references telemetry streams against the historical <code>sensor_db</code> to guarantee pipeline alignment over extended durations.</li>
+</ul>
+<p><strong>Immutable Testing Rules:</strong></p>
+<ul>
+<li><strong>Idempotency:</strong> All E2E hardware tests (Tier 2/3/4) must be fully idempotent. Mutating tests are tagged with <code>@pytest.mark.destructive</code> and must perform a hard teardown inside a strict <code>finally</code> block to prevent hardware state exhaustion.</li>
+<li><strong>Teardown Sequence:</strong> When cleaning up DataPush telemetry pipelines, agents MUST be deleted before their parent connections to avoid "resource busy" HTTP 400 errors.</li>
+<li><strong>Consolidated CRUD Testing:</strong> Redundant configuration tests (e.g., <code>test_datapush.py</code>) MUST be consolidated into the robust Tier 2 suite (<code>test_cp_datapush_crud.py</code>) to minimize hardware mutation overhead while maintaining full coverage.</li>
+<li><strong>Proactive Capability Skips:</strong> Destructive E2E tests must be protected at the top of the function with awaited proactive hardware checks (e.g., <code>if not await real_device.has_analytics: pytest.skip(...)</code>).</li>
+<li><strong>Hub Fixture Scopes:</strong> Hub Tests MUST use <code>@pytest_asyncio.fixture(scope="session")</code> to share a single authenticated <code>HubClient</code>, preventing Auth0 HTTP 429 Rate Limit blocks.</li>
+<li><strong>Local Device Fixture Scopes:</strong> Local Device Tests MUST use <code>@pytest_asyncio.fixture(scope="function")</code> for the <code>DeviceClient</code>. <code>httpx</code> aggressively binds its connection pool to the active event loop; sharing a local device client across tests will trigger catastrophic <code>RuntimeError: Event loop is closed</code> failures. The fixture must <code>yield</code> and forcefully <code>await client.aclose()</code>.</li>
+<li><strong>Parametrized Matrices:</strong> Stream validation utilizes exhaustive <code>pytest.mark.parametrize</code> matrices combining agent types (LIVE_DATA, STATUS, LOGICS, WIFI_BT), targets (Single vs. Multi), transport protocols (TCP, HTTP, UDP), and specific retry schemas (BUFFER, DROP).</li>
+<li><strong>No Dummy Data:</strong> Never use fake MAC addresses for Hub Integration tests. Dynamically fetch a valid device ID via <code>get_devices()</code> before attempting updates.</li>
+<li><strong>Strict Query Parameter Serialization:</strong> All boolean flags in HTTP query parameters (e.g., <code>include_empty</code>, <code>force</code>, <code>volatile</code>) MUST be explicitly passed as lowercase strings <code>"true"</code> or <code>"false"</code>. Python's default capitalized <code>True</code>/<code>False</code> triggers <code>HTTP 500 Internal Server Error</code> in the sensor backend.</li>
+<li><strong>CacheCollection Iteration:</strong> <code>CacheCollection</code> objects (e.g., <code>self.multisensors._contexts</code>) are natively iterable. Developers MUST cast them directly to a list (<code>list(self.multisensors._contexts)</code>) and NEVER call <code>.values()</code>, which will trigger an <code>AttributeError</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="llms.txt" target="_blank" rel="noopener" title="AI-Only Gateway (llms.txt)" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
