@@ -1415,7 +1415,7 @@
   <a href="#tool-filtering-mapping" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛠️ Tool Filtering &amp; Mapping
+        Tool Filtering &amp; Mapping
       
     </span>
   </a>
@@ -1426,7 +1426,7 @@
   <a href="#strict-operational-constraints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🚫 Strict Operational Constraints
+        Strict Operational Constraints
       
     </span>
   </a>
@@ -1437,7 +1437,7 @@
   <a href="#privacy-security-layers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛡️ Privacy &amp; Security Layers
+        Privacy &amp; Security Layers
       
     </span>
   </a>
@@ -1448,7 +1448,7 @@
   <a href="#post-processing-de-anonymization-no-god-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🔄 Post-Processing De-anonymization (No God Mode)
+        Post-Processing De-anonymization (No God Mode)
       
     </span>
   </a>
@@ -1459,7 +1459,7 @@
   <a href="#waf-tunnel-privacy-blocks-http-403-html" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛑 WAF, Tunnel &amp; Privacy Blocks (HTTP 403 / HTML)
+        WAF, Tunnel &amp; Privacy Blocks (HTTP 403 / HTML)
       
     </span>
   </a>
@@ -1678,7 +1678,7 @@
   <a href="#tool-filtering-mapping" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛠️ Tool Filtering &amp; Mapping
+        Tool Filtering &amp; Mapping
       
     </span>
   </a>
@@ -1689,7 +1689,7 @@
   <a href="#strict-operational-constraints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🚫 Strict Operational Constraints
+        Strict Operational Constraints
       
     </span>
   </a>
@@ -1700,7 +1700,7 @@
   <a href="#privacy-security-layers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛡️ Privacy &amp; Security Layers
+        Privacy &amp; Security Layers
       
     </span>
   </a>
@@ -1711,7 +1711,7 @@
   <a href="#post-processing-de-anonymization-no-god-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🔄 Post-Processing De-anonymization (No God Mode)
+        Post-Processing De-anonymization (No God Mode)
       
     </span>
   </a>
@@ -1722,7 +1722,7 @@
   <a href="#waf-tunnel-privacy-blocks-http-403-html" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛑 WAF, Tunnel &amp; Privacy Blocks (HTTP 403 / HTML)
+        WAF, Tunnel &amp; Privacy Blocks (HTTP 403 / HTML)
       
     </span>
   </a>
@@ -1824,8 +1824,8 @@
 
 
 <h1 id="agent-instructions-internal">Agent Instructions (Internal)</h1>
-<p>You are the lead autonomous engineer and Python systems architect for the <code>xovis-sdk</code>.</p>
-<p>This is an enterprise-grade, high-performance Python SDK designed to intercept, parse, and normalize data from Xovis 3D stereo-vision sensors and orchestrate fleets via the Xovis HUB Cloud. It acts as the definitive Universal Translator for the hardware, cleanly decoupling raw edge data from our proprietary downstream business logic.</p>
+<p>You are the lead autonomous engineer and Python systems architect for the <code>xovis-sdk</code>.
+This is an enterprise-grade, high-performance Python SDK designed to intercept, parse, and normalize data from Xovis 3D stereo-vision sensors and orchestrate fleets via the Xovis HUB Cloud. It acts as the definitive Universal Translator for the hardware, cleanly decoupling raw edge data from our proprietary downstream business logic.</p>
 <div class="admonition warning">
 <p class="admonition-title">Contributor Guidelines</p>
 <p>These instructions are intended for engineers collaborating on the SDK or building high-fidelity agentic workflows. For a general overview of the Agentic Layer, see <a href="../../ai/agentic_layer/">AI &amp; Agents Introduction</a>.</p>
@@ -1833,81 +1833,71 @@
 <h2 id="core-architecture-philosophy">Core Architecture &amp; Philosophy</h2>
 <p>The SDK is strictly quadrifurcated into four distinct planes. <strong>Never mix the design patterns of these planes:</strong></p>
 <h3 id="1-the-data-plane-srcxovisdatapush">1. The Data Plane (<code>src/xovis/datapush/</code>)</h3>
-<p>Ultra-high-frequency (12.5Hz) ingestion of live tracking telemetry via raw TCP sockets (<code>XovisTCPServer</code>), HTTP Webhooks (<code>XovisHTTPServer</code>), and native <code>asyncio.DatagramProtocol</code> packets (<code>XovisUDPServer</code>).</p>
-<ul>
-<li><strong>Rule - Absolute Throughput:</strong> We use pure native <code>asyncio</code> (enhanced by <code>uvloop</code> on Linux/macOS or <code>WindowsProactorEventLoopPolicy</code> on Windows) for zero-blocking socket management.</li>
-<li><strong>Rule - The Parsing Quirk:</strong> Xovis TCP/UDP streams send raw, concatenated JSON without newlines or length prefixes. You MUST use a sliding string buffer combined with standard library <code>json.JSONDecoder().raw_decode()</code> to extract frames safely. Do NOT use <code>orjson</code> for this specific extraction step.</li>
-<li><strong>Rule - URI Path Decoupling:</strong> Hardware URI paths are immutable. Internal SDK refactors MUST NOT alter the underlying hardware API routes (e.g., <code>/api/v5/.../data/push</code>).</li>
-<li><strong>Rule - UDP AnyUrl Validation:</strong> When provisioning UDP connections via Pydantic models, the <code>uri</code> MUST be prefixed with <code>udp://</code> to satisfy <code>AnyUrl</code> validation, even if the raw hardware payload traditionally uses plain IPs.</li>
-<li><strong>Rule - DataPush Connection URI:</strong> In <code>HTTPConfig</code>, the <code>uri</code> MUST NOT contain a port (e.g., use <code>http://192.168.1.10/webhook</code>). The <code>port</code> MUST be provided in its own dedicated field. Mixing them causes hardware-level routing failures.</li>
-<li><strong>Rule - Explicit Agent Activation:</strong> When creating a <code>DataPushAgent</code>, always explicitly set <code>enabled=True</code>. Since the SDK uses <code>exclude_unset=True</code> during serialization, omitting this field will cause the sensor to default the agent to a deactivated state.</li>
-<li><strong>Rule - Zero-Copy / Data Handling:</strong> STRICTLY NO <code>pydantic</code> validation in this hot path. Telemetry data must be instantly forwarded to the attached sinks to ensure zero-blocking of the high-frequency ingestion stream.</li>
-<li><strong>Rule - Efficient Sinks:</strong> Downstream handoffs MUST utilize batched delivery mechanisms where applicable to minimize network round-trips and maintain high throughput.</li>
-</ul>
+<p>Ultra-high-frequency (12.5Hz) ingestion of live tracking telemetry via raw TCP sockets (<code>XovisTCPServer</code>), HTTP Webhooks (<code>XovisHTTPServer</code>), and native <code>asyncio.DatagramProtocol</code> packets (<code>XovisUDPServer</code>).
+* <strong>Rule - Absolute Throughput:</strong> We use pure native <code>asyncio</code> (enhanced by <code>uvloop</code> on Linux/macOS or <code>WindowsProactorEventLoopPolicy</code> on Windows) for zero-blocking socket management.
+* <strong>Rule - The Parsing Quirk:</strong> Xovis TCP/UDP streams send raw, concatenated JSON without newlines or length prefixes. You MUST use a sliding string buffer combined with standard library <code>json.JSONDecoder().raw_decode()</code> to extract frames safely. Do NOT use <code>orjson</code> for this specific extraction step.
+* <strong>Rule - URI Path Decoupling:</strong> Hardware URI paths are immutable. Internal SDK refactors MUST NOT alter the underlying hardware API routes (e.g., <code>/api/v5/.../data/push</code>).
+* <strong>Rule - UDP AnyUrl Validation:</strong> When provisioning UDP connections via Pydantic models, the <code>uri</code> MUST be prefixed with <code>udp://</code> to satisfy <code>AnyUrl</code> validation, even if the raw hardware payload traditionally uses plain IPs.
+* <strong>Rule - DataPush Connection URI:</strong> In <code>HTTPConfig</code>, the <code>uri</code> MUST NOT contain a port (e.g., use <code>http://192.168.1.10/webhook</code>). The <code>port</code> MUST be provided in its own dedicated field. Mixing them causes hardware-level routing failures.
+* <strong>Rule - Explicit Agent Activation:</strong> When creating a <code>DataPushAgent</code>, always explicitly set <code>enabled=True</code>. Since the SDK uses <code>exclude_unset=True</code> during serialization, omitting this field will cause the sensor to default the agent to a deactivated state.
+* <strong>Rule - Zero-Copy / Data Handling:</strong> STRICTLY NO <code>pydantic</code> validation in this hot path. Telemetry data must be instantly forwarded to the attached sinks to ensure zero-blocking of the high-frequency ingestion stream.
+* <strong>Rule - Efficient Sinks:</strong> Downstream handoffs MUST utilize batched delivery mechanisms where applicable to minimize network round-trips and maintain high throughput.</p>
 <h3 id="2-the-control-plane-srcxovisapi">2. The Control Plane (<code>src/xovis/api/</code>)</h3>
-<p>Low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors.</p>
-<ul>
-<li><strong>Rule - Robustness:</strong> We use <code>httpx</code> for async networking, <code>tenacity</code> for rate-limit (HTTP 429) and server-error (HTTP 50x) backoffs.</li>
-<li><strong>Rule - Strict Pydantic CRUD:</strong> All resource managers (Analytics, Scene, DataPush, etc.) MUST enforce strict schema validation using the auto-generated Pydantic V2 models. Never use raw <code>Dict[str, Any]</code> in method signatures for payloads.</li>
-<li><strong>Rule - Pydantic Serialization:</strong> When posting Pydantic models to <code>httpx</code>, you MUST use <code>payload = obj.model_dump(mode="json", by_alias=True, exclude_unset=True)</code> to ensure <code>Enums</code> and <code>AnyUrl</code> serialize correctly.</li>
-<li><strong>Rule - Proactive Hardware Probing:</strong> Do not rely on brittle <code>try...except 403/404</code> blocks for missing hardware features. Use the lazy, asynchronous <code>_probe_capability</code> cache (e.g., <code>client.has_wifi</code>, <code>client.has_analytics</code>) or license-aware checks (e.g. <code>client.has_object_detection</code>, <code>client.has_pram_detection</code>) to gracefully handle hardware constraints.</li>
-<li><strong>Rule - Hub Auth0:</strong> The Xovis Hub uses Auth0. Token requests MUST be sent as a form-encoded POST (<code>data={...}</code>, NOT <code>json={...}</code>) to <code>https://login.xovis.cloud/oauth/token</code> including the <code>"audience": "https://api.xovis.cloud/"</code> parameter. Tokens MUST be cached to disk to prevent 429 rate-limiting.</li>
-</ul>
+<p>Low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors.
+* <strong>Rule - Robustness:</strong> We use <code>httpx</code> for async networking, <code>tenacity</code> for rate-limit (HTTP 429) and server-error (HTTP 50x) backoffs.
+* <strong>Rule - Strict Pydantic CRUD:</strong> All resource managers (Analytics, Scene, DataPush, etc.) MUST enforce strict schema validation using the auto-generated Pydantic V2 models. Never use raw <code>Dict[str, Any]</code> in method signatures for payloads.
+* <strong>Rule - Pydantic Serialization:</strong> When posting Pydantic models to <code>httpx</code>, you MUST use <code>payload = obj.model_dump(mode="json", by_alias=True, exclude_unset=True)</code> to ensure <code>Enums</code> and <code>AnyUrl</code> serialize correctly.
+* <strong>Rule - Proactive Hardware Probing:</strong> Do not rely on brittle <code>try...except 403/404</code> blocks for missing hardware features. Use the lazy, asynchronous <code>_probe_capability</code> cache (e.g., <code>client.has_wifi</code>, <code>client.has_analytics</code>) or license-aware checks (e.g. <code>client.has_object_detection</code>, <code>client.has_pram_detection</code>) to gracefully handle hardware constraints.
+* <strong>Rule - Hub Auth0:</strong> The Xovis Hub uses Auth0. Token requests MUST be sent as a form-encoded POST (<code>data={...}</code>, NOT <code>json={...}</code>) to <code>https://login.xovis.cloud/oauth/token</code> including the <code>"audience": "https://api.xovis.cloud/"</code> parameter. Tokens MUST be cached to disk to prevent 429 rate-limiting.</p>
 <h3 id="3-the-state-topology-plane-fleet-engine">3. The State &amp; Topology Plane (Fleet Engine)</h3>
-<p>The SDK is a <strong>Stateful, Topology-Aware Fleet Manager</strong>. It abstracts away UUIDs and complex graph traversals.</p>
-<ul>
-<li><strong>Rule - Context Isolation:</strong> A device IP is a "Host". A host runs isolated "Contexts". The <code>singlesensor</code> context applies strictly to the physical lens (and MUST gracefully raise <code>HardwareNotSupportedError</code> if the host is a lensless Spider NUC). The <code>multisensors</code> context applies to 0..N virtual stitched environments. Geometries and DataPushes are strictly partitioned by context.</li>
-<li><strong>Rule - Multisensor Cache Rooting:</strong> Virtual contexts discovered via <code>multisensors.sync()</code> MUST be rooted into the persistent <code>HostStateBucket</code> via the <code>@multisensors.setter</code>. This ensures that DataPush agents and connections persist across CRUD operations and are visible to the <code>REPLAccessor</code>.</li>
-<li><strong>Rule - String-Normalized Resolution:</strong> All resource managers MUST normalize context and resource IDs to strings when interacting with the stateful cache. Integer keys are strictly forbidden in the <code>multisensors</code> mapping to prevent resolution failures.</li>
-<li><strong>Rule - Proactive Context Discovery:</strong> Resource managers SHOULD trigger a proactive <code>multisensors.sync()</code> if a targeted virtual context is missing from the local cache, enabling on-the-fly recovery of hardware state.</li>
-<li><strong>Rule - Hardware-Aware Context Routing:</strong> Agents MUST call <code>get_system_info</code> as a mandatory prerequisite to identify the hardware type (Spider vs. PC/PF series). Spider NUCs lack a physical lens and will reject <code>singlesensor</code> requests. <code>SinglesensorContext.datapush</code> must raise <code>HardwareNotSupportedError</code> on lensless hardware.</li>
-<li><strong>Rule - Smart Caching &amp; GC Trap:</strong> The SDK uses a <code>ConfigCacheManager</code> (Device) and <code>HubCacheManager</code> (Hub, with client-side <code>fleet_filter</code> mapping). <strong>CRITICAL:</strong> If <code>BACKGROUND_WATCHER</code> is active, the <code>asyncio.create_task</code> loop MUST be stored in a hard-referenced <code>Set</code> (to prevent Python 3.11+ GC mid-execution) and cleanly cancelled in <code>__aexit__</code>.</li>
-<li><strong>Rule - Offline-First Persistence:</strong> The <code>ConfigCacheManager</code> supports auto-persistence via <code>auto_persist_path</code>. Disk serialization/deserialization MUST be offloaded using <code>asyncio.to_thread</code> to ensure zero blocking of the async event loop.</li>
-<li><strong>Rule - Edge Topology Synthesis:</strong> The <code>TopologyManager</code> synthesizes directed graphs (<code>MSGraph</code>) by concurrently cross-referencing multisensor child clusters with physical local network nodes.</li>
-<li><strong>Rule - Multisensor Discovery Fallbacks:</strong> Global status endpoints (e.g., <code>/multisensors/status</code>) may fail on restrictive hardware. Discovery logic MUST fallback to probing explicit IDs (e.g., 1, 2, 3) to ensure context isolation.</li>
-<li><strong>Rule - Time Normalization (XovisTime):</strong> All time-sensitive query parameters (e.g., <code>start_time</code>, <code>end_time</code>, <code>time_utc</code>) MUST be normalized via the <code>XovisTime</code> utility. This utility ensures that relative strings (<code>-1h</code>), ISO 8601 strings (with or without timezone offsets), and <code>datetime</code> objects are converted to UTC Unix milliseconds before transmission.</li>
-<li><strong>Rule - Credential Defaults:</strong> The default username for Xovis hardware is "admin", and the default password for local testing is "pass". CLI and TUI tools should internalize these defaults to streamline developer experience.</li>
-<li><strong>Rule - The Hub-to-Edge Tunnel:</strong> <code>HubClient.connect_device()</code> securely intercepts OAuth2 tokens to dynamically spawn <code>DeviceClient</code> instances routed through the Cloud HUB proxy tunnel. The resulting client MUST be used as an async context manager to prevent connection leaks.</li>
-<li><strong>Rule - Fleet Bulk Execution:</strong> Fleet operations use <code>hub.bulk_execute(lambda c: c.system.reboot())</code> wrapping <code>asyncio.gather(return_exceptions=True)</code> to return a resilient <code>Dict[str, BulkResult[T]]</code> mapping MAC addresses to isolated successes or exceptions.</li>
-<li><strong>Rule - Hyper-Optimized DX:</strong><ul>
-<li><em>Runtime:</em> Use <code>REPLAccessor</code> wrappers to expose <code>.by_name</code> and <code>.by_mac</code> dot-notation.</li>
-<li><em>Static (CLI):</em> The <code>xovis-cli</code> script parses offline <code>HostStateBucket</code> caches to generate partitioned <code>xovis_types.py</code> files with <code>Literal</code> types. The CLI features zero-dependency ANSI color outputs, generation analytics ("the receipt"), <code>--dry-run</code> safety, and dynamic path resolution anchoring (<code>Path(__file__)</code>), finishing with native <code>subprocess.run(["ruff", "format"...])</code>.</li>
-<li><em>Smart Resolvers:</em> Methods like <code>delete_geometry(id_or_name)</code> accept IDs (fast-path) or Names (falling back to cache lookups, raising <code>ResourceNotFoundError</code> or explicit <code>MultipleResourcesFoundError</code>).</li>
-</ul>
-</li>
-</ul>
+<p>The SDK is a <strong>Stateful, Topology-Aware Fleet Manager</strong>. It abstracts away UUIDs and complex graph traversals.
+* <strong>Rule - Context Isolation:</strong> A device IP is a "Host". A host runs isolated "Contexts". The <code>singlesensor</code> context applies strictly to the physical lens (and MUST gracefully raise <code>HardwareNotSupportedError</code> if the host is a lensless Spider NUC). The <code>multisensors</code> context applies to 0..N virtual stitched environments. Geometries and DataPushes are strictly partitioned by context.
+* <strong>Rule - Multisensor Cache Rooting:</strong> Virtual contexts discovered via <code>multisensors.sync()</code> MUST be rooted into the persistent <code>HostStateBucket</code> via the <code>@multisensors.setter</code>. This ensures that DataPush agents and connections persist across CRUD operations and are visible to the <code>REPLAccessor</code>.
+* <strong>Rule - String-Normalized Resolution:</strong> All resource managers MUST normalize context and resource IDs to strings when interacting with the stateful cache. Integer keys are strictly forbidden in the <code>multisensors</code> mapping to prevent resolution failures.
+* <strong>Rule - Proactive Context Discovery:</strong> Resource managers SHOULD trigger a proactive <code>multisensors.sync()</code> if a targeted virtual context is missing from the local cache, enabling on-the-fly recovery of hardware state.
+* <strong>Rule - Hardware-Aware Context Routing:</strong> Agents MUST call <code>get_system_info</code> as a mandatory prerequisite to identify the hardware type (Spider vs. PC/PF series). Spider NUCs lack a physical lens and will reject <code>singlesensor</code> requests. <code>SinglesensorContext.datapush</code> must raise <code>HardwareNotSupportedError</code> on lensless hardware.
+* <strong>Rule - Smart Caching &amp; GC Trap:</strong> The SDK uses a <code>ConfigCacheManager</code> (Device) and <code>HubCacheManager</code> (Hub, with client-side <code>fleet_filter</code> mapping). <strong>CRITICAL:</strong> If <code>BACKGROUND_WATCHER</code> is active, the <code>asyncio.create_task</code> loop MUST be stored in a hard-referenced <code>Set</code> (to prevent Python 3.11+ GC mid-execution) and cleanly cancelled in <code>__aexit__</code>.
+* <strong>Rule - Offline-First Persistence:</strong> The <code>ConfigCacheManager</code> supports auto-persistence via <code>auto_persist_path</code>. Disk serialization/deserialization MUST be offloaded using <code>asyncio.to_thread</code> to ensure zero blocking of the async event loop.
+* <strong>Rule - Edge Topology Synthesis:</strong> The <code>TopologyManager</code> synthesizes directed graphs (<code>MSGraph</code>) by concurrently cross-referencing multisensor child clusters with physical local network nodes.
+* <strong>Rule - Multisensor Discovery Fallbacks:</strong> Global status endpoints (e.g., <code>/multisensors/status</code>) may fail on restrictive hardware. Discovery logic MUST fallback to probing explicit IDs (e.g., 1, 2, 3) to ensure context isolation.
+* <strong>Rule - Time Normalization (XovisTime):</strong> All time-sensitive query parameters (e.g., <code>start_time</code>, <code>end_time</code>, <code>time_utc</code>) MUST be normalized via the <code>XovisTime</code> utility. This utility ensures that relative strings (<code>-1h</code>), ISO 8601 strings (with or without timezone offsets), and <code>datetime</code> objects are converted to UTC Unix milliseconds before transmission.
+* <strong>Rule - Credential Defaults:</strong> The default username for Xovis hardware is "admin", and the default password for local testing is "pass". CLI and TUI tools should internalize these defaults to streamline developer experience.
+* <strong>Rule - The Hub-to-Edge Tunnel:</strong> <code>HubClient.connect_device()</code> securely intercepts OAuth2 tokens to dynamically spawn <code>DeviceClient</code> instances routed through the Cloud HUB proxy tunnel. The resulting client MUST be used as an async context manager to prevent connection leaks.
+* <strong>Rule - Fleet Bulk Execution:</strong> Fleet operations use <code>hub.bulk_execute(lambda c: c.system.reboot())</code> wrapping <code>asyncio.gather(return_exceptions=True)</code> to return a resilient <code>Dict[str, BulkResult[T]]</code> mapping MAC addresses to isolated successes or exceptions.
+* <strong>Rule - Hyper-Optimized DX:</strong>
+    * <em>Runtime:</em> Use <code>REPLAccessor</code> wrappers to expose <code>.by_name</code> and <code>.by_mac</code> dot-notation.
+    * <em>Static (CLI):</em> The <code>xovis-cli</code> script parses offline <code>HostStateBucket</code> caches to generate partitioned <code>xovis_types.py</code> files with <code>Literal</code> types. The CLI features zero-dependency ANSI color outputs, generation analytics ("the receipt"), <code>--dry-run</code> safety, and dynamic path resolution anchoring (<code>Path(__file__)</code>), finishing with native <code>subprocess.run(["ruff", "format"...])</code>.
+    * <em>Smart Resolvers:</em> Methods like <code>delete_geometry(id_or_name)</code> accept IDs (fast-path) or Names (falling back to cache lookups, raising <code>ResourceNotFoundError</code> or explicit <code>MultipleResourcesFoundError</code>).</p>
 <h2 id="agentic-layer-mcp-safety-boundaries">Agentic Layer &amp; MCP Safety Boundaries</h2>
-<p><strong>Theoretical API Access of Xovis AIToolkit and MCP</strong></p>
-<p>The <code>XovisAIToolkit</code> and its associated Model Context Protocol (MCP) implementation do not have full unrestricted API access to the Xovis hardware. Instead, they operate under a Safety-by-Design architecture that explicitly restricts the agent's capabilities to prevent device damage, data loss, or network lockouts.</p>
-<h3 id="tool-filtering-mapping">🛠️ Tool Filtering &amp; Mapping</h3>
+<p><strong>Theoretical API Access of Xovis AIToolkit and MCP</strong>
+The <code>XovisAIToolkit</code> and its associated Model Context Protocol (MCP) implementation do not have full unrestricted API access to the Xovis hardware. Instead, they operate under a Safety-by-Design architecture that explicitly restricts the agent's capabilities to prevent device damage, data loss, or network lockouts.</p>
+<h3 id="tool-filtering-mapping">Tool Filtering &amp; Mapping</h3>
 <p>The toolkit uses a strictly defined mapping of SDK methods to tools. It does not automatically expose the entire underlying REST API or SDK.
 * <strong>Explicit Mapping:</strong> Only methods explicitly added to the <code>_tools_map</code> in <code>src/xovis/skills/toolkit.py</code> are available to the AI.
 * <strong>Safety Levels:</strong> Every tool is assigned a <code>SafetyLevel</code> (<code>OPEN</code>, <code>RESTRICTED</code>, <code>CRITICAL</code>, <code>BLOCKED</code>).</p>
-<h3 id="strict-operational-constraints">🚫 Strict Operational Constraints</h3>
+<h3 id="strict-operational-constraints">Strict Operational Constraints</h3>
 <p>The system implements four tiers of safety that determine if and how a tool can be executed:
 * <strong>BLOCKED (Strictly Forbidden):</strong> Endpoints like <code>flash_format</code> (bricking), <code>reboot_rescue</code> (rescue mode), or <code>delete_remote_connection</code> are hardcoded to <code>SafetyLevel.BLOCKED</code>. The toolkit maps these to a <code>_not_implemented</code> placeholder, ensuring that even if the AI attempts to call them, the execution is intercepted and rejected by the SDK before reaching the hardware.
 * <strong>CRITICAL (Human-in-the-Loop):</strong> Destructive operations such as <code>factory_reset</code>, <code>hard_reset</code>, or modifying sensitive <code>update_network_settings</code> (IP/DHCP) are marked as <code>CRITICAL</code>. The <code>XovisSafetyGuardrail</code> requires these to have explicit human confirmation; otherwise, the toolkit will raise a <code>PermissionError</code>.
 * <strong>RESTRICTED (Warnings &amp; Delays):</strong> Operations that cause temporary disruptions (e.g., <code>reboot_device</code>, <code>delete_analytics</code>) require the AI to acknowledge a warning or inject a programmatic delay before execution.
 * <strong>OPEN (Read-Only &amp; Maintenance):</strong> Observation tools like <code>get_system_info</code>, <code>get_topology_graph</code>, and <code>get_agent_memory</code> are always safe and accessible.</p>
-<h3 id="privacy-security-layers">🛡️ Privacy &amp; Security Layers</h3>
+<h3 id="privacy-security-layers">Privacy &amp; Security Layers</h3>
 <p>In addition to the safety guardrails, the toolkit utilizes two additional security layers:
 * <strong>Format-Preserving Pseudonymization:</strong> Via the <code>AIPrivacySession</code>, sensitive identifiers like MAC addresses and customer names are hashed before being shown to the LLM. The AI only ever sees and interacts with these hashes (e.g., <code>Id_a1b2c3d4</code>), and the toolkit "restores" the real values only at the moment of execution.
 * <strong>Authorization Scopes:</strong> Tools can be further restricted by <code>AgentAuthorizationScope</code>, which can limit an agent's access to specific devices or groups based on metadata.</p>
-<h3 id="post-processing-de-anonymization-no-god-mode">🔄 Post-Processing De-anonymization (No God Mode)</h3>
+<h3 id="post-processing-de-anonymization-no-god-mode">Post-Processing De-anonymization (No God Mode)</h3>
 <p>Agents and workflow scripts must NEVER bypass the <code>AIPrivacySession</code> to extract plaintext data. The zero-trust boundary is absolute. To generate readable reports for human operators, the wrapper script must execute <code>toolkit.privacy_session.deanonymize_text(raw_llm_output)</code>. This safely swaps the hashes back to their real plaintext values (MAC addresses, Customer Names) natively in Python <em>after</em> the LLM has generated the final string.</p>
-<h3 id="waf-tunnel-privacy-blocks-http-403-html">🛑 WAF, Tunnel &amp; Privacy Blocks (HTTP 403 / HTML)</h3>
-<p>When operating through the Hub Cloud tunnel or directly on the Edge, the agent may encounter <code>HTTP 403 Forbidden</code> errors that return raw HTML (e.g., <code>&lt;!DOCTYPE html&gt;...</code>).</p>
-<ul>
-<li><strong>What this means:</strong> This indicates the requested resource is <strong>Forbidden</strong>. This can be caused by:</li>
-<li><strong>Missing Hardware Capabilities:</strong> Attempting to access WiFi/BT endpoints on a lens-only sensor or a Spider NUC without the necessary radio modules.</li>
-<li><strong>Restrictive Privacy Mode:</strong> Sensors set to Privacy Mode 3 or 4 will aggressively reject analytics, geometries, and license queries.</li>
-<li><strong>Cloud Proxy Firewall (WAF):</strong> High-security tenants or missing M2M privileges in the Xovis HUB.</li>
-<li><strong>Agent Reporting Rule:</strong> If an autonomous agent encounters an HTML 403 error, it MUST NOT retry or hallucinate data. It must explicitly document the failure in its reports as: <em>"Access Forbidden: This endpoint is restricted due to missing hardware capabilities, strict Edge Privacy Policy, or Cloud Proxy security rules."</em></li>
-<li><strong>Privacy Verification Rule:</strong> If an agent encounters an HTML 403 error on analytics or history endpoints, it MUST immediately execute <code>get_privacy_state</code>. If the privacy mode is 3 or 4, or if <code>remote_access</code> is disabled, the agent must document: <em>"Data extraction blocked by Edge Privacy Policy (Mode X)."</em></li>
-<li><strong>Rule - Intra-Context Pacing:</strong> Aggregation loops iterating over <code>active_contexts</code> via a <code>HubClient</code> MUST include an <code>asyncio.sleep(1.0)</code> delay after each request to prevent rapid sequential bursts from saturating the cloud tunnel.</li>
-<li><strong>Rule - DataPush Trigger Boundaries:</strong> DataPush agents for <code>STATUS</code> and <code>RECORDING</code> do NOT support manual retriggering via the <code>/trigger</code> endpoint. Attempting to trigger these will result in a no-op or a hardware-level rejection. Tests and orchestration logic must skip trigger calls for these types.</li>
-<li><strong>Rule - Telemetry Resolution Scaling:</strong> To prevent sensor Out-Of-Memory (OOM) crashes during heavy 24-hour historical queries, agents MUST default to a 60-minute resolution for daily reports.</li>
-</ul>
+<h3 id="waf-tunnel-privacy-blocks-http-403-html">WAF, Tunnel &amp; Privacy Blocks (HTTP 403 / HTML)</h3>
+<p>When operating through the Hub Cloud tunnel or directly on the Edge, the agent may encounter <code>HTTP 403 Forbidden</code> errors that return raw HTML (e.g., <code>&lt;!DOCTYPE html&gt;...</code>).
+* <strong>What this means:</strong> This indicates the requested resource is <strong>Forbidden</strong>. This can be caused by:
+  1. <strong>Missing Hardware Capabilities:</strong> Attempting to access WiFi/BT endpoints on a lens-only sensor or a Spider NUC without the necessary radio modules.
+  2. <strong>Restrictive Privacy Mode:</strong> Sensors set to Privacy Mode 3 or 4 will aggressively reject analytics, geometries, and license queries.
+  3. <strong>Cloud Proxy Firewall (WAF):</strong> High-security tenants or missing M2M privileges in the Xovis HUB.
+* <strong>Agent Reporting Rule:</strong> If an autonomous agent encounters an HTML 403 error, it MUST NOT retry or hallucinate data. It must explicitly document the failure in its reports as: <em>"Access Forbidden: This endpoint is restricted due to missing hardware capabilities, strict Edge Privacy Policy, or Cloud Proxy security rules."</em>
+* <strong>Privacy Verification Rule:</strong> If an agent encounters an HTML 403 error on analytics or history endpoints, it MUST immediately execute <code>get_privacy_state</code>. If the privacy mode is 3 or 4, or if <code>remote_access</code> is disabled, the agent must document: <em>"Data extraction blocked by Edge Privacy Policy (Mode X)."</em>
+* <strong>Rule - Intra-Context Pacing:</strong> Aggregation loops iterating over <code>active_contexts</code> via a <code>HubClient</code> MUST include an <code>asyncio.sleep(1.0)</code> delay after each request to prevent rapid sequential bursts from saturating the cloud tunnel.
+* <strong>Rule - DataPush Trigger Boundaries:</strong> DataPush agents for <code>STATUS</code> and <code>RECORDING</code> do NOT support manual retriggering via the <code>/trigger</code> endpoint. Attempting to trigger these will result in a no-op or a hardware-level rejection. Tests and orchestration logic must skip trigger calls for these types.
+* <strong>Rule - Telemetry Resolution Scaling:</strong> To prevent sensor Out-Of-Memory (OOM) crashes during heavy 24-hour historical queries, agents MUST default to a 60-minute resolution for daily reports.</p>
 <h2 id="coding-documentation-standards">Coding &amp; Documentation Standards</h2>
 <p><strong>Rule - Zero-Inline-Comment, Max-Docstring:</strong>
 Do NOT use inline developer chatter (e.g., <code># this creates the agent</code>). The code must explain itself. You MUST enforce maxed-out, hyper-professional Google-style docstrings for every module, class, and method. Explicitly document architectural intent, Pydantic constraints, parameter types, and plane boundaries. (Exception: compiler/linter directives like <code># type: ignore</code> are permitted).</p>
@@ -1925,40 +1915,34 @@ Do NOT use inline developer chatter (e.g., <code># this creates the agent</code>
 <h3 id="environment-variables">Environment Variables</h3>
 <p>For agent creation and AI-powered tasks, the following environment variables are available:
 * <strong>AI APIs:</strong> <code>GEMINI_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>PERPLEXITY_API_KEY</code>
-* <strong>Xovis Hub:</strong> <code>XOVIS_HUB_CLIENT_ID</code>, <code>XOVIS_HUB_CLIENT_SECRET</code></p>
-<p><strong>Local Environment Setup:</strong>
+* <strong>Xovis Hub:</strong> <code>XOVIS_HUB_CLIENT_ID</code>, <code>XOVIS_HUB_CLIENT_SECRET</code>
+<strong>Local Environment Setup:</strong>
 <div class="highlight"><pre><span></span><code><span class="c1"># Create venv and install the package in editable mode with all dependencies</span>
 python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
 <span class="nb">source</span><span class="w"> </span>.venv/bin/activate
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[test]&quot;</span>
-</code></pre></div></p>
-<p><strong>Required Runtime Infrastructure:</strong></p>
-<ul>
-<li><strong>uvloop:</strong> Automatically utilized if available on the host OS to maximize standard <code>asyncio</code> performance.</li>
-<li><strong>Redis (Downstream Bridge):</strong> Certain downstream integrations require Redis (<code>redis://localhost:6379/0</code>) for high-speed data offloading.</li>
-</ul>
+</code></pre></div>
+<strong>Required Runtime Infrastructure:</strong>
+* <strong>uvloop:</strong> Automatically utilized if available on the host OS to maximize standard <code>asyncio</code> performance.
+* <strong>Redis (Downstream Bridge):</strong> Certain downstream integrations require Redis (<code>redis://localhost:6379/0</code>) for high-speed data offloading.</p>
 <h2 id="enterprise-testing-standards-sdet-rules">Enterprise Testing Standards (SDET Rules)</h2>
-<p>We use <code>pytest</code>, <code>pytest-asyncio</code>, and <code>respx</code> (for HTTP mocking). Testing is strictly organized into four execution tiers:</p>
-<ol>
-<li><strong>Tier 1 (Smoke &amp; Stateless):</strong> Validates baseline connectivity, API routing, utility normalization (e.g., <code>XovisTime</code> unit tests), and read-only operations.</li>
-<li><strong>Tier 2 (Stateful Configuration):</strong> Validates Desired State Configuration (DSC) and CRUD operations (e.g., Geometries, Logics, DataPush).</li>
-<li><strong>Tier 3 (The Data Plane):</strong> Validates high-frequency telemetry pipelines, socket stream parsing, and standard <code>XovisSink</code> protocol compliance.</li>
-<li><strong>Tier 4 (Endurance/Integrity):</strong> Cross-references telemetry streams against the historical <code>sensor_db</code> to guarantee pipeline alignment. <strong>Rule:</strong> These tests require a minimum 75-second aggregation window wait to ensure hardware bin closure, followed by a retry loop (up to 60s) for firmware DB commit latency.</li>
-</ol>
-<p><strong>Immutable Testing Rules:</strong></p>
-<ol>
-<li><strong>Strict Idempotency (CRITICAL):</strong> All E2E hardware tests (Tier 2/3/4) MUST be fully idempotent. Mutating tests are tagged with <code>@pytest.mark.destructive</code>. Resource creation and deletion MUST be wrapped in a <code>try...finally</code> block to guarantee hard teardown.</li>
-<li><strong>Teardown Order (CRITICAL):</strong> When cleaning up DataPush resources, you MUST delete all <code>DataPushAgent</code> instances BEFORE deleting the <code>DataPushConnection</code>. Attempting to delete a connection with active agents will trigger an HTTP 400 "Connection in use" error.</li>
-<li><strong>Consolidated CRUD Testing:</strong> Redundant configuration tests (e.g., <code>test_datapush.py</code>) MUST be consolidated into the robust Tier 2 suite (<code>test_cp_datapush_crud.py</code>) to minimize hardware mutation overhead while maintaining full coverage.</li>
-<li><strong>Pacing and Resource Limits:</strong> E2E tests for resource provisioning (Connections/Agents) must respect the SDK's <code>_pacing_delay()</code>. Use <code>id_mode="SERVER"</code> to let the hardware manage resource indexing.</li>
-<li><strong>Clock-Aware Assertions:</strong> When validating historical data (Tier 4), queries MUST use the sensor's internal clock (via <code>get_state</code>) to construct ISO8601 windows, neutralizing runner-to-sensor drift.</li>
-<li><strong>Proactive Capability Skips:</strong> Destructive E2E tests must be protected at the top of the function with awaited proactive hardware checks (e.g., <code>if not await real_device.has_analytics: pytest.skip(...)</code>).</li>
-<li><strong>Fixture Scopes (CRITICAL):</strong></li>
-<li><strong>Hub Tests:</strong> MUST use <code>@pytest_asyncio.fixture(scope="session")</code> for the <code>HubClient</code> to prevent Auth0 HTTP 429 rate-limit blocks.</li>
-<li><strong>Local Device Tests:</strong> MUST use <code>@pytest_asyncio.fixture(scope="function")</code> for <code>DeviceClient</code>. <code>httpx</code> aggressively binds its connection pool to the active event loop; sharing a client across tests will cause <code>RuntimeError: Event loop is closed</code>. Yield the client and aggressively <code>await client.aclose()</code>.</li>
-<li><strong>No Dummy Data:</strong> Never use fake MAC addresses for Hub tests. Dynamically fetch a valid device ID via <code>get_devices()</code> before attempting updates.</li>
-<li><strong>Parametrized Matrices:</strong> Stream and DataPush validation utilizes exhaustive <code>@pytest.mark.parametrize</code> matrices combining agent types, targets (Single vs. Multi), transport protocols (TCP, HTTP, UDP), and retry schemas.</li>
-</ol>
+<p>We use <code>pytest</code>, <code>pytest-asyncio</code>, and <code>respx</code> (for HTTP mocking). Testing is strictly organized into four execution tiers:
+1. <strong>Tier 1 (Smoke &amp; Stateless):</strong> Validates baseline connectivity, API routing, utility normalization (e.g., <code>XovisTime</code> unit tests), and read-only operations.
+2. <strong>Tier 2 (Stateful Configuration):</strong> Validates Desired State Configuration (DSC) and CRUD operations (e.g., Geometries, Logics, DataPush).
+3. <strong>Tier 3 (The Data Plane):</strong> Validates high-frequency telemetry pipelines, socket stream parsing, and standard <code>XovisSink</code> protocol compliance.
+4. <strong>Tier 4 (Endurance/Integrity):</strong> Cross-references telemetry streams against the historical <code>sensor_db</code> to guarantee pipeline alignment. <strong>Rule:</strong> These tests require a minimum 75-second aggregation window wait to ensure hardware bin closure, followed by a retry loop (up to 60s) for firmware DB commit latency.
+<strong>Immutable Testing Rules:</strong>
+1. <strong>Strict Idempotency (CRITICAL):</strong> All E2E hardware tests (Tier 2/3/4) MUST be fully idempotent. Mutating tests are tagged with <code>@pytest.mark.destructive</code>. Resource creation and deletion MUST be wrapped in a <code>try...finally</code> block to guarantee hard teardown.
+2. <strong>Teardown Order (CRITICAL):</strong> When cleaning up DataPush resources, you MUST delete all <code>DataPushAgent</code> instances BEFORE deleting the <code>DataPushConnection</code>. Attempting to delete a connection with active agents will trigger an HTTP 400 "Connection in use" error.
+3. <strong>Consolidated CRUD Testing:</strong> Redundant configuration tests (e.g., <code>test_datapush.py</code>) MUST be consolidated into the robust Tier 2 suite (<code>test_cp_datapush_crud.py</code>) to minimize hardware mutation overhead while maintaining full coverage.
+4. <strong>Pacing and Resource Limits:</strong> E2E tests for resource provisioning (Connections/Agents) must respect the SDK's <code>_pacing_delay()</code>. Use <code>id_mode="SERVER"</code> to let the hardware manage resource indexing.
+5. <strong>Clock-Aware Assertions:</strong> When validating historical data (Tier 4), queries MUST use the sensor's internal clock (via <code>get_state</code>) to construct ISO8601 windows, neutralizing runner-to-sensor drift.
+6. <strong>Proactive Capability Skips:</strong> Destructive E2E tests must be protected at the top of the function with awaited proactive hardware checks (e.g., <code>if not await real_device.has_analytics: pytest.skip(...)</code>).
+7. <strong>Fixture Scopes (CRITICAL):</strong>
+   * <strong>Hub Tests:</strong> MUST use <code>@pytest_asyncio.fixture(scope="session")</code> for the <code>HubClient</code> to prevent Auth0 HTTP 429 rate-limit blocks.
+   * <strong>Local Device Tests:</strong> MUST use <code>@pytest_asyncio.fixture(scope="function")</code> for <code>DeviceClient</code>. <code>httpx</code> aggressively binds its connection pool to the active event loop; sharing a client across tests will cause <code>RuntimeError: Event loop is closed</code>. Yield the client and aggressively <code>await client.aclose()</code>.
+8. <strong>No Dummy Data:</strong> Never use fake MAC addresses for Hub tests. Dynamically fetch a valid device ID via <code>get_devices()</code> before attempting updates.
+9. <strong>Parametrized Matrices:</strong> Stream and DataPush validation utilizes exhaustive <code>@pytest.mark.parametrize</code> matrices combining agent types, targets (Single vs. Multi), transport protocols (TCP, HTTP, UDP), and retry schemas.</p>
 
 
 

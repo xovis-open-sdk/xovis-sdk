@@ -1392,40 +1392,34 @@
 
 <h1 id="recipe-langgraph-congestion-control">Recipe: LangGraph Congestion Control</h1>
 <p>This recipe demonstrates how to utilize the <code>xovis-sdk</code> within a cyclic LangGraph loop. 
-The agent reads the local state via <code>XovisAgentMemory</code>, executes a task, and dynamically adjusts the hardware if network congestion is detected in the Data Plane.</p>
+The agent reads the local state via <code>XovisAgentMemory</code>, executes a task, and dynamically adjusts the hardware if network congestion is detected in the Data Plane.
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">TypedDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">StateGraph</span><span class="p">,</span> <span class="n">END</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">xovis.api.device.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">xovis.skills.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">XovisAIToolkit</span><span class="p">,</span> <span class="n">XovisAgentMemory</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">xovis.skills.langchain_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_langchain_tools</span>
-
 <span class="k">class</span><span class="w"> </span><span class="nc">AgentState</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
     <span class="n">messages</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="s2">&quot;The message history.&quot;</span><span class="p">]</span>
     <span class="n">hardware_state</span><span class="p">:</span> <span class="nb">str</span>
-
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process_hardware_loop</span><span class="p">():</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">DeviceClient</span><span class="p">(</span><span class="s2">&quot;10.0.0.50&quot;</span><span class="p">,</span> <span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">device</span><span class="p">:</span>
         <span class="n">toolkit</span> <span class="o">=</span> <span class="n">XovisAIToolkit</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="n">tools</span> <span class="o">=</span> <span class="n">get_langchain_tools</span><span class="p">(</span><span class="n">toolkit</span><span class="p">)</span>
         <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bind_tools</span><span class="p">(</span><span class="n">tools</span><span class="p">)</span>
-
         <span class="n">memory</span> <span class="o">=</span> <span class="n">XovisAgentMemory</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">_state</span><span class="p">)</span>
         <span class="n">compressed_state</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">get_compressed_state</span><span class="p">()</span>
-
         <span class="c1"># Initialize the LangGraph State</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">agent_node</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">AgentState</span><span class="p">):</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">llm</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">])</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">response</span><span class="p">]}</span>
-
         <span class="c1"># Define the routing logic (Tool execution vs END)</span>
         <span class="c1"># ... standard LangGraph ToolNode execution omitted for brevity ...</span>
 
         <span class="c1"># Execute the graph</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LangGraph Execution Initialized with physical hardware access.&quot;</span><span class="p">)</span>
-</code></pre></div>
+</code></pre></div></p>
 
 
 
