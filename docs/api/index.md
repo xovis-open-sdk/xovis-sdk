@@ -12,4 +12,12 @@ The raw hardware and cloud APIs are documented via interactive Scalar references
 
 ## 🐍 Python SDK Reference
 
-The Python SDK is organized according to the trifurcated architecture. See the [Python SDK](python/core.md) section for detailed module-level documentation.
+The Python SDK is organized according to the **quadrifurcated architecture**.
+
+### Planes
+- [**The Data Plane**](python/datapush.md): High-frequency telemetry ingestion.
+- [**The Control Plane**](python/device.md): Low-frequency REST API wrappers for edge sensors.
+- [**The Hub Plane**](python/hub.md): Cloud-scale fleet management.
+- [**The Agentic Layer**](python/skills.md): AI Skillsets and MCP toolkits.
+
+For a detailed module-level overview, see the [Core SDK](python/core.md) documentation.

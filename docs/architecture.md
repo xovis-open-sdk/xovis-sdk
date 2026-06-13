@@ -1,68 +1,8 @@
-# 🏗️ Quadrifurcated Architecture
+# Quadrifurcated Architecture
 
 The `xovis-sdk` is strictly **quadrifurcated** into four distinct planes. This decoupling ensures high-frequency telemetry remains unblocked by slow control operations, while fleet-wide state is managed independently of the hardware's physical lens topology.
 
----
-
-!!! info "For Contributors"
-    If you are interested in collaborating on the SDK or want to understand the deep technical rules governing each plane, please refer to the [Engineering Guidelines](contributing/engineering_guidelines.md).
-
-### 1️⃣ The Data Plane (Telemetry Ingestion)
-**Module:** `src/xovis/datapush/`
-
-The engine designed for ultra-high-frequency (12.5Hz) ingestion of live tracking telemetry from physical sensors.
-
-- **Objective**: Zero-copy, maximum throughput, non-blocking ingestion.
-- **Engine**: Pure native `asyncio` enhanced by `uvloop` (Linux/macOS) or `ProactorEventLoopPolicy` (Windows).
-- **Protocol Fidelity**: Implements a sliding string buffer using `json.JSONDecoder().raw_decode()` to handle raw, concatenated JSON streams without length prefixes or newlines.
-- **Rules**:
-    - **Zero-Validation**: Pydantic validation is strictly forbidden in the hot path to prevent CPU saturation.
-    - **Efficient Sinks**: Telemetry is instantly offloaded to `XovisSink` protocols (TCP, UDP, HTTP, MQTT).
-    - **URI Integrity**: Hardware URI paths are immutable; SDK refactors never alter the underlying edge routes.
-
-### 2️⃣ The Control Plane (Configuration Management)
-**Module:** `src/xovis/api/`
-
-Low-frequency REST API wrappers for configuring the Xovis HUB Cloud and physical Edge sensors.
-
-- **Objective**: Robustness, strict schema adherence, and resilience.
-- **Engine**: `httpx` for networking and `Pydantic V2` for comprehensive model validation.
-- **Safety**: Implements the `XovisSafetyGuardrail` to prevent destructive operations without confirmation.
-- **Key Features**:
-    - **Proactive Probing**: Asynchronously caches hardware capabilities (WiFi, Analytics, License scopes) to prevent fragile 403/404 handling.
-    - **XovisTime Utility**: Normalizes relative strings (`now`, `-1h`), ISO 8601, and `datetime` objects into UTC Unix milliseconds for all triggers and historical queries.
-    - **Cloud Tunneling**: Securely intercepts OAuth2 tokens to spawn `DeviceClient` instances routed through the Cloud HUB proxy.
-
-### 3️⃣ The State & Topology Plane (Fleet Orchestration)
-**Module:** `src/xovis/api/device/`
-
-A stateful, topology-aware engine that abstracts complex sensor graphs into human-readable mappings.
-
-- **Objective**: Transparent management of multisensor environments and offline-first state persistence.
-- **Engine**: `TopologyManager` + `ConfigCacheManager`.
-- **Logic**:
-    - **Context Isolation**: Distinguishes between `singlesensor` (physical lens) and `multisensors` (virtual stitched environments).
-    - **Offline Persistence**: Supports `auto_persist_path` for disk serialization, offloading I/O to threads via `asyncio.to_thread`.
-    - **Dynamic Discovery**: Identifies hardware API fields and registers them in the `HostStateBucket` for zero-latency lookups via `REPLAccessor` (dot-notation).
-
-### 4️⃣ The Agentic Layer (AI Orchestration)
-**Module:** `src/xovis/skills/`
-
-The "Universal Translator" for autonomous agents, LLMs, and the Model Context Protocol (MCP).
-
-- **Objective**: Bridging hardware operations with natural language reasoning while maintaining enterprise safety.
-- **Engine**: `XovisAIToolkit` + `AIPrivacySession`.
-- **Safety Tiering**:
-    - **Privacy Pseudonymization**: Hashes sensitive identifiers (MACs, names) before they reach the LLM, restoring them only at execution.
-    - **Tool Mapping**: Categorizes every operation into `OPEN`, `RESTRICTED`, `CRITICAL`, or `BLOCKED` safety levels.
-    - **MCP Integration**: Exposes the entire SDK surface as a standardized set of tools for Claude Desktop, Cursor, and Windsurf.
-
----
-
-!!! info "Advanced AI Integration"
-    For detailed instructions on building autonomous agents and understanding the safety-by-design architecture, see the [Agent Instructions](contributing/agent_instructions.md).
-
-### 🗺️ System Data Flow
+### System Data Flow
 
 ```mermaid
 graph TB
@@ -120,3 +60,60 @@ graph TB
     style G fill:#1e293b,stroke:#818cf8,stroke-width:2px
     style M fill:#1e293b,stroke:#818cf8,stroke-width:2px
 ```
+
+---
+
+!!! info "For Contributors"
+    If you are interested in collaborating on the SDK or want to understand the technical rules governing each plane, please refer to the [Contributor Architecture & Guidelines](contributing/agent_instructions.md).
+
+### 1. The Data Plane (Telemetry Ingestion)
+**Module:** `src/xovis/datapush/`
+
+The engine designed for ultra-high-frequency (12.5Hz) ingestion of live tracking telemetry from physical sensors.
+
+- **Objective**: Zero-copy, maximum throughput, non-blocking ingestion.
+- **Engine**: Pure native `asyncio` enhanced by `uvloop` (Linux/macOS) or `ProactorEventLoopPolicy` (Windows).
+- **Protocol Fidelity**: Optimized to handle raw, concatenated JSON streams directly from the hardware via a **Sliding String Buffer**.
+- **Key Features**:
+    - **High Throughput**: Telemetry is instantly offloaded to `XovisSink` protocols.
+    - **URI Integrity**: Hardware-native routing for maximum compatibility with edge devices.
+
+### 2. The Control Plane (Configuration Management)
+**Module:** `src/xovis/api/`
+
+Low-frequency REST API wrappers for configuring the Xovis HUB Cloud and physical Edge sensors.
+
+- **Objective**: Robustness, strict schema adherence, and resilience.
+- **Engine**: `httpx` for networking and `Pydantic V2` for comprehensive model validation.
+- **Safety**: Integrates with the `XovisSafetyGuardrail` to ensure operational security.
+- **Key Features**:
+    - **Proactive Probing**: Caches hardware capabilities to optimize performance and reliability.
+    - **XovisTime Utility**: Standardizes all time-sensitive inputs into UTC Unix milliseconds.
+    - **Cloud Tunneling**: Provides secure access to edge devices through the Cloud HUB proxy.
+
+### 3. The State & Topology Plane (Fleet Orchestration)
+**Module:** `src/xovis/api/device/`
+
+A stateful, topology-aware engine that abstracts complex sensor graphs into human-readable mappings.
+
+- **Objective**: Transparent management of multisensor environments and offline-first state persistence.
+- **Engine**: `TopologyManager` + `ConfigCacheManager`.
+- **Logic**:
+    - **Context Isolation**: Distinguishes between physical lenses (`singlesensor`) and virtual stitched environments (`multisensors`).
+    - **Offline Persistence**: Enables zero-latency lookups via localized state caching.
+    - **Dynamic Discovery**: Automatically identifies hardware topologies and registers them for easy access.
+
+### 4. The Agentic Layer (AI Orchestration)
+**Module:** `src/xovis/skills/`
+
+The integration layer for autonomous agents, LLMs, and the Model Context Protocol (MCP).
+
+- **Objective**: Bridging hardware operations with natural language reasoning while maintaining enterprise safety.
+- **Engine**: `XovisAIToolkit` + `AIPrivacySession`.
+- **Safety Tiering**:
+    - **Privacy Pseudonymization**: Protects sensitive identifiers before they reach external models.
+    - **Tool Mapping**: Categorizes every operation into clear safety levels (OPEN, RESTRICTED, CRITICAL, BLOCKED).
+    - **MCP Integration**: Exposes the SDK as a standardized toolset for AI-enabled environments.
+
+---
+

@@ -55,12 +55,12 @@ plugins:
             show_source: true
             show_root_heading: true
             show_category_heading: true
-            import_outline_sidebar: true
             filters:
               - "!^xovis\\.models\\.device_auto\\.versions\\..*"
               - "!^xovis\\.models\\.hub_auto.*"
               - "!^xovis\\.models\\.hub_license_auto.*"
               - "!^xovis\\.models\\.xovis_types.*"
+              - "!^xovis\\.skills\\.discovery.*"
   - mermaid2:
       arguments:
         theme: dark

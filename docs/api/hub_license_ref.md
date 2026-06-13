@@ -1,4 +1,4 @@
-# 💳 Hub License API Reference (Scalar)
+# Hub License API Reference (Scalar)
 
 This schema dictates the **billing** and **subscription** payloads handled by the `xovis-sdk` when operating against the Xovis HUB Cloud. 
 

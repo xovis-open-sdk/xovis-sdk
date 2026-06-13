@@ -2,7 +2,7 @@
 Xovis SDK - TUI Confirmation Modal
 
 Provides a reusable, enterprise-grade modal dialog for critical bulk operations
-within the Xovis Terminal OS. Implements the standard Textual ModalScreen pattern
+within the Xovis Open SDK Mission Control. Implements the standard Textual ModalScreen pattern
 with success/error variants for action confirmation.
 """
 

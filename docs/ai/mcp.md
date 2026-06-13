@@ -22,6 +22,15 @@ The server dynamically inspects the `XovisAIToolkit` at runtime. Any tool regist
 ### 3. Safety Guardrails
 All MCP tool calls are proxied through the `XovisSafetyGuardrail`. High-impact operations (e.g., reboots) initiated via MCP **require** explicit confirmation payloads, preventing accidental hardware outages during agentic reasoning loops.
 
+## Prerequisites: Type Generation
+
+Before using the MCP server, you MUST generate the local resource types. The MCP server relies on these types to provide the AI with accurate autocompletion for resource IDs (e.g., Zone names, Line IDs, MAC addresses).
+
+1.  **Warmup**: Run `xovis-cli warmup --host <DEVICE_IP>` to sync hardware state.
+2.  **Generate Types**: Run `xovis-cli generate-types` to create the `xovis_types.py` definitions.
+
+For a detailed explanation of the type generation system and the CLI commands, see the [CLI Documentation](../cli.md#generate-types).
+
 ## Deployment & Configuration
 
 ### IDE Integration (Cursor / Windsurf)

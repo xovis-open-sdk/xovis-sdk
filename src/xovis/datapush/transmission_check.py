@@ -214,8 +214,8 @@ class TransmissionMonitorApp(App):
         """Configures the UI refresh interval and displays a setup hint."""
         self.set_interval(0.5, self.update_stats)
         self.notify(
-            "Ensure DataPush is configured on your sensor. \nTransmission Studio in Mission Control can auto-provision.",
-            title="Transmission Check Hint",
+            "Ensure DataPush is configured on your sensor. \nMission Control can auto-provision.",
+            title="Mission Control Hint",
             severity="warning",
             timeout=10.0,
         )
@@ -243,13 +243,13 @@ class TransmissionMonitorApp(App):
 
 class DatapushStudioApp(App):
     """
-    Standalone Textual Application for Datapush Studio.
+    Standalone Textual Application for the Xovis Open SDK Datapush Studio.
 
     Provides the full suite of server monitoring and autonomous sensor
     provisioning.
     """
 
-    TITLE = "Xovis Datapush Studio"
+    TITLE = "Xovis Open SDK Datapush Studio"
     BINDINGS = [
         Binding("q", "quit", "Quit", priority=True),
     ]

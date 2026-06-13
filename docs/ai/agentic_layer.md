@@ -1,5 +1,12 @@
 # Agentic Layer (Skills)
 
+[![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/)
+[![LangGraph Ready](https://img.shields.io/badge/LangGraph-Ready-1C3C3C.svg?logo=langchain&logoColor=white)](https://langchain.com/)
+[![OpenAI Compatible](https://img.shields.io/badge/OpenAI-Compatible-412991.svg?logo=openai&logoColor=white)](https://openai.com/)
+[![Anthropic Compatible](https://img.shields.io/badge/Anthropic-Compatible-D2B8A3.svg?logo=anthropic&logoColor=black)](https://www.anthropic.com/)
+[![CrewAI Ready](https://img.shields.io/badge/CrewAI-Ready-FF4B4B.svg?logo=google-cloud&logoColor=white)](https://crewai.com/)
+[![Cursor Optimized](https://img.shields.io/badge/Cursor-Optimized-000000.svg?logo=python&logoColor=white)](https://cursor.sh/)
+
 The `xovis.skills` module is the definitive **Agentic Layer** of the Xovis SDK. It modernizes hardware orchestration by transforming physical edge sensors and Cloud HUB fleet operations into standardized, strictly validated toolsets for Large Language Models (LLMs) and autonomous agent frameworks.
 
 !!! info "Advanced Integration"
@@ -56,6 +63,9 @@ The `XovisAgentMemory.get_compressed_state()` method implements a state-of-the-a
 ### Safety & Guardrails
 The Agentic Layer includes an enterprise-grade safety engine to prevent hallucination-driven outages and accidental fleet destruction.
 
+![AI Tool Safety](img/ai_tool_safety.png)
+Figure: AI Tool Safety configuration in the Xovis Open SDK Mission Control.
+
 *   **Safety Levels**: Every tool is assigned a `SafetyLevel` (`OPEN`, `RESTRICTED`, `CRITICAL`, `BLOCKED`).
     *   **OPEN**: Read-only observation tools (e.g., `get_system_info`, `get_topology_graph`, `aggregate_geometries`).
     *   **RESTRICTED**: Operations causing temporary disruption (e.g., `reboot_device`, `delete_all_geometries`). Enforces a warning and programmatic delay.
@@ -64,7 +74,15 @@ The Agentic Layer includes an enterprise-grade safety engine to prevent hallucin
 *   **Enterprise Safety Policy**: Implements hardcoded overrides for high-risk operations, ensuring safety logic is robust against dynamic discovery heuristics.
 *   **AI Privacy Engine**: A stateful, two-way pseudonymization system via `AIPrivacySession`. It replaces sensitive identifiers (MAC addresses, Customer names) with session-bound hashes (e.g., `Id_a1b2c3d4`). The AI only ever sees and interacts with these hashes, and the toolkit "restores" the real values only at the moment of execution. This ensures zero-trust data handling.
 *   **Adaptive Pacing**: Intra-context aggregation loops automatically inject delays (1.0s for Cloud, 0.2s for LAN) to prevent Cloud HUB WAF triggers and sensor OOM crashes. Aggregation loops iterating over `active_contexts` via a `HubClient` MUST include an `asyncio.sleep(1.0)` delay after each request.
+
+![Datapush Studio](img/push_studio.png)
+Figure: Validating Data Plane telemetry via the Datapush Studio.
+
 *   **AI Safety TUI**: Users can configure granular field-level privacy (HASH/BLOCK/ALLOW) and persistent tool-to-safety mappings via the built-in management screen.
+
+![AI Privacy Settings](img/ai_privacy.png)
+Figure: AI Privacy and Tool Safety management screen.
+
 *   **WAF & Privacy Blocks (HTTP 403)**: The toolkit intelligently detects `HTTP 403 Forbidden` errors that return raw HTML. These are reported as access restrictions by the Xovis HUB Web Application Firewall (WAF) or Edge Privacy Mode, preventing the agent from hallucinating data.
     *   *Agent Reporting Rule*: If an agent encounters an HTML 403 error, it must explicitly document: *"Access Restricted: Cloud Proxy Firewall or Strict Privacy Mode is blocking data extraction."*
 *   **Strict Concurrency Limits**: Enforces a 350-device threshold for high-intensity fleet state operations (State Buckets / Deep Dives) to prevent hardware-side rate-limiting.
@@ -72,6 +90,15 @@ The Agentic Layer includes an enterprise-grade safety engine to prevent hallucin
 *   **Execution Quotas**: Limits the number of `CRITICAL` operations allowed per session (default: 3).
 *   **Dynamic Restricted Tools**: Allows users to manually elevate ANY tool to `CRITICAL` or `BLOCKED` status via the `restricted_tools` dictionary.
 *   **Dry Run Mode**: Allows for safe agent training by intercepting and simulating hardware-modifying commands.
+
+#### AI Scope (Fleet Whitelist)
+Autonomous agents can be further restricted by whitelisting specific sensors in the **Fleet Explorer**. Using the `ctrl+a` (Toggle AI Scope) shortcut, you can define exactly which devices are visible and accessible to the AI.
+
+![Fleet Explorer AI Scope](img/fleet_explorer.png)
+Figure: Whitelisting devices in the Fleet Explorer.
+
+![Fleet List](img/fleet_list.png)
+Figure: Visual indicators for devices within the AI Scope.
 
 #### Implementation Example (Dynamic Safety & Blocking):
 ```python

@@ -3,7 +3,7 @@ Xovis SDK - Device Dashboard Screen
 
 Provides a fullscreen dashboard for managing a specific Xovis device.
 Includes a sidebar for navigation and a main container for active tools,
-including the Transmission Studio.
+including the Datapush Studio.
 """
 
 from textual import on
@@ -75,7 +75,7 @@ class DeviceDashboardScreen(Screen):
                 with ListView(id="sidebar-nav"):
                     yield ListItem(Label("Overview"), id="nav-overview")
                     yield ListItem(Label("Network Settings"), id="nav-network")
-                    yield ListItem(Label("Transmission Studio"), id="nav-studio")
+                    yield ListItem(Label("Datapush Studio"), id="nav-studio")
 
             with Container(id="workspace"):
                 # Initial view

@@ -1,6 +1,7 @@
 # Xovis SDK
 
-[![PyPI version](https://badge.fury.io/py/xovis-sdk.svg)](https://badge.fury.io/py/xovis-sdk)
+[![PyPI version](https://badge.fury.io/py/xovis-sdk.svg)](https://pypi.org/project/xovis-sdk/1.0.0a0/)
+[![GitHub](https://img.shields.io/badge/GitHub-xovis--sdk-181717?logo=github)](https://github.com/xovis-open-sdk/xovis-sdk)
 [![npm version](https://badge.fury.io/js/xovis-sdk.svg)](https://badge.fury.io/js/xovis-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <br>
@@ -13,6 +14,8 @@
 [![Cursor Optimized](https://img.shields.io/badge/Cursor-Optimized-000000.svg?logo=python&logoColor=white)](https://cursor.sh/)
 
 An enterprise-grade integration SDK for Xovis 3D Sensors and the Xovis HUB Cloud infrastructure.
+
+**[Read the Full Documentation →](https://xovis-open-sdk.github.io/xovis-sdk/)**
 
 **Compliance Note:** This project is an independent, open-source initiative. It is not officially affiliated with, maintained by, or endorsed by Xovis AG.
 
@@ -30,6 +33,65 @@ Integrating native Xovis DataPush protocols and REST APIs into enterprise data p
 
 This SDK abstracts the complexities of the Xovis hardware into a unified, modern, and type-safe "Universal Translator" architecture. It completely decouples raw edge telemetry from downstream infrastructure, enabling engineers to focus strictly on spatial analytics, fleet orchestration, and data warehousing.
 
+### System Data Flow
+
+```mermaid
+graph TB
+    subgraph "Xovis Hardware Layer"
+        direction TB
+        A[Physical Sensors / Spiders]
+        H[Xovis HUB Cloud]
+        H -- Secure Proxy Tunnel (M2M) --> A
+    end
+
+    subgraph "Data Plane (High Frequency)"
+        B[XovisTCPServer / XovisUDPServer / XovisHTTPServer]
+        S[XovisSink]
+    end
+
+    subgraph "Control & State Plane (SDK Core)"
+        C[DeviceClient]
+        F[HubClient]
+        D[HostStateBucket / ConfigCache]
+        
+        F -- "connect_device()" --> C
+        C <--> D
+    end
+
+    subgraph "Agentic & Tooling Layer"
+        G[XovisAIToolkit]
+        M[MCP Server / Model Context Protocol]
+        R[REPLAccessor / CLI]
+    end
+
+    %% Data Connections
+    A -->|12.5Hz Raw JSON| B
+    B -->|Sliding Buffer Extraction| S
+
+    %% Control Connections
+    A <-->|Local REST API v5| C
+    H <-->|Hub REST API| F
+    
+    %% Fleet Integration
+    D -. "Reflect State" .-> R
+    F -. "Fleet Sync" .-> D
+
+    %% AI Integration
+    D --- G
+    F --- G
+    G --- M
+    M --- LLM[LLM / Autonomous Agents]
+
+    %% Styling
+    style A fill:#1e293b,stroke:#38bdf8,stroke-width:2px
+    style H fill:#1e293b,stroke:#38bdf8,stroke-width:2px
+    style B fill:#0f172a,stroke:#2dd4bf,stroke-width:2px
+    style C fill:#0f172a,stroke:#2dd4bf,stroke-width:2px
+    style F fill:#0f172a,stroke:#2dd4bf,stroke-width:2px
+    style G fill:#1e293b,stroke:#818cf8,stroke-width:2px
+    style M fill:#1e293b,stroke:#818cf8,stroke-width:2px
+```
+
 ## Architectural Pillars
 
 The SDK is strictly quadrifurcated to prevent blocking the asynchronous Python event loop during high-frequency operations while enabling autonomous systems:
@@ -43,7 +105,6 @@ The SDK is strictly quadrifurcated to prevent blocking the asynchronous Python e
 
 ```bash
 pip install "xovis-sdk[uvloop]"
-
 ```
 
 *(Note: `uvloop` is highly recommended for Linux/macOS deployments to maximize socket throughput).*
@@ -204,7 +265,10 @@ Features include zero-dependency ANSI color outputs, generation analytics ("the 
 # Generate static types
 xovis-cli generate-types --source ./device_state.json
 
-# Launch Datapush Studio TUI
+# Launch Xovis Open SDK Mission Control TUI
+xovis-cli ui
+
+# Launch Xovis Open SDK Datapush Studio TUI
 xovis-cli datapush --protocol TCP --port 9000
 ```
 

@@ -1,4 +1,4 @@
-# ☁️ Hub Device API Reference (Scalar)
+# Hub Device API Reference (Scalar)
 
 This schema defines the exact **telemetry** and **orchestration** payloads managed by the SDK's `HubClient`. 
 

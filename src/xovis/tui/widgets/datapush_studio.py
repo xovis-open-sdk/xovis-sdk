@@ -1,5 +1,5 @@
 """
-Xovis SDK - Datapush Studio Widget
+Xovis SDK - Xovis Open SDK Datapush Studio Widget
 
 Provides a real-time telemetry dashboard for monitoring Xovis DataPlane
 throughput. Binds directly to the XovisTCPServer and updates metrics via
@@ -427,7 +427,7 @@ class DatapushStudio(Static):
             local_ips.append(("127.0.0.1 (Loopback)", "127.0.0.1"))
 
         with Vertical(id="studio-container"):
-            yield Label("[b]DATAPUSH STUDIO[/b]", id="studio-header")
+            yield Label("[b]XOVIS OPEN SDK DATAPUSH STUDIO[/b]", id="studio-header")
 
             with Container(id="config-panel"):
                 # ROW 1
@@ -490,7 +490,7 @@ class DatapushStudio(Static):
                         )
                     with Vertical(classes="form-group"):
                         yield Label("DataPush Agent Name", classes="form-label")
-                        yield Input(placeholder="Agent Name", id="input-name", value="TUI-Studio")
+                        yield Input(placeholder="Agent Name", id="input-name", value="OpenSDK-Studio")
                     with Vertical(classes="form-group"):
                         from textual.widgets import Checkbox
 

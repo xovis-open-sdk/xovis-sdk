@@ -1,4 +1,4 @@
-# 🌐 Edge API Reference (Scalar)
+# Edge API Reference (Scalar)
 
 This specification defines the foundational **Data Plane** and **Control Plane** structures that the `xovis-sdk` automatically validates via **Pydantic V2**. 
 

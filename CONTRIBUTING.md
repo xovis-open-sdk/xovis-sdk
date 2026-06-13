@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to the Xovis SDK! To maintain the high-performance and architectural integrity of this project, we have established the following guidelines.
 
-## 🏗️ Architectural Philosophy: The Quadrifurcation
+## Architectural Philosophy: The Quadrifurcation
 
 The SDK is strictly divided into four distinct planes. **Never mix the design patterns of these planes:**
 
@@ -11,14 +11,14 @@ The SDK is strictly divided into four distinct planes. **Never mix the design pa
 3.  **The State Plane (`src/xovis/fleet/`)**: Topology-aware fleet management and caching.
 4.  **The Skill Plane (`src/xovis/skills/`)**: AI-powered toolkit and MCP integrations.
 
-## ✍️ Coding Standards
+## Coding Standards
 
 -   **Google-Style Docstrings**: Every module, class, and public method MUST have a comprehensive Google-style docstring.
 -   **Type Hinting**: Use strict type hinting across the entire codebase.
 -   **Zero-Inline-Comments**: Code should be self-documenting. Use docstrings for architectural intent, not inline chatter.
 -   **Pydantic V2**: Use Pydantic V2 models for all API payloads and configurations.
 
-## 🧪 Testing Requirements
+## Testing Requirements
 
 -   All new features must include tests.
 -   **Tier 1 (Smoke)**: Fast, non-destructive tests.
@@ -26,7 +26,7 @@ The SDK is strictly divided into four distinct planes. **Never mix the design pa
 -   **Tier 3 (Data)**: Telemetry pipeline validation.
 - Tests must be idempotent and respect hardware pacing delays.
 
-## 🧪 Testing with Mocks (CI Safety)
+## Testing with Mocks (CI Safety)
 
 Since physical Xovis hardware is not available in the CI environment, the SDK uses a **Mocked Device Layer** triggered automatically when hardware environment variables are missing.
 
@@ -34,7 +34,7 @@ Since physical Xovis hardware is not available in the CI environment, the SDK us
 - **CI / Isolated Testing**: Omit these variables to use the `unittest.mock` based surrogate defined in `tests/conftest.py`.
 - **Stateless Tests**: Prefer using `respx` for fine-grained HTTP lifecycle validation as demonstrated in `tests/api/device/test_cp_datapush_stateless.py`.
 
-## 🚀 Pull Request Process
+## Pull Request Process
 
 1.  **Branching**: Create a feature branch from `main`.
 2.  **Linting**: Run `ruff check .` and `ruff format .` before submitting.
@@ -42,7 +42,7 @@ Since physical Xovis hardware is not available in the CI environment, the SDK us
 4.  **Security**: Ensure no sensitive data (MAC addresses, API keys) is included in tests or code.
 5.  **Review**: All PRs require at least one approval from a code owner.
 
-## 🛡️ Safety Guardrails
+## Safety Guardrails
 
 When developing, leverage the `XovisSafetyGuardrail`. Destructive operations (factory reset, network changes) are marked as `CRITICAL` and require human-in-the-loop confirmation.
 

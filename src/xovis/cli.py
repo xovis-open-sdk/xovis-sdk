@@ -443,10 +443,10 @@ async def start_hub_warmup(client_id: str = None, client_secret: str = None, for
 
 
 def start_tui() -> None:
-    """Launches the Xovis Mission Control TUI Terminal OS."""
-    from xovis.tui.app import XovisTerminalOS
+    """Launches the Xovis Open SDK Mission Control TUI."""
+    from xovis.tui.app import XovisMissionControl
 
-    app = XovisTerminalOS()
+    app = XovisMissionControl()
     app.run()
 
 

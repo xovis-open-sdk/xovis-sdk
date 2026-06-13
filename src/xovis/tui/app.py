@@ -15,7 +15,7 @@ from xovis.tui.screens.fleet_explorer import XovisFleetTable
 
 
 class DashboardScreen(Screen):
-    """Primary landing screen for the Xovis Terminal OS.
+    """Primary landing screen for the Xovis Open SDK Mission Control.
 
     Offers a unified navigation path to explore the Xovis HUB Cloud fleet.
     """
@@ -64,14 +64,14 @@ class DashboardScreen(Screen):
             self.app.push_screen(AIPrivacyScreen())
 
 
-class XovisTerminalOS(App):
-    """The central entry point for the Xovis TUI Terminal OS.
+class XovisMissionControl(App):
+    """The central entry point for the Xovis Open SDK Mission Control TUI.
 
     Manages screen routing, authentication state, and fleet-wide caches.
     Ensures background tasks are hard-referenced to prevent garbage collection.
     """
 
-    TITLE = "Xovis Terminal OS"
+    TITLE = "Xovis Open SDK Mission Control"
     hub_client: Optional[HubClient] = None
     CSS = """
     Footer {
@@ -108,7 +108,7 @@ class XovisTerminalOS(App):
         self.background_tasks: set[asyncio.Task] = set()
 
     def on_mount(self) -> None:
-        """Initializes the TUI OS and pushes the primary dashboard."""
+        """Initializes the Mission Control TUI and pushes the primary dashboard."""
         load_dotenv()
         client_id = os.getenv("XOVIS_HUB_CLIENT_ID")
         client_secret = os.getenv("XOVIS_HUB_CLIENT_SECRET")
@@ -147,5 +147,5 @@ class XovisTerminalOS(App):
 
 
 if __name__ == "__main__":
-    app = XovisTerminalOS()
+    app = XovisMissionControl()
     app.run()

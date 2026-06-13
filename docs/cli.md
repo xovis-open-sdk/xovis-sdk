@@ -62,7 +62,10 @@ Launches the guided SDK setup wizard for initial configuration.
 Launches the **Xovis Mission Control TUI**, a terminal-based dashboard for real-time sensor observation.
 
 ### `transmission-check`
-Launches the interactive **Transmission Studio TUI** to monitor DataPush stream throughput and frame integrity. This tool supports autonomous sensor provisioning directly from the UI for TCP, UDP, and HTTP protocols.
+Launches the interactive **Datapush Studio TUI** to monitor DataPush stream throughput and frame integrity. This tool supports autonomous sensor provisioning directly from the UI for TCP, UDP, and HTTP protocols.
+
+![Datapush Studio](ai/img/push_studio.png)
+Figure: XOVIS-SDK Datapush Studio in action.
 
 **Options:**
 - `--port`: Listen port (default: 9000).
