@@ -1199,8 +1199,69 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#5-token-optimized-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Token-Optimized Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety &amp; Guardrails
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Safety &amp; Guardrails">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ai-scope-fleet-whitelist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Scope (Fleet Whitelist)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-example-dynamic-safety-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Example (Dynamic Safety &amp; Blocking):
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standards-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standards &amp; Compliance
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1647,8 +1708,69 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#5-token-optimized-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Token-Optimized Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety &amp; Guardrails
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Safety &amp; Guardrails">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ai-scope-fleet-whitelist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Scope (Fleet Whitelist)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-example-dynamic-safety-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Example (Dynamic Safety &amp; Blocking):
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standards-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standards &amp; Compliance
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1670,6 +1792,12 @@
 
 
 <h1 id="agentic-layer-skills">Agentic Layer (Skills)</h1>
+<p><a href="https://modelcontextprotocol.io/"><img alt="MCP Ready" src="https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&amp;logoColor=white" /></a>
+<a href="https://langchain.com/"><img alt="LangGraph Ready" src="https://img.shields.io/badge/LangGraph-Ready-1C3C3C.svg?logo=langchain&amp;logoColor=white" /></a>
+<a href="https://openai.com/"><img alt="OpenAI Compatible" src="https://img.shields.io/badge/OpenAI-Compatible-412991.svg?logo=openai&amp;logoColor=white" /></a>
+<a href="https://www.anthropic.com/"><img alt="Anthropic Compatible" src="https://img.shields.io/badge/Anthropic-Compatible-D2B8A3.svg?logo=anthropic&amp;logoColor=black" /></a>
+<a href="https://crewai.com/"><img alt="CrewAI Ready" src="https://img.shields.io/badge/CrewAI-Ready-FF4B4B.svg?logo=google-cloud&amp;logoColor=white" /></a>
+<a href="https://cursor.sh/"><img alt="Cursor Optimized" src="https://img.shields.io/badge/Cursor-Optimized-000000.svg?logo=python&amp;logoColor=white" /></a></p>
 <p>The <code>xovis.skills</code> module is the definitive <strong>Agentic Layer</strong> of the Xovis SDK. It modernizes hardware orchestration by transforming physical edge sensors and Cloud HUB fleet operations into standardized, strictly validated toolsets for Large Language Models (LLMs) and autonomous agent frameworks.</p>
 <div class="admonition info">
 <p class="admonition-title">Advanced Integration</p>
@@ -1687,11 +1815,13 @@
 </ol>
 <h2 id="components-capabilities">Components &amp; Capabilities</h2>
 <h3 id="1-xovisaitoolkit-universal-adapter">1. XovisAIToolkit (Universal Adapter)</h3>
-<p>The primary entry point for both single-device and fleet-wide orchestration. It manages the complex routing of LLM tool requests to the underlying asynchronous SDK managers.
-*   <strong>Dynamic Reflection Engine</strong>: Crawls SDK managers at runtime using <code>inspect</code>, generating high-fidelity Pydantic schemas from Google-style docstrings and coroutine signatures.
-*   <strong>OpenAI GPT-4o Optimized</strong>: Generates strict JSON schemas via <code>get_openai_tools()</code>.
-*   <strong>Latest Anthropic Models Ready</strong>: Provides the flat <code>input_schema</code> format required by the Messages API via <code>get_anthropic_tools()</code>.
-*   <strong>Callable Primitives</strong>: Exports direct references to async functions and their validation models for <strong>LangGraph</strong>, <strong>CrewAI</strong>, and <strong>Cursor/Windsurf</strong>.</p>
+<p>The primary entry point for both single-device and fleet-wide orchestration. It manages the complex routing of LLM tool requests to the underlying asynchronous SDK managers.</p>
+<ul>
+<li><strong>Dynamic Reflection Engine</strong>: Crawls SDK managers at runtime using <code>inspect</code>, generating high-fidelity Pydantic schemas from Google-style docstrings and coroutine signatures.</li>
+<li><strong>OpenAI GPT-4o Optimized</strong>: Generates strict JSON schemas via <code>get_openai_tools()</code>.</li>
+<li><strong>Latest Anthropic Models Ready</strong>: Provides the flat <code>input_schema</code> format required by the Messages API via <code>get_anthropic_tools()</code>.</li>
+<li><strong>Callable Primitives</strong>: Exports direct references to async functions and their validation models for <strong>LangGraph</strong>, <strong>CrewAI</strong>, and <strong>Cursor/Windsurf</strong>.</li>
+</ul>
 <h3 id="2-xovisagentmemory-state-observation">2. XovisAgentMemory (State Observation)</h3>
 <p>Autonomous agents require environmental context without the 12.5Hz network overhead. By wrapping the <code>HostStateBucket</code>, this plane allows for the injection of minified, JSON-serialized hardware "memories" directly into the System Prompt.</p>
 <h3 id="3-xovisfleettoolkit-distributed-management">3. XovisFleetToolkit (Distributed Management)</h3>
@@ -1741,113 +1871,53 @@
 <td style="text-align: left;"><code>get_callable_tools()</code></td>
 <td style="text-align: left;">Direct function primitives</td>
 </tr>
-<tr>
-<td style="text-align: left;">### 5. Token-Optimized Memory</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">The <code>XovisAgentMemory.get_compressed_state()</code> method implements a state-of-the-art compression algorithm that strips empty collections and default hardware values, reducing context window tokens by up to 40% for massive fleet summaries.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">### Safety &amp; Guardrails</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">The Agentic Layer includes an enterprise-grade safety engine to prevent hallucination-driven outages and accidental fleet destruction.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Safety Levels</strong>: Every tool is assigned a <code>SafetyLevel</code> (<code>OPEN</code>, <code>RESTRICTED</code>, <code>CRITICAL</code>, <code>BLOCKED</code>).</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>OPEN</strong>: Read-only observation tools (e.g., <code>get_system_info</code>, <code>get_topology_graph</code>, <code>aggregate_geometries</code>).</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>RESTRICTED</strong>: Operations causing temporary disruption (e.g., <code>reboot_device</code>, <code>delete_all_geometries</code>). Enforces a warning and programmatic delay.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>CRITICAL</strong>: Destructive operations (e.g., <code>factory_reset</code>, <code>update_network_settings</code>, <code>clear_sensor_db</code>). Requires explicit Human-in-the-Loop (HITL) confirmation.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>BLOCKED</strong>: Hardcoded forbidden endpoints (e.g., <code>flash_format</code>, <code>reboot_rescue</code>) to prevent hardware damage.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Enterprise Safety Policy</strong>: Implements hardcoded overrides for high-risk operations, ensuring safety logic is robust against dynamic discovery heuristics.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>AI Privacy Engine</strong>: A stateful, two-way pseudonymization system via <code>AIPrivacySession</code>. It replaces sensitive identifiers (MAC addresses, Customer names) with session-bound hashes (e.g., <code>Id_a1b2c3d4</code>). The AI only ever sees and interacts with these hashes, and the toolkit "restores" the real values only at the moment of execution. This ensures zero-trust data handling.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Adaptive Pacing</strong>: Intra-context aggregation loops automatically inject delays (1.0s for Cloud, 0.2s for LAN) to prevent Cloud HUB WAF triggers and sensor OOM crashes. Aggregation loops iterating over <code>active_contexts</code> via a <code>HubClient</code> MUST include an <code>asyncio.sleep(1.0)</code> delay after each request.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>AI Safety TUI</strong>: Users can configure granular field-level privacy (HASH/BLOCK/ALLOW) and persistent tool-to-safety mappings via the built-in management screen.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>WAF &amp; Privacy Blocks (HTTP 403)</strong>: The toolkit intelligently detects <code>HTTP 403 Forbidden</code> errors that return raw HTML. These are reported as access restrictions by the Xovis HUB Web Application Firewall (WAF) or Edge Privacy Mode, preventing the agent from hallucinating data.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <em>Agent Reporting Rule</em>: If an agent encounters an HTML 403 error, it must explicitly document: <em>"Access Restricted: Cloud Proxy Firewall or Strict Privacy Mode is blocking data extraction."</em></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Strict Concurrency Limits</strong>: Enforces a 350-device threshold for high-intensity fleet state operations (State Buckets / Deep Dives) to prevent hardware-side rate-limiting.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Mandatory Confirmation</strong>: High-impact operations (e.g., <code>reboot_fleet</code>) require an explicit <code>confirmation=True</code> argument from the LLM.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Execution Quotas</strong>: Limits the number of <code>CRITICAL</code> operations allowed per session (default: 3).</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Dynamic Restricted Tools</strong>: Allows users to manually elevate ANY tool to <code>CRITICAL</code> or <code>BLOCKED</code> status via the <code>restricted_tools</code> dictionary.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Dry Run Mode</strong>: Allows for safe agent training by intercepting and simulating hardware-modifying commands.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">#### Implementation Example (Dynamic Safety &amp; Blocking):</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;"><div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">xovis.skills.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">XovisAIToolkit</span><span class="p">,</span> <span class="n">XovisSafetyGuardrail</span><span class="p">,</span> <span class="n">SafetyLevel</span>
+</tbody>
+</table>
+<h3 id="5-token-optimized-memory">5. Token-Optimized Memory</h3>
+<p>The <code>XovisAgentMemory.get_compressed_state()</code> method implements a state-of-the-art compression algorithm that strips empty collections and default hardware values, reducing context window tokens by up to 40% for massive fleet summaries.</p>
+<h3 id="safety-guardrails">Safety &amp; Guardrails</h3>
+<p>The Agentic Layer includes an enterprise-grade safety engine to prevent hallucination-driven outages and accidental fleet destruction.</p>
+<p><img alt="AI Tool Safety" src="../img/ai_tool_safety.png" />
+Figure: AI Tool Safety configuration in the Xovis Open SDK Mission Control.</p>
+<ul>
+<li><strong>Safety Levels</strong>: Every tool is assigned a <code>SafetyLevel</code> (<code>OPEN</code>, <code>RESTRICTED</code>, <code>CRITICAL</code>, <code>BLOCKED</code>).<ul>
+<li><strong>OPEN</strong>: Read-only observation tools (e.g., <code>get_system_info</code>, <code>get_topology_graph</code>, <code>aggregate_geometries</code>).</li>
+<li><strong>RESTRICTED</strong>: Operations causing temporary disruption (e.g., <code>reboot_device</code>, <code>delete_all_geometries</code>). Enforces a warning and programmatic delay.</li>
+<li><strong>CRITICAL</strong>: Destructive operations (e.g., <code>factory_reset</code>, <code>update_network_settings</code>, <code>clear_sensor_db</code>). Requires explicit Human-in-the-Loop (HITL) confirmation.</li>
+<li><strong>BLOCKED</strong>: Hardcoded forbidden endpoints (e.g., <code>flash_format</code>, <code>reboot_rescue</code>) to prevent hardware damage.</li>
+</ul>
+</li>
+<li><strong>Enterprise Safety Policy</strong>: Implements hardcoded overrides for high-risk operations, ensuring safety logic is robust against dynamic discovery heuristics.</li>
+<li><strong>AI Privacy Engine</strong>: A stateful, two-way pseudonymization system via <code>AIPrivacySession</code>. It replaces sensitive identifiers (MAC addresses, Customer names) with session-bound hashes (e.g., <code>Id_a1b2c3d4</code>). The AI only ever sees and interacts with these hashes, and the toolkit "restores" the real values only at the moment of execution. This ensures zero-trust data handling.</li>
+<li><strong>Adaptive Pacing</strong>: Intra-context aggregation loops automatically inject delays (1.0s for Cloud, 0.2s for LAN) to prevent Cloud HUB WAF triggers and sensor OOM crashes. Aggregation loops iterating over <code>active_contexts</code> via a <code>HubClient</code> MUST include an <code>asyncio.sleep(1.0)</code> delay after each request.</li>
+</ul>
+<p><img alt="Datapush Studio" src="../img/push_studio.png" />
+Figure: Validating Data Plane telemetry via the Datapush Studio.</p>
+<ul>
+<li><strong>AI Safety TUI</strong>: Users can configure granular field-level privacy (HASH/BLOCK/ALLOW) and persistent tool-to-safety mappings via the built-in management screen.</li>
+</ul>
+<p><img alt="AI Privacy Settings" src="../img/ai_privacy.png" />
+Figure: AI Privacy and Tool Safety management screen.</p>
+<ul>
+<li><strong>WAF &amp; Privacy Blocks (HTTP 403)</strong>: The toolkit intelligently detects <code>HTTP 403 Forbidden</code> errors that return raw HTML. These are reported as access restrictions by the Xovis HUB Web Application Firewall (WAF) or Edge Privacy Mode, preventing the agent from hallucinating data.<ul>
+<li><em>Agent Reporting Rule</em>: If an agent encounters an HTML 403 error, it must explicitly document: <em>"Access Restricted: Cloud Proxy Firewall or Strict Privacy Mode is blocking data extraction."</em></li>
+</ul>
+</li>
+<li><strong>Strict Concurrency Limits</strong>: Enforces a 350-device threshold for high-intensity fleet state operations (State Buckets / Deep Dives) to prevent hardware-side rate-limiting.</li>
+<li><strong>Mandatory Confirmation</strong>: High-impact operations (e.g., <code>reboot_fleet</code>) require an explicit <code>confirmation=True</code> argument from the LLM.</li>
+<li><strong>Execution Quotas</strong>: Limits the number of <code>CRITICAL</code> operations allowed per session (default: 3).</li>
+<li><strong>Dynamic Restricted Tools</strong>: Allows users to manually elevate ANY tool to <code>CRITICAL</code> or <code>BLOCKED</code> status via the <code>restricted_tools</code> dictionary.</li>
+<li><strong>Dry Run Mode</strong>: Allows for safe agent training by intercepting and simulating hardware-modifying commands.</li>
+</ul>
+<h4 id="ai-scope-fleet-whitelist">AI Scope (Fleet Whitelist)</h4>
+<p>Autonomous agents can be further restricted by whitelisting specific sensors in the <strong>Fleet Explorer</strong>. Using the <code>ctrl+a</code> (Toggle AI Scope) shortcut, you can define exactly which devices are visible and accessible to the AI.</p>
+<p><img alt="Fleet Explorer AI Scope" src="../img/fleet_explorer.png" />
+Figure: Whitelisting devices in the Fleet Explorer.</p>
+<p><img alt="Fleet List" src="../img/fleet_list.png" />
+Figure: Visual indicators for devices within the AI Scope.</p>
+<h4 id="implementation-example-dynamic-safety-blocking">Implementation Example (Dynamic Safety &amp; Blocking):</h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">xovis.skills.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">XovisAIToolkit</span><span class="p">,</span> <span class="n">XovisSafetyGuardrail</span><span class="p">,</span> <span class="n">SafetyLevel</span>
+
 <span class="c1"># Elevate an OPEN tool to CRITICAL and Hard-Block a destructive tool</span>
 <span class="n">guardrail</span> <span class="o">=</span> <span class="n">XovisSafetyGuardrail</span><span class="p">(</span>
     <span class="n">restricted_tools</span><span class="o">=</span><span class="p">{</span>
@@ -1855,45 +1925,19 @@
         <span class="s2">&quot;factory_reset&quot;</span><span class="p">:</span> <span class="n">SafetyLevel</span><span class="o">.</span><span class="n">BLOCKED</span>
     <span class="p">}</span>
 <span class="p">)</span>
+
 <span class="c1"># 1. get_system_info now MUST provide confirmation=True</span>
 <span class="c1"># 2. factory_reset is now impossible for the agent to call</span>
 <span class="n">toolkit</span> <span class="o">=</span> <span class="n">XovisAIToolkit</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">guardrail</span><span class="o">=</span><span class="n">guardrail</span><span class="p">)</span>
-</code></pre></div></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">## Standards &amp; Compliance</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Pydantic V2 Validation</strong>: Every skill utilizes strict schema enforcement. Malformed LLM payloads are intercepted and rejected before they reach the hardware.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Zero-Inline-Comment, Max-Docstring</strong>: Adheres to the SDK's enterprise documentation standard. Architectural intent and Pydantic constraints are formalized exclusively through rigorous Google-style docstrings.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">*   <strong>Asynchronous Excellence</strong>: All tools are natively non-blocking, ensuring compatibility with the high-throughput <code>uvloop</code> event loop used in the Data Plane.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">---</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Note:</strong> For edge-level resource management (Zones, Lines, Logics), refer to the <code>xovis.api.device.resources</code> documentation.</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-</tbody>
-</table>
+</code></pre></div>
+<h2 id="standards-compliance">Standards &amp; Compliance</h2>
+<ul>
+<li><strong>Pydantic V2 Validation</strong>: Every skill utilizes strict schema enforcement. Malformed LLM payloads are intercepted and rejected before they reach the hardware.</li>
+<li><strong>Zero-Inline-Comment, Max-Docstring</strong>: Adheres to the SDK's enterprise documentation standard. Architectural intent and Pydantic constraints are formalized exclusively through rigorous Google-style docstrings.</li>
+<li><strong>Asynchronous Excellence</strong>: All tools are natively non-blocking, ensuring compatibility with the high-throughput <code>uvloop</code> event loop used in the Data Plane.</li>
+</ul>
+<hr />
+<p><strong>Note:</strong> For edge-level resource management (Zones, Lines, Logics), refer to the <code>xovis.api.device.resources</code> documentation.</p>
 
 
 

@@ -831,6 +831,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#architectural-pillars" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Pillars
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#models" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2007,6 +2018,45 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynamic-type-safety-xovis_types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Type Safety (xovis_types)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dynamic Type Safety (xovis_types)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-use-dynamic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why use dynamic types?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-generate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to generate
+      
+    </span>
+  </a>
   
 </li>
         
@@ -2862,6 +2912,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#architectural-pillars" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Pillars
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#models" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4047,6 +4108,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#dynamic-type-safety-xovis_types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Type Safety (xovis_types)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dynamic Type Safety (xovis_types)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-use-dynamic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why use dynamic types?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-generate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to generate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#utilities" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4316,6 +4416,13 @@
 
 
 <h1 id="core-sdk-reference">Core SDK Reference</h1>
+<p>The Core SDK provides the foundational type system, Pydantic models, and cross-plane utilities that power the Xovis Open SDK. It serves as the \Base Layer\ ensuring strict validation and consistent behavior across the entire quadrifurcated architecture.</p>
+<h2 id="architectural-pillars">Architectural Pillars</h2>
+<ol>
+<li><strong>Strict Type Enforcement</strong>: Leveraging Pydantic V2, the core models ensure that every piece of data entering the SDK—whether from an edge sensor or a Cloud HUB—is validated against rigorous schemas.</li>
+<li><strong>Universal Models</strong>: Unified representations for \Device\ and \HubDevice\ allow for seamless transition between single-sensor management and fleet-scale orchestration.</li>
+<li><strong>High-Performance Utilities</strong>: Specialized primitives for asynchronous loops, privacy hashing, and ISO-8601 time handling, optimized for the SDK's high-throughput requirements.</li>
+</ol>
 <h2 id="models">Models</h2>
 
 
@@ -11161,7 +11268,19 @@ from the Xovis HUB Cloud OpenAPI specification, incorporating strict AI privacy 
 
     </div>
 
-</div><h2 id="utilities">Utilities</h2>
+</div><h2 id="dynamic-type-safety-xovis_types">Dynamic Type Safety (<code>xovis_types</code>)</h2>
+<p>While the core models provide structure, the SDK supports <strong>Dynamic Type Generation</strong> to provide literal-level safety for your specific environment.</p>
+<h3 id="why-use-dynamic-types">Why use dynamic types?</h3>
+<p>Because every Xovis installation is unique (with different Agent names, Zone IDs, and Line configurations), static SDK code cannot know your specific topology. By generating a local <code>xovis_types.py</code> module, you gain:
+- <strong>IDE Autocomplete</strong>: See your actual sensor names in your editor.
+- <strong>Static Validation</strong>: Tools like <code>mypy</code> or <code>pyright</code> can catch invalid references before you run the code.
+- <strong>Strict Literals</strong>: Enforce that only existing zones or agents are used in your logic.</p>
+<h3 id="how-to-generate">How to generate</h3>
+<p>Use the Xovis CLI to probe a live sensor and build your local type definitions:</p>
+<div class="highlight"><pre><span></span><code>xovis-cli<span class="w"> </span>generate-types<span class="w"> </span>--host<span class="w"> </span>&lt;SENSOR_IP&gt;
+</code></pre></div>
+<p>This will create <code>src/xovis/models/xovis_types.py</code>. Note that this file is environment-specific and is typically excluded from version control to prevent conflicts across different installations.</p>
+<h2 id="utilities">Utilities</h2>
 
 
 <div class="doc doc-object doc-module">

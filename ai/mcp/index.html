@@ -1194,6 +1194,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#prerequisites-type-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites: Type Generation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deployment-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1625,6 +1636,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#prerequisites-type-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites: Type Generation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deployment-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1708,9 +1730,16 @@
 <p>The server dynamically inspects the <code>XovisAIToolkit</code> at runtime. Any tool registered in the toolkit is automatically projected into the MCP client's "Toolbox," complete with docstring-derived descriptions and type-safe arguments.</p>
 <h3 id="3-safety-guardrails">3. Safety Guardrails</h3>
 <p>All MCP tool calls are proxied through the <code>XovisSafetyGuardrail</code>. High-impact operations (e.g., reboots) initiated via MCP <strong>require</strong> explicit confirmation payloads, preventing accidental hardware outages during agentic reasoning loops.</p>
+<h2 id="prerequisites-type-generation">Prerequisites: Type Generation</h2>
+<p>Before using the MCP server, you MUST generate the local resource types. The MCP server relies on these types to provide the AI with accurate autocompletion for resource IDs (e.g., Zone names, Line IDs, MAC addresses).</p>
+<ol>
+<li><strong>Warmup</strong>: Run <code>xovis-cli warmup --host &lt;DEVICE_IP&gt;</code> to sync hardware state.</li>
+<li><strong>Generate Types</strong>: Run <code>xovis-cli generate-types</code> to create the <code>xovis_types.py</code> definitions.</li>
+</ol>
+<p>For a detailed explanation of the type generation system and the CLI commands, see the <a href="../../cli/#generate-types">CLI Documentation</a>.</p>
 <h2 id="deployment-configuration">Deployment &amp; Configuration</h2>
 <h3 id="ide-integration-cursor-windsurf">IDE Integration (Cursor / Windsurf)</h3>
-<p>To enable native hardware control within your AI-native IDE, add the following to your configuration:
+<p>To enable native hardware control within your AI-native IDE, add the following to your configuration:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;mcpServers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;xovis&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1726,9 +1755,9 @@
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
-</code></pre></div></p>
+</code></pre></div>
 <h3 id="claude-desktop-integration">Claude Desktop Integration</h3>
-<p>Add the Xovis MCP server to your <code>claude_desktop_config.json</code>:
+<p>Add the Xovis MCP server to your <code>claude_desktop_config.json</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;mcpServers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;xovis&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1741,7 +1770,7 @@
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
-</code></pre></div></p>
+</code></pre></div>
 <h2 id="standards-compliance">Standards &amp; Compliance</h2>
 <ul>
 <li><strong>MCP 1.0.0+ Compatible</strong>: Adheres to the latest Model Context Protocol specification.</li>

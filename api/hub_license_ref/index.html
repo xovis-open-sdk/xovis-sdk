@@ -1464,14 +1464,14 @@
 
 
 <h1 id="hub-license-api-reference-scalar">Hub License API Reference (Scalar)</h1>
-<p>This schema dictates the <strong>billing</strong> and <strong>subscription</strong> payloads handled by the <code>xovis-sdk</code> when operating against the Xovis HUB Cloud. 
-The SDK's Control Plane natively maps these endpoints into the <code>LicenseStatus</code> and <code>PayPerUseBillStatus</code> Pydantic V2 models, ensuring enterprise compliance and usage tracking.</p>
+<p>This schema dictates the <strong>billing</strong> and <strong>subscription</strong> payloads handled by the <code>xovis-sdk</code> when operating against the Xovis HUB Cloud. </p>
+<p>The SDK's Control Plane natively maps these endpoints into the <code>LicenseStatus</code> and <code>PayPerUseBillStatus</code> Pydantic V2 models, ensuring enterprise compliance and usage tracking.</p>
 <hr />
 <div class="setup-instructions-container" id="setup-instructions" style="display: none;">
 <div class="admonition failure">
 <p class="admonition-title">Interactive Explorer Disabled</p>
-<p>The interactive explorer is currently disabled because the proprietary <strong>Hub License schema</strong> was not found in your local environment.
-The SDK's <code>HubLicenseManager</code> uses these schemas to validate license allocation and service entitlement across global fleet deployments.</p>
+<p>The interactive explorer is currently disabled because the proprietary <strong>Hub License schema</strong> was not found in your local environment.</p>
+<p>The SDK's <code>HubLicenseManager</code> uses these schemas to validate license allocation and service entitlement across global fleet deployments.</p>
 </div>
 <h4 id="how-to-enable-locally">How to Enable Locally</h4>
 <ol>
@@ -1481,6 +1481,7 @@ The SDK's <code>HubLicenseManager</code> uses these schemas to validate license 
 </ol>
 </div>
 <div id="explorer-container" style="display: none;">
+
 <div class="scalar-api-reference">
   <script
     id="api-reference"
@@ -1488,7 +1489,9 @@ The SDK's <code>HubLicenseManager</code> uses these schemas to validate license 
     data-configuration='{"theme": "deepSpace", "showSidebar": true, "layout": "modern"}'></script>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+
 </div>
+
 <script>
 (async () => {
   const schemaUrl = "../../assets/openapi/HUB-license.json";

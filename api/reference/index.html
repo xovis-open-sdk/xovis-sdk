@@ -1464,14 +1464,14 @@
 
 
 <h1 id="edge-api-reference-scalar">Edge API Reference (Scalar)</h1>
-<p>This specification defines the foundational <strong>Data Plane</strong> and <strong>Control Plane</strong> structures that the <code>xovis-sdk</code> automatically validates via <strong>Pydantic V2</strong>. 
-While the SDK abstracts these endpoints natively through the <code>DeviceClient</code>, this reference provides complete transparency into the raw edge payloads processed under the hood.</p>
+<p>This specification defines the foundational <strong>Data Plane</strong> and <strong>Control Plane</strong> structures that the <code>xovis-sdk</code> automatically validates via <strong>Pydantic V2</strong>. </p>
+<p>While the SDK abstracts these endpoints natively through the <code>DeviceClient</code>, this reference provides complete transparency into the raw edge payloads processed under the hood.</p>
 <hr />
 <div class="setup-instructions-container" id="setup-instructions" style="display: none;">
 <div class="admonition failure">
 <p class="admonition-title">Interactive Explorer Disabled</p>
-<p>The interactive explorer is currently disabled because the proprietary <strong>Edge API schema</strong> (<code>api.yaml</code>) was not found in your local environment.
-The SDK generates strict <code>RootModels</code> and <code>typing.Literal</code> definitions directly from this proprietary specification to guarantee zero-drift between the hardware and your Python runtime.</p>
+<p>The interactive explorer is currently disabled because the proprietary <strong>Edge API schema</strong> (<code>api.yaml</code>) was not found in your local environment.</p>
+<p>The SDK generates strict <code>RootModels</code> and <code>typing.Literal</code> definitions directly from this proprietary specification to guarantee zero-drift between the hardware and your Python runtime.</p>
 </div>
 <h4 id="how-to-enable-locally">How to Enable Locally</h4>
 <ol>
@@ -1481,6 +1481,7 @@ The SDK generates strict <code>RootModels</code> and <code>typing.Literal</code>
 </ol>
 </div>
 <div id="explorer-container" style="display: none;">
+
 <div class="scalar-api-reference">
   <script
     id="api-reference"
@@ -1488,7 +1489,9 @@ The SDK generates strict <code>RootModels</code> and <code>typing.Literal</code>
     data-configuration='{"theme": "deepSpace", "showSidebar": true, "layout": "modern"}'></script>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+
 </div>
+
 <script>
 (async () => {
   const schemaUrl = "../../assets/openapi/api.yaml";
