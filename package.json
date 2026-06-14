@@ -1,21 +1,31 @@
 {
   "name": "xovis-sdk",
-  "version": "1.0.0-alpha.2",
-  "description": "Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB.",
+  "version": "1.0.0-alpha.3",
+  "description": "Unofficial Xovis Hardware integration for In-Store Analytics, People Flow, and Data Warehousing via MCP.",
   "keywords": [
     "xovis",
-    "api",
-    "retail",
-    "analytics",
-    "sensors",
-    "telemetry"
+    "mcp",
+    "model-context-protocol",
+    "people-counting",
+    "people-tracking",
+    "in-store-analytics",
+    "people-flow",
+    "spatial-intelligence",
+    "data-warehousing",
+    "retail-analytics"
   ],
   "license": "MIT",
-  "author": "Xovis Open SDK Team",
+  "author": "Xovis Open SDK Team <xovis.sdk@proton.me>",
   "type": "module",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xovis-open-sdk/xovis-sdk.git"
+  },
+  "homepage": "https://xovis-open-sdk.github.io/xovis-sdk/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "sync-docs": "python scripts/sync_project_structure.py"
+    "sync-docs": "python scripts/sync_project_structure.py",
+    "smithery:login": "npx @smithery/cli@latest login",
+    "smithery:publish": "npx @smithery/cli@latest mcp publish . -n @xovis-sdk/xovis-mcp"
   }
 }

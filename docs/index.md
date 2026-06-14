@@ -5,7 +5,7 @@ Welcome to the **xovis-sdk** documentation. This is an enterprise-grade, high-pe
 Compliance Note: This project is an independent, open-source initiative. It is not officially affiliated with, maintained by, or endorsed by Xovis AG.
 
 [![GitHub](https://img.shields.io/badge/GitHub-xovis--sdk-181717?logo=github)](https://github.com/xovis-open-sdk/xovis-sdk)
-[![PyPI](https://img.shields.io/pypi/v/xovis-sdk?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/xovis-sdk/1.0.0a0/)
+[![PyPI](https://img.shields.io/pypi/v/xovis-sdk?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/xovis-sdk/1.0.0a3/)
 [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/)
 [![LangGraph Ready](https://img.shields.io/badge/LangGraph-Ready-1C3C3C.svg?logo=langchain&logoColor=white)](https://langchain.com/)
 [![OpenAI Compatible](https://img.shields.io/badge/OpenAI-Compatible-412991.svg?logo=openai&logoColor=white)](https://openai.com/)

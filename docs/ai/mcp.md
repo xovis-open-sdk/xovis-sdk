@@ -1,12 +1,8 @@
 # Model Context Protocol (MCP)
 
-<div align="center">
-
 | **Status** | **Discovery** | **Installation** |
 |:---:|:---:|:---:|
-| [![Smithery](https://img.shields.io/badge/Smithery-Verified-brightgreen.svg)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
-
-</div>
+| [![Smithery: Verified](https://img.shields.io/badge/Smithery-Placeholder-orange)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery: Install](https://img.shields.io/badge/Smithery-Install--Pending-white)](https://smithery.ai/server/xovis-sdk) |
 
 The `xovis.mcp` module is the standardized bridge for **Autonomous Desktop Agents**. It implements the Anthropic Model Context Protocol (MCP), allowing AI-native IDEs and desktop applications to orchestrate Xovis hardware natively via standard I/O.
 
@@ -15,6 +11,7 @@ The `xovis.mcp` module is the standardized bridge for **Autonomous Desktop Agent
 The MCP server transforms the Xovis SDK from a library into a **Live Resource Provider**. By exposing the `XovisAIToolkit` over a JSON-RPC 2.0 boundary, it enables agents like Claude Desktop, Cursor, and Windsurf to "attach" to a local sensor network, query topology, and execute configuration changes without requiring the agent to write and execute its own Python scripts for every interaction.
 
 ### Architectural Pillars:
+
 1.  **Standardized Tool Projection**: Automatically maps SDK `CallablePrimitives` to MCP `Tool` definitions, including strict Pydantic-derived input schemas.
 2.  **State-as-Resource**: Exposes physical device state and topology (via `HostStateBucket`) as queryable MCP Resources.
 3.  **Secure Tunneling**: Leverages the SDK's `HubClient` tunnel to route MCP requests from a local developer machine through the Cloud HUB to remote edge sensors.

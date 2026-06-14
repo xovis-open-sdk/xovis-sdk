@@ -1,47 +1,47 @@
-# smithery.yaml
-name: xovis-sdk-mcp
+name: xovis-mcp
 displayName: Xovis SDK MCP Server
-description: Unofficial Xovis Hardware and Cloud Hub Integration for MCP
-version: 1.0.0a2
-category: Development
+description: Unofficial Xovis Hardware integration for In-Store Analytics, People Flow, and Data Warehousing via MCP.
+version: 1.0.0a3
+category: Data
 
 startCommand:
   type: stdio
-  
-  # Prompts Smithery UI/CLI to collect required credentials
+
+  # Prompts Smithery UI/CLI to collect required credentials from the user
   configSchema:
     type: object
     properties:
-      XOVIS_CLIENT_ID:
+      XOVIS_HUB_CLIENT_ID:
         type: string
-        description: "Xovis Cloud Hub Client ID (Auth0)"
-      XOVIS_CLIENT_SECRET:
+        description: "Xovis Cloud Hub Client ID (Auth0 - Optional for Cloud)"
+      XOVIS_HUB_CLIENT_SECRET:
         type: string
-        description: "Xovis Cloud Hub Client Secret (Auth0)"
-      NTLM_AUTH:
+        description: "Xovis Cloud Hub Client Secret (Auth0 - Optional for Cloud)"
+      XOVIS_MCP_HOST:
         type: string
-        default: "true"
-        description: "Use Windows SSO for local devices (true/false)"
-      DC_USERNAME:
+        default: "127.0.0.1"
+        description: "Device IP/Host (Used if Hub credentials are left blank)"
+      XOVIS_MCP_USER:
         type: string
-        description: "Device Connector Username (if NTLM is false)"
-      DC_PASSWORD:
+        default: "admin"
+        description: "Device Username"
+      XOVIS_MCP_PASS:
         type: string
-        description: "Device Connector Password (if NTLM is false)"
-        
-  # Dynamically pull the published PyPI artifact
+        description: "Device Password"
+
+  # Dynamically pull the published PyPI artifact and inject the exact vars server.py expects
   commandFunction: |-
     (config) => ({
       command: 'uvx',
       args: [
         '--from', 'xovis-sdk==1.0.0a2',
-        'xovis-mcp'
+        'xovis-cli', 'mcp'
       ],
       env: {
-        XOVIS_CLIENT_ID: config.XOVIS_CLIENT_ID,
-        XOVIS_CLIENT_SECRET: config.XOVIS_CLIENT_SECRET,
-        NTLM_AUTH: config.NTLM_AUTH,
-        DC_USERNAME: config.DC_USERNAME,
-        DC_PASSWORD: config.DC_PASSWORD
+        XOVIS_HUB_CLIENT_ID: config.XOVIS_HUB_CLIENT_ID || "",
+        XOVIS_HUB_CLIENT_SECRET: config.XOVIS_HUB_CLIENT_SECRET || "",
+        XOVIS_MCP_HOST: config.XOVIS_MCP_HOST || "127.0.0.1",
+        XOVIS_MCP_USER: config.XOVIS_MCP_USER || "admin",
+        XOVIS_MCP_PASS: config.XOVIS_MCP_PASS || ""
       }
     })

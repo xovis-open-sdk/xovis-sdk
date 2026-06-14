@@ -2,6 +2,7 @@
 
 The `xovis-sdk` is strictly **quadrifurcated** into four distinct planes. This decoupling ensures high-frequency telemetry remains unblocked by slow control operations, while fleet-wide state is managed independently of the hardware's physical lens topology.
 
+
 !!! info "Xovis HUB Pro"
     Operating the SDK on the Cloud HUB free tier may result in rate limit exhaustion during bulk operations. A **Xovis HUB Pro** subscription is suggested for production environments.
 
@@ -65,6 +66,7 @@ graph TB
 ```
 
 ---
+
 
 !!! info "For Contributors"
     If you are interested in collaborating on the SDK or want to understand the technical rules governing each plane, please refer to the [Contributor Architecture & Guidelines](contributing/agent_instructions.md).

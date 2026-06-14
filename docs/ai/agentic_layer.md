@@ -1,17 +1,13 @@
 # Agentic Layer (Skills)
 
-<div align="center">
-
 | **Status** | **Discovery** | **Installation** |
 | :---: | :---: | :---: |
-| [![Smithery](https://img.shields.io/badge/Smithery-Verified-brightgreen.svg)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
+| [![Smithery: Verified](https://img.shields.io/badge/Smithery-Placeholder-orange)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery: Install](https://img.shields.io/badge/Smithery-Install--Pending-white)](https://smithery.ai/server/xovis-sdk) |
 
 | **Compatibility** | **Frameworks** | **Optimized For** |
 | :---: | :---: | :---: |
 | [![OpenAI Compatible](https://img.shields.io/badge/OpenAI-Compatible-412991.svg?logo=openai&logoColor=white)](https://openai.com/) | [![LangGraph Ready](https://img.shields.io/badge/LangGraph-Ready-1C3C3C.svg?logo=langchain&logoColor=white)](https://langchain.com/) | [![Cursor Optimized](https://img.shields.io/badge/Cursor-Optimized-000000.svg?logo=python&logoColor=white)](https://cursor.sh/) |
 | [![Anthropic Compatible](https://img.shields.io/badge/Anthropic-Compatible-D2B8A3.svg?logo=anthropic&logoColor=black)](https://www.anthropic.com/) | [![CrewAI Ready](https://img.shields.io/badge/CrewAI-Ready-FF4B4B.svg?logo=google-cloud&logoColor=white)](https://crewai.com/) | |
-
-</div>
 
 The `xovis.skills` module is the definitive **Agentic Layer** of the Xovis SDK. It modernizes hardware orchestration by transforming physical edge sensors and Cloud HUB fleet operations into standardized, strictly validated toolsets for Large Language Models (LLMs) and autonomous agent frameworks.
 
@@ -23,6 +19,7 @@ The `xovis.skills` module is the definitive **Agentic Layer** of the Xovis SDK. 
 In the current state-of-the-art landscape, hardware nodes are no longer passive targets for scripts; they are intelligent participants in autonomous ecosystems. This module provides the "Universal Translator" required to bridge the gap between low-level Universal Translator SDK logic and high-level business logic AI reasoning loops.
 
 ### Architectural Pillars:
+
 1.  **Universal Tool Adapter (`XovisAIToolkit`)**: A dynamic reflection engine that crawls SDK managers at runtime, projecting Google-style docstrings and Pydantic V2 schemas for OpenAI, Anthropic, and LangGraph.
 2.  **The Agentic Memory Plane (`XovisAgentMemory`)**: A high-density, zero-latency observation window. It provides agents with minified hardware state snapshots, eliminating the network penalty of redundant polling.
 3.  **Fleet-Scale Orchestration (`XovisFleetToolkit`)**: Exposes resilient, concurrent `bulk_execute` operations as atomic tools for managing thousands of sensors via a single reasoning context.
