@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish to PyPI and NPM
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  pypi-publish:
-    name: Upload release to PyPI
+  publish:
+    name: Upload release to PyPI and NPM
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'xovis-open-sdk' # Security guard
+    if: github.repository_owner == 'xovis-open-sdk'
     environment: pypi
     permissions:
       id-token: write
@@ -18,6 +18,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ==========================================
+      # 1. PYTHON / PYPI BUILD & PUBLISH
+      # ==========================================
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
@@ -32,8 +35,22 @@ jobs:
       - name: Run Quality Check (Tests)
         run: uv run --extra all pytest tests/ -m "not destructive"
 
-      - name: Build package
+      - name: Build Python package
         run: uv build
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+      # ==========================================
+      # 2. NODE / NPM BUILD & PUBLISH
+      # ==========================================
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish to NPM (with Provenance)
+        # The --provenance flag tells NPM to use the OIDC id-token
+        # instead of looking for a traditional NPM_TOKEN secret.
+        run: npm publish --provenance --access public
