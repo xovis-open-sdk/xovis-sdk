@@ -4,7 +4,7 @@ This document defines the architectural principles, boundaries, and technical ru
 
 ## Core Philosophy: The Quadrifurcated Architecture
 
-To handle 12.5Hz DataPushes without destabilizing, while simultaneously orchestrating complex multisensor graph topologies and cloud fleets, the `xovis-sdk` architecture is strictly quadrifurcated into four distinct operational planes. **Never mix the design patterns of these planes.**
+To handle 12.5Hz Live-Push DataPushes without destabilizing, while simultaneously orchestrating complex multisensor graph topologies and cloud fleets, the `xovis-sdk` architecture is strictly quadrifurcated into four distinct operational planes. **Never mix the design patterns of these planes.**
 
 ---
 

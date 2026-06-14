@@ -1,4 +1,4 @@
-# Quadrifurcated Architecture
+﻿# Quadrifurcated Architecture
 
 The `xovis-sdk` is strictly **quadrifurcated** into four distinct planes. This decoupling ensures high-frequency telemetry remains unblocked by slow control operations, while fleet-wide state is managed independently of the hardware's physical lens topology.
 
@@ -38,7 +38,7 @@ graph TB
     end
 
     %% Data Connections
-    A -->|12.5Hz Raw JSON| B
+    A -->|Live-Push up to 12.5Hz| B
     B -->|Sliding Buffer Extraction| S
 
     %% Control Connections
@@ -74,10 +74,14 @@ graph TB
 ### 1. The Data Plane (Telemetry Ingestion)
 **Module:** `src/xovis/datapush/`
 
-The engine designed for ultra-high-frequency (12.5Hz) ingestion of live tracking telemetry from physical sensors.
+The engine designed for high-frequency Live-Push (up to 12.5Hz) ingestion of live tracking telemetry from physical sensors.
 
 - **Objective**: Zero-copy, maximum throughput, non-blocking ingestion.
 - **Engine**: Pure native `asyncio` enhanced by `orjson` for high-performance JSON deserialization.
+- **DataPush Variety**: Supports multiple transmission types:
+    - **Live-Push**: High-speed coordinate streams at up to **12.5Hz**.
+    - **Logic-Push**: Minutely state transitions and counts.
+    - **Status & Recording**: Diagnostic health and configuration-based data offloading.
 - **Protocol Fidelity**: Unified ingestion strategy across HTTP, UDP, TCP, and MQTT.
     - **Stream Handling**: Optimized to handle raw, concatenated JSON streams (TCP) via a **Sliding String Buffer** and `json.JSONDecoder().raw_decode()`.
     - **Packet Handling**: Uses `orjson` for discrete packet ingestion (HTTP, UDP, MQTT) to minimize CPU overhead.
@@ -104,7 +108,7 @@ Low-frequency REST API wrappers for configuring the Xovis HUB Cloud and physical
 
 A stateful, topology-aware engine that abstracts complex sensor graphs into human-readable mappings.
 
-- **Objective**: Transparent management of multisensor environments and offline-first state persistence.
+- **Objective**: Transparent management of multisensor environments and offline-first state persistence. The [Xovis Mission Control TUI](cli.md#ui) serves as the primary visual interface for configuring these buckets and detecting hardware topologies.
 - **Engine**: `TopologyManager` + `ConfigCacheManager`.
 - **Logic**:
     - **Context Isolation**: Distinguishes between physical lenses (`singlesensor`) and virtual stitched environments (`multisensors`).
@@ -125,3 +129,19 @@ The integration layer for autonomous agents, LLMs, and the Model Context Protoco
 
 ---
 
+
+### DataPush Frequencies & Scheduling
+
+The Xovis SDK supports multiple DataPush types, each optimized for different analytical needs. While Live-Push offers the highest frequency, other types are scheduled based on the agent's Scheduler configuration.
+
+| Push Type | Frequency (Typical) | Scheduling Strategy | Best For                             |
+| :--- | :--- | :--- |:-------------------------------------|
+| **Live-Push** | Up to 12.5Hz | Real-time Stream | Low-latency tracking, scene-events   |
+| **Logic-Push** | 1 minute | `INTERVAL` / `PERIODIC` | State transitions, counts, occupancy |
+| **Status-Push** | 5 minutes | `INTERVAL` | Device health, connection monitoring |
+| **Recording** | Manual / Config | `IMMEDIATE` | Validation, event auditing           |
+
+### Scheduling & Performance
+For non-live data, the SDK's `Scheduler` provides high flexibility:
+- **Fastest Interval**: The `INTERVAL` strategy can be configured as fast as **5 seconds** for near-real-time state monitoring.
+- **Immediate Execution**: The `IMMEDIATE` strategy ensures data is dispatched as soon as the hardware event occurs (for event-driven types) or upon manual trigger.

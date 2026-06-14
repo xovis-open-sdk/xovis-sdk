@@ -37,7 +37,7 @@ The primary entry point for both single-device and fleet-wide orchestration. It 
 *   **Callable Primitives**: Exports direct references to async functions and their validation models for **LangGraph**, **CrewAI**, and **Cursor/Windsurf**.
 
 ### 2. XovisAgentMemory (State Observation)
-Autonomous agents require environmental context without the 12.5Hz network overhead. By wrapping the `HostStateBucket`, this plane allows for the injection of minified, JSON-serialized hardware "memories" directly into the System Prompt.
+Autonomous agents require environmental context without the high-frequency Live-Push overhead. By wrapping the `HostStateBucket`, this plane allows for the injection of minified, JSON-serialized hardware "memories" directly into the System Prompt.
 
 ### 3. XovisFleetToolkit (Distributed Management)
 A specialized orchestrator for `HubClient` contexts. It exposes high-impact tools such as `fleet_reboot` and `get_fleet_summary`, enabling an agent to supervise entire global deployments with fault isolation.
@@ -74,6 +74,10 @@ Figure: AI Tool Safety configuration in the Xovis Open SDK Mission Control.
     *   **RESTRICTED**: Operations causing temporary disruption (e.g., `reboot_device`, `delete_all_geometries`). Enforces a warning and programmatic delay.
     *   **CRITICAL**: Destructive operations (e.g., `factory_reset`, `update_network_settings`, `clear_sensor_db`). Requires explicit Human-in-the-Loop (HITL) confirmation.
     *   **BLOCKED**: Hardcoded forbidden endpoints (e.g., `flash_format`, `reboot_rescue`) to prevent hardware damage.
+eboot_rescue) to prevent hardware damage.
+eboot_rescue) to prevent hardware damage.
+eboot_rescue) to prevent hardware damage.
+eboot_rescue\) to prevent hardware damage.
 *   **Enterprise Safety Policy**: Implements hardcoded overrides for high-risk operations, ensuring safety logic is robust against dynamic discovery heuristics.
 *   **AI Privacy Engine**: A stateful, two-way pseudonymization system via `AIPrivacySession`. It replaces sensitive identifiers (MAC addresses, Customer names) with session-bound hashes (e.g., `Id_a1b2c3d4`). The AI only ever sees and interacts with these hashes, and the toolkit "restores" the real values only at the moment of execution. This ensures zero-trust data handling.
 *   **Adaptive Pacing**: Intra-context aggregation loops automatically inject delays (1.0s for Cloud, 0.2s for LAN) to prevent Cloud HUB WAF triggers and sensor OOM crashes. Aggregation loops iterating over `active_contexts` via a `HubClient` MUST include an `asyncio.sleep(1.0)` delay after each request.
@@ -92,7 +96,9 @@ Figure: AI Privacy and Tool Safety management screen.
 *   **Dry Run Mode**: Allows for safe agent training by intercepting and simulating hardware-modifying commands.
 
 #### AI Scope (Fleet Whitelist)
-Autonomous agents can be further restricted by whitelisting specific sensors in the **Fleet Explorer**. Using the `ctrl+a` (Toggle AI Scope) shortcut, you can define exactly which devices are visible and accessible to the AI.
+Autonomous agents can be further restricted by whitelisting specific sensors in the **Fleet Explorer**. Using the `ctrl+a` (Toggle AI Scope) shortcut, you can define exactly which devices are visible and accessible to the AI. This whitelist serves as a **Security Boundary**, ensuring the agent cannot reason about or interact with hardware outside its authorized scope.
+
+While this whitelist enforces **Security**, the same interface is used for **Functional** configuration including device discovery, bucket creation, and topology detection. For details on these technical capabilities, see the [Mission Control TUI documentation](../cli.md#ui).
 
 ![Fleet Explorer AI Scope](img/fleet_explorer.png)
 Figure: Whitelisting devices in the Fleet Explorer.
@@ -125,3 +131,4 @@ toolkit = XovisAIToolkit(client, guardrail=guardrail)
 
 ---
 **Note:** For edge-level resource management (Zones, Lines, Logics), refer to the `xovis.api.device.resources` documentation.
+

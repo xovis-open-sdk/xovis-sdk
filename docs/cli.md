@@ -59,7 +59,14 @@ Launches the Xovis MCP Server for integration with Claude Desktop, Cursor, and W
 Launches the guided SDK setup wizard for initial configuration.
 
 ### `ui`
-Launches the **Xovis Mission Control TUI**, a terminal-based dashboard for real-time sensor observation.
+Launches the **Xovis Mission Control TUI**, the primary visual interface for SDK orchestration.
+
+**Core Capabilities:**
+- **Interactive Device Discovery**: Scan local networks and Cloud HUB fleets to identify active sensors.
+- **State Bucket Management**: Select multiple sensors and group them into named `HostStateBucket` instances. These buckets are persisted locally and serve as the primary configuration source for the SDK.
+- **Topology Detection**: Visually verify and generate topology graphs for multisensor environments.
+- **Localized Caching**: Automatically manages state and resource caches for selected devices to ensure offline-first performance.
+- **AI Scope Control**: Toggle the "AI Security" whitelist (`ctrl+a`) to restrict which devices are visible to autonomous agents.
 
 ### `transmission-check`
 Launches the interactive **Datapush Studio TUI** to monitor DataPush stream throughput and frame integrity. This tool supports autonomous sensor provisioning directly from the UI for TCP, UDP, and HTTP protocols.

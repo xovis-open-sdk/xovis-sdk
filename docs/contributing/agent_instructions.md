@@ -1,4 +1,4 @@
-# Contributor Architecture & Guidelines
+﻿# Contributor Architecture & Guidelines
 
 This document provides a technical roadmap for developers and autonomous agents contributing to the `xovis-sdk`. It defines the architectural boundaries, technical principles, and safety guardrails required to maintain the SDK's enterprise-grade integrity.
 
@@ -9,7 +9,7 @@ To maintain the high-performance and reliable nature of the SDK, every contribut
 ### 1. The Data Plane (High-Frequency Telemetry)
 **Path:** `src/xovis/datapush/`
 
-The hot path for ingestion of live tracking telemetry (12.5Hz). Contributions here prioritize throughput and non-blocking execution.
+The hot path for ingestion of Live-Push tracking telemetry (up to 12.5Hz). Contributions here prioritize throughput and non-blocking execution.
 
 - **Objective**: Zero-blocking ingestion and high-speed data offloading.
 - **Principle - Absolute Throughput**: Use native `asyncio` and `orjson` for lock-free deserialization.
@@ -63,3 +63,4 @@ The SDK uses a four-tier testing strategy. All PRs must include relevant tests:
 3. **Tier 4**: Long-term stability and data alignment.
 
 For implementation details, refer to the [Engineering Guidelines](engineering_guidelines.md).
+
