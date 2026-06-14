@@ -47,16 +47,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '24.x'
 
       - name: Install Node Dependencies
         run: npm ci || npm install
 
-      - name: Publish to NPM (with Provenance)
-        # The --provenance flag leverages the OIDC id-token write scope
-        # establishing an immutable build lineage chain back to this runner.
-        run: npm publish --provenance --access public
+      - name: Publish to NPM
+        # Node 24 & npm v11 automatically generate provenance and handle OIDC natively.
+        # No tokens are needed!
+        run: npm publish --access public
 
       # ==========================================
       # 3. SMITHERY MCP REGISTRY PUBLISH
