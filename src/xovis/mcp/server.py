@@ -49,6 +49,42 @@ def _get_active_client_context() -> Union[DeviceClient, HubClient]:
     )
 
 
+def _normalize_schema(schema: Any) -> Any:
+    """
+    Recursively normalizes Pydantic JSON schemas to strict Draft 7 format required by Anthropic/Smithery.
+    Strips 'anyOf' and enforces strict 'type' parameters.
+    """
+    if isinstance(schema, dict):
+        if "anyOf" in schema:
+            types = []
+            for sub in schema.pop("anyOf"):
+                if isinstance(sub, dict) and "type" in sub:
+                    if isinstance(sub["type"], list):
+                        types.extend(sub["type"])
+                    else:
+                        types.append(sub["type"])
+            if types:
+                types = list(set(types))
+                schema["type"] = types[0] if len(types) == 1 else types
+
+        # Ensure all object properties have a type if they are properties
+        if "properties" in schema and isinstance(schema["properties"], dict):
+            for prop_name, prop_val in schema["properties"].items():
+                if isinstance(prop_val, dict):
+                    if "type" not in prop_val and "anyOf" not in prop_val and "$ref" not in prop_val:
+                        prop_val["type"] = "object"
+
+        # Recurse into all dictionary values
+        for key, value in schema.items():
+            schema[key] = _normalize_schema(value)
+
+    elif isinstance(schema, list):
+        for i, item in enumerate(schema):
+            schema[i] = _normalize_schema(item)
+
+    return schema
+
+
 @server.list_tools()
 async def handle_list_tools() -> list[Tool]:
     """
@@ -74,11 +110,14 @@ async def handle_list_tools() -> list[Tool]:
         if safety_level:
             description = f"[{safety_level.name}] {description}"
 
+        raw_schema = tool["args_model"].model_json_schema()
+        normalized_schema = _normalize_schema(raw_schema)
+
         mcp_tools.append(
             Tool(
                 name=tool["name"],
                 description=description,
-                inputSchema=tool["args_model"].model_json_schema(),
+                inputSchema=normalized_schema,
             )
         )
     return mcp_tools
