@@ -25,6 +25,11 @@ src/xovis/models/xovis_types.py
 /scripts/diagnostic_report_*.md
 /scripts/mock_sensor.py
 /scripts/verify_probing.py
+/scripts/deploy_sdk.py
+/scripts/sanitize_public_history.py
+/mailmap
+/mailmap_public
+/replacements.txt
 
 /docs/llms-full.txt
 /DOC_COMPLIANCE.md
