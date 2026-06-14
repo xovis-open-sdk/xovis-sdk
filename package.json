@@ -1,6 +1,6 @@
 {
   "name": "xovis-sdk",
-  "version": "1.0.0a11",
+  "version": "1.0.0a12",
   "description": "Unofficial Xovis Hardware integration via MCP. Features zero-trust format-preserving pseudonymization (AIPrivacySession) and human-in-the-loop safety guardrails (XovisSafetyGuardrail) for critical operations.",
   "keywords": [
     "xovis",
@@ -25,7 +25,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "sync-docs": "python scripts/sync_project_structure.py",
-    "smithery:login": "npx @smithery/cli@latest login",
+    "smithery:login": "npx @smithery/cli@latest auth login",
     "smithery:publish": "npx @smithery/cli@latest mcp publish https://github.com/xovis-open-sdk/xovis-sdk -n @xovis-sdk/xovis-mcp"
   }
 }
