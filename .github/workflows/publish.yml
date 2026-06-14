@@ -54,8 +54,8 @@ jobs:
 
       - name: Publish to NPM
         # Node 24 & npm v11 automatically generate provenance and handle OIDC natively.
-        # No tokens are needed!
-        run: npm publish --access public
+        # No tokens are needed! We must specify '--tag next' when publishing prereleases to the registry.
+        run: npm publish --access public --tag next
 
       # ==========================================
       # 3. SMITHERY MCP REGISTRY PUBLISH
