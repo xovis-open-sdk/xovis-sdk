@@ -56,13 +56,3 @@ jobs:
         # Node 24 & npm v11 automatically generate provenance and handle OIDC natively.
         # No tokens are needed! We must specify '--tag next' when publishing prereleases to the registry.
         run: npm publish --access public --tag next
-
-      # ==========================================
-      # 3. SMITHERY MCP REGISTRY PUBLISH
-      # ==========================================
-      - name: Publish to Smithery MCP Registry
-        # Dispatches the unified compilation payload to the Smithery indexing plane.
-        # This securely bridges our layer translations directly onto their consumer routing catalog.
-        run: npm run smithery:publish
-        env:
-          SMITHERY_API_KEY: ${{ secrets.SMITHERY_API_KEY }}
