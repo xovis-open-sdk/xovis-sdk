@@ -43,6 +43,7 @@ A stateful engine that abstracts complex sensor graphs. Contributions here maint
 
 The safety-first integration layer for autonomous agents and MCP.
 
+- **Principle - Deterministic Resolution**: Use `uv` for all dependency management. Always respect the `uv.lock` file to ensure consistent cross-platform behavior.
 - **Principle - Safety-by-Design**: Tools MUST be mapped to a `SafetyLevel`. Destructive operations require Human-in-the-Loop (HITL).
 - **Principle - Zero-Trust Privacy**: The `AIPrivacySession` is the absolute boundary. Real identifiers (MACs, names) MUST NEVER reach the LLM.
 - **Principle - Post-Execution De-anonymization**: Use `toolkit.privacy_session.deanonymize_text()` only when generating final reports for humans.

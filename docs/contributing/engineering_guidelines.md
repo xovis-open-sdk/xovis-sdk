@@ -89,3 +89,16 @@ Organized into four execution tiers (Smoke, Stateful, Data Plane, Endurance).
 * **Teardown Sequence:** Delete agents before parent connections.
 * **Fixture Scopes:** Session-scoped `HubClient` to avoid 429s; function-scoped `DeviceClient` to prevent event loop closure errors.
 * **Strict Parameter Serialization:** Boolean flags in query parameters MUST be passed as lowercase strings `"true"` or `"false"`.
+
+---
+
+### 8. Deterministic Dependency Management (uv)
+
+The SDK uses `uv` for ultra-fast, deterministic dependency resolution and environment management.
+
+* **Source of Truth**: The `pyproject.toml` defines the abstract requirements.
+* **Locking**: The `uv.lock` file is the absolute, cross-platform source of truth for exact versions used in development and CI.
+* **Resolution**: `uv` uses a high-performance SAT solver to prevent complex resolution loops.
+* **Contributor Workflow**: 
+    - Use `uv sync` to keep your environment aligned with the lockfile.
+    - Always commit changes to `uv.lock` alongside `pyproject.toml` updates.

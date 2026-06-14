@@ -14,16 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
-      - name: Install Ruff
-        run: pip install ruff
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
       - name: Run Ruff Check
-        run: ruff check .
+        run: uv run ruff check .
       - name: Run Ruff Format Check
-        run: ruff format --check .
+        run: uv run ruff format --check .
 
   test:
     name: Test (Python ${{ matrix.python-version }})
@@ -40,41 +40,41 @@ jobs:
       XOVIS_HUB_CLIENT_SECRET: ${{ secrets.XOVIS_HUB_CLIENT_SECRET }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Package
-        run: pip install -e ".[all]"
+          enable-cache: true
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
       - name: Run Non-Destructive Tests
-        run: pytest tests/ -m "not destructive"
+        run: uv run --extra all pytest tests/ -m "not destructive"
       - name: Run Destructive Tests (Mocked)
-        run: pytest tests/ -m "destructive"
+        run: uv run --extra all pytest tests/ -m "destructive"
 
   cli-dry-run:
     name: CLI Dry-Run
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
-      - name: Install Package
-        run: pip install -e .
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
       - name: CLI Help Check
-        run: xovis-cli --help
+        run: uv run xovis-cli --help
 
   security:
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
-      - name: Install Bandit
-        run: pip install bandit
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
       - name: Run Bandit Scan
-        run: bandit -r src/ -ll
+        run: uv run bandit -r src/ -ll
