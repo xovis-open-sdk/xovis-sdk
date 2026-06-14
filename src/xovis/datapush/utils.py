@@ -1,14 +1,14 @@
 """
-Xovis SDK - Data Plane Ingestion Utilities
+Xovis SDK - Data Plane Utilities
 
-This module provides high-performance, centralized utilities for telemetry
-ingestion across all transport layers (HTTP, UDP, TCP, MQTT). It standardizes
-JSON parsing, binary data handling, connection test filtering, and sink routing.
+This module provides centralized high-performance ingestion helpers for the Data Plane.
+It standardizes JSON parsing via `orjson`, connection test filtering, and sink dispatching
+across all transport layers (HTTP, UDP, TCP, MQTT).
 """
 
 import asyncio
 import logging
-from typing import Any, Dict, List, Union
+from typing import List, Any, Dict, Union
 
 import orjson
 
@@ -19,78 +19,70 @@ logger = logging.getLogger("xovis_sdk.datapush.utils")
 
 class DataPlaneIngestor:
     """
-    Centralized Ingestion Logic for the Data Plane.
-
-    Standardizes how telemetry data is parsed and routed to sinks, ensuring
-    consistent behavior across all transport protocols while maintaining
-    maximum performance.
+    Centralized logic for telemetry ingestion and dispatching.
     """
 
     @staticmethod
-    def parse_frame(data: Union[bytes, str]) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+    def parse_frame(data: Union[bytes, str]) -> Dict[str, Any]:
         """
-        Parses raw telemetry data into a JSON-compatible structure.
+        Standardized frame parsing with binary fallback.
 
-        Uses `orjson` for high-performance deserialization. If parsing fails,
-        the raw data is wrapped in a `recording_data` frame to support binary
-        recording ingestion.
+        Attempts to parse the input as JSON using `orjson`. If parsing fails,
+        wraps the raw bytes in a `recording_data` pseudo-frame.
 
         Args:
-            data (Union[bytes, str]): The raw telemetry data received from a sensor.
+            data (Union[bytes, str]): The raw frame data.
 
         Returns:
-            Union[Dict[str, Any], List[Dict[str, Any]]]: The parsed JSON frame(s)
-                or a wrapped binary fallback frame.
+            Dict[str, Any]: The parsed JSON frame or a binary fallback frame.
         """
-        if isinstance(data, str):
-            data = data.encode("utf-8", errors="ignore")
+        if not data:
+            return {}
 
         try:
             return orjson.loads(data)
-        except orjson.JSONDecodeError:
-            # Binary fallback for non-JSON payloads (e.g., sensor recordings)
-            logger.debug("Non-JSON payload received, falling back to binary wrapping.")
-            return {"recording_data": data}
+        except (orjson.JSONDecodeError, TypeError):
+            # If it's already a dict (e.g. from TCP raw_decode), just return it
+            if isinstance(data, dict):
+                return data
+            
+            # Fallback for binary recordings
+            logger.debug(f"Received non-JSON payload of {len(data)} bytes")
+            return {"recording_data": data if isinstance(data, bytes) else data.encode("utf-8")}
 
     @staticmethod
     async def route_to_sinks(frame: Dict[str, Any], sinks: List[XovisSink]) -> None:
         """
-        Routes a parsed telemetry frame to all attached sinks.
+        Standardized sink dispatching and filtering.
 
-        Filters out connection tests and heartbeats before dispatching to sinks.
-        Handles both single frames and lists of frames (batched payloads).
+        Filters out connection tests and routes frames/events to all attached sinks.
 
         Args:
             frame (Dict[str, Any]): The parsed telemetry frame.
-            sinks (List[XovisSink]): A list of sinks to receive the telemetry.
+            sinks (List[XovisSink]): List of attached telemetry sinks.
         """
-        if not sinks:
+        if not frame or not sinks:
             return
 
-        # Handle batching (if frame is actually a list of frames)
-        if isinstance(frame, list):
-            for f in frame:
-                await DataPlaneIngestor.route_to_sinks(f, sinks)
-            return
-
-        # Centralized Connection Test Filtering
+        # Intercept Connection Tests
         if "connection_test" in frame:
-            logger.debug("Filtered out connection_test frame")
+            logger.debug("Filtered connection_test frame")
             return
 
-        # Unified routing to sinks
+        events = frame.get("events", [])
         tasks = []
         for sink in sinks:
             try:
-                # Primary telemetry channel
-                tasks.append(asyncio.create_task(sink.on_frame(frame)))
-
-                # Secondary event-specific channel (if implemented by sink)
-                if "events" in frame and hasattr(sink, "on_events"):
-                    tasks.append(asyncio.create_task(sink.on_events(frame["events"])))
-
+                # Schedule both frame and event processing
+                tasks.append(sink.on_frame(frame))
+                if events:
+                    tasks.append(sink.on_events(events))
             except Exception as e:
-                logger.error(f"Error routing to sink {sink}: {e}")
+                logger.error(f"Error preparing sink task: {e}")
 
         if tasks:
-            await asyncio.gather(*tasks, return_exceptions=True)
+            # Execute all sink tasks concurrently
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            for res in results:
+                if isinstance(res, Exception):
+                    logger.error(f"Sink execution error: {res}")
