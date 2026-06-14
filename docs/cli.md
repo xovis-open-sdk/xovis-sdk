@@ -73,7 +73,15 @@ Figure: XOVIS-SDK Datapush Studio in action.
 - `--host`: Optional: Sensor IP for auto-provisioning.
 
 ### `generate-rules`
-Generates a `.cursorrules` file to guide AI agents in respecting the SDK's trifurcated architecture.
+Generates a `.cursorrules` file to guide AI agents in respecting the SDK's quadrifurcated architecture.
+
+<div align="center">
+
+| **Status** | **Discovery** | **Installation** |
+| :---: | :---: | :---: |
+| [![Smithery](https://img.shields.io/badge/Smithery-Verified-brightgreen.svg)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
+
+</div>
 
 ### `check-docs`
 Scans the codebase for "Max-Docstring" compliance, ensuring all public methods have Google-style docstrings (The Receipt).
