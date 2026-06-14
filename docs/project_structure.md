@@ -4,11 +4,19 @@
 xovis-sdk/
 +- .github
 |   +- workflows
-|   |   *- ci.yml
+|   |   +- ci.yml
+|   |   +- docs.yml
+|   |   *- publish.yml
 |   +- CODEOWNERS
 |   *- PULL_REQUEST_TEMPLATE.md
 +- docs
 |   +- ai
+|   |   +- img
+|   |   |   +- ai_privacy.png
+|   |   |   +- ai_tool_safety.png
+|   |   |   +- fleet_explorer.png
+|   |   |   +- fleet_list.png
+|   |   |   *- push_studio.png
 |   |   +- agentic_layer.md
 |   |   *- mcp.md
 |   +- api
@@ -106,7 +114,8 @@ xovis-sdk/
 |   |   |   +- tcp_client.py
 |   |   |   +- tcp_server.py
 |   |   |   +- transmission_check.py
-|   |   |   *- udp_server.py
+|   |   |   +- udp_server.py
+|   |   |   *- utils.py
 |   |   +- mcp
 |   |   |   +- README.md
 |   |   |   *- server.py
@@ -197,14 +206,17 @@ xovis-sdk/
 |   +- README.md
 |   +- __init__.py
 |   +- conftest.py
-|   *- test_tui_fleet.py
+|   +- test_tui_fleet.py
+|   *- verify_examples.py
 +- .env.example
 +- .gitignore
 +- CONTRIBUTING.md
++- LICENSE
 +- README.md
 +- docs_check.txt
 +- mkdocs.yml
-+- package.json
 +- pyproject.toml
-*- requirements.txt
++- requirements.txt
++- smithery.yaml
+*- uv.lock
 ```
