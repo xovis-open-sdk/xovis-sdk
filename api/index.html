@@ -635,6 +635,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#model-context-protocol-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🤖 Model Context Protocol (MCP)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1502,6 +1513,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#model-context-protocol-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🤖 Model Context Protocol (MCP)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1520,7 +1542,12 @@
 
 
 <h1 id="api-reference">API Reference</h1>
+<p><strong>Compliance Note:</strong> This project is an independent, open-source initiative. It is not officially affiliated with, maintained by, or endorsed by Xovis AG.</p>
 <p>The Xovis SDK provides multiple ways to interact with the hardware and cloud infrastructure.</p>
+<div class="admonition tip">
+<p class="admonition-title">Xovis HUB Pro</p>
+<p>For enterprise-scale fleet orchestration via the <code>HubClient</code>, a <strong>Xovis HUB Pro</strong> subscription is recommended to ensure stable rate limits for high-concurrency operations.</p>
+</div>
 <h2 id="edge-hub-api-openapi">📡 Edge &amp; Hub API (OpenAPI)</h2>
 <p>The raw hardware and cloud APIs are documented via interactive Scalar references.</p>
 <ul>
@@ -1536,6 +1563,19 @@
 <li><a href="python/device/"><strong>The Control Plane</strong></a>: Low-frequency REST API wrappers for edge sensors.</li>
 <li><a href="python/hub/"><strong>The Hub Plane</strong></a>: Cloud-scale fleet management.</li>
 <li><a href="python/skills/"><strong>The Agentic Layer</strong></a>: AI Skillsets and MCP toolkits.</li>
+</ul>
+<h2 id="model-context-protocol-mcp">🤖 Model Context Protocol (MCP)</h2>
+<p>The Xovis SDK provides a native MCP server for seamless AI integration.</p>
+<div align="center">
+
+| **Status** | **Discovery** | **Installation** |
+|:---:|:---:|:---:|
+| [![Smithery](https://img.shields.io/badge/Smithery-Verified-brightgreen.svg)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
+
+</div>
+
+<ul>
+<li><strong>Manual Setup:</strong> See <a href="../README.md#manual-mcp-setup">MCP Configuration</a></li>
 </ul>
 <p>For a detailed module-level overview, see the <a href="python/core/">Core SDK</a> documentation.</p>
 

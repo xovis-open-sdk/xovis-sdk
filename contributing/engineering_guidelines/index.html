@@ -1410,6 +1410,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#8-deterministic-dependency-management-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Deterministic Dependency Management (uv)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1601,6 +1612,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#8-deterministic-dependency-management-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Deterministic Dependency Management (uv)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1629,11 +1651,17 @@
 <p>To handle 12.5Hz DataPushes without destabilizing, while simultaneously orchestrating complex multisensor graph topologies and cloud fleets, the <code>xovis-sdk</code> architecture is strictly quadrifurcated into four distinct operational planes. <strong>Never mix the design patterns of these planes.</strong></p>
 <hr />
 <h3 id="1-the-data-plane-high-frequency-telemetry-ingestion">1. The Data Plane (High-Frequency Telemetry Ingestion)</h3>
-<p><strong>Path:</strong> <code>src/xovis/streams/</code>
-The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, and UDP DataPush streams.</p>
+<p><strong>Path:</strong> <code>src/xovis/datapush/</code>
+The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, UDP, and MQTT DataPush streams.</p>
 <ul>
-<li><strong>Core Engine:</strong> Pure native asyncio (<code>asyncio.start_server</code>, <code>asyncio.DatagramProtocol</code>) enhanced by <code>uvloop</code> (where available) or <code>WindowsProactorEventLoopPolicy</code>.</li>
-<li><strong>Parsing Strategy:</strong> Uses a sliding string buffer with <code>json.JSONDecoder().raw_decode()</code> to slice frames out of raw concatenated JSON streams. Do NOT use <code>orjson</code> for frame extraction.</li>
+<li><strong>Core Engine:</strong> Pure native asyncio (<code>asyncio.start_server</code>, <code>asyncio.DatagramProtocol</code>) and <code>orjson</code> for lock-free deserialization.</li>
+<li><strong>Unified Ingestion:</strong> Leverages the <code>DataPlaneIngestor</code> to standardize processing across all transport layers.</li>
+<li><strong>Parsing Strategy:</strong> <ul>
+<li><strong>TCP Streams</strong>: Uses a sliding string buffer with <code>json.JSONDecoder().raw_decode()</code> to slice frames out of raw concatenated JSON streams.</li>
+<li><strong>Discrete Packets</strong>: Uses <code>orjson.loads()</code> for HTTP, UDP, and MQTT to minimize CPU overhead.</li>
+</ul>
+</li>
+<li><strong>Binary Fallback</strong>: Automatically wraps non-JSON payloads (e.g. recordings) in a <code>recording_data</code> pseudo-frame.</li>
 <li><strong>Data Packing:</strong> STRICTLY NO Pydantic validation is allowed in this hot path.</li>
 <li><strong>Network I/O:</strong> Telemetry frames are delivered to sinks in real-time. Efficient batching and lock-free archiving are enforced.</li>
 </ul>
@@ -1694,6 +1722,19 @@ Organized into four execution tiers (Smoke, Stateful, Data Plane, Endurance).</p
 <li><strong>Teardown Sequence:</strong> Delete agents before parent connections.</li>
 <li><strong>Fixture Scopes:</strong> Session-scoped <code>HubClient</code> to avoid 429s; function-scoped <code>DeviceClient</code> to prevent event loop closure errors.</li>
 <li><strong>Strict Parameter Serialization:</strong> Boolean flags in query parameters MUST be passed as lowercase strings <code>"true"</code> or <code>"false"</code>.</li>
+</ul>
+<hr />
+<h3 id="8-deterministic-dependency-management-uv">8. Deterministic Dependency Management (uv)</h3>
+<p>The SDK uses <code>uv</code> for ultra-fast, deterministic dependency resolution and environment management.</p>
+<ul>
+<li><strong>Source of Truth</strong>: The <code>pyproject.toml</code> defines the abstract requirements.</li>
+<li><strong>Locking</strong>: The <code>uv.lock</code> file is the absolute, cross-platform source of truth for exact versions used in development and CI.</li>
+<li><strong>Resolution</strong>: <code>uv</code> uses a high-performance SAT solver to prevent complex resolution loops.</li>
+<li><strong>Contributor Workflow</strong>: <ul>
+<li>Use <code>uv sync</code> to keep your environment aligned with the lockfile.</li>
+<li>Always commit changes to <code>uv.lock</code> alongside <code>pyproject.toml</code> updates.</li>
+</ul>
+</li>
 </ul>
 
 

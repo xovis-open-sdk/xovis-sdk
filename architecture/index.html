@@ -740,6 +740,10 @@
 <article class="md-content__inner md-typeset">
 <h1 id="quadrifurcated-architecture">Quadrifurcated Architecture</h1>
 <p>The <code>xovis-sdk</code> is strictly <strong>quadrifurcated</strong> into four distinct planes. This decoupling ensures high-frequency telemetry remains unblocked by slow control operations, while fleet-wide state is managed independently of the hardware's physical lens topology.</p>
+<div class="admonition info">
+<p class="admonition-title">Xovis HUB Pro</p>
+<p>Operating the SDK on the Cloud HUB free tier may result in rate limit exhaustion during bulk operations. A <strong>Xovis HUB Pro</strong> subscription is suggested for production environments.</p>
+</div>
 <h3 id="system-data-flow">System Data Flow</h3>
 <div class="mermaid">graph TB
     subgraph "Xovis Hardware Layer"
@@ -806,11 +810,16 @@
 <p>The engine designed for ultra-high-frequency (12.5Hz) ingestion of live tracking telemetry from physical sensors.</p>
 <ul>
 <li><strong>Objective</strong>: Zero-copy, maximum throughput, non-blocking ingestion.</li>
-<li><strong>Engine</strong>: Pure native <code>asyncio</code> enhanced by <code>uvloop</code> (Linux/macOS) or <code>ProactorEventLoopPolicy</code> (Windows).</li>
-<li><strong>Protocol Fidelity</strong>: Optimized to handle raw, concatenated JSON streams directly from the hardware via a <strong>Sliding String Buffer</strong>.</li>
+<li><strong>Engine</strong>: Pure native <code>asyncio</code> enhanced by <code>orjson</code> for high-performance JSON deserialization.</li>
+<li><strong>Protocol Fidelity</strong>: Unified ingestion strategy across HTTP, UDP, TCP, and MQTT.<ul>
+<li><strong>Stream Handling</strong>: Optimized to handle raw, concatenated JSON streams (TCP) via a <strong>Sliding String Buffer</strong> and <code>json.JSONDecoder().raw_decode()</code>.</li>
+<li><strong>Packet Handling</strong>: Uses <code>orjson</code> for discrete packet ingestion (HTTP, UDP, MQTT) to minimize CPU overhead.</li>
+</ul>
+</li>
 <li><strong>Key Features</strong>:<ul>
 <li><strong>High Throughput</strong>: Telemetry is instantly offloaded to <code>XovisSink</code> protocols.</li>
-<li><strong>URI Integrity</strong>: Hardware-native routing for maximum compatibility with edge devices.</li>
+<li><strong>Binary Fallback</strong>: Automatically wraps non-JSON payloads (e.g., binary recordings) into a standardized <code>recording_data</code> frame.</li>
+<li><strong>Connection Filtering</strong>: Centralized logic to intercept and ignore sensor heartbeat/connection tests before they reach sinks.</li>
 </ul>
 </li>
 </ul>

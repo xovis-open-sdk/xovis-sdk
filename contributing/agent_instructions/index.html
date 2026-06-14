@@ -1644,9 +1644,14 @@
 <p>The hot path for ingestion of live tracking telemetry (12.5Hz). Contributions here prioritize throughput and non-blocking execution.</p>
 <ul>
 <li><strong>Objective</strong>: Zero-blocking ingestion and high-speed data offloading.</li>
-<li><strong>Principle - Absolute Throughput</strong>: Use native <code>asyncio</code> (enhanced by <code>uvloop</code> on Linux/macOS or <code>ProactorEventLoopPolicy</code> on Windows).</li>
+<li><strong>Principle - Absolute Throughput</strong>: Use native <code>asyncio</code> and <code>orjson</code> for lock-free deserialization.</li>
 <li><strong>Principle - Zero-Copy Handling</strong>: Strictly no Pydantic validation in this path to prevent CPU saturation.</li>
-<li><strong>Technical Detail - Protocol Fidelity</strong>: Implements a <strong>Sliding String Buffer</strong> (see Deep-Dives) to handle raw, concatenated JSON streams.</li>
+<li><strong>Technical Detail - Unified Ingestor</strong>: Use the <code>DataPlaneIngestor</code> utility (in <code>utils.py</code>) for parsing and routing. It handles:<ul>
+<li><strong>Stream Handling</strong>: <code>raw_decode</code> for concatenated TCP streams.</li>
+<li><strong>Packet Handling</strong>: Fast <code>orjson</code> parsing for HTTP, UDP, and MQTT.</li>
+<li><strong>Binary Fallback</strong>: Automatic wrapping of non-JSON data into <code>recording_data</code> frames.</li>
+</ul>
+</li>
 </ul>
 <h3 id="2-the-control-plane-configuration-management">2. The Control Plane (Configuration Management)</h3>
 <p><strong>Path:</strong> <code>src/xovis/api/</code></p>
@@ -1669,6 +1674,7 @@
 <p><strong>Path:</strong> <code>src/xovis/skills/</code></p>
 <p>The safety-first integration layer for autonomous agents and MCP.</p>
 <ul>
+<li><strong>Principle - Deterministic Resolution</strong>: Use <code>uv</code> for all dependency management. Always respect the <code>uv.lock</code> file to ensure consistent cross-platform behavior.</li>
 <li><strong>Principle - Safety-by-Design</strong>: Tools MUST be mapped to a <code>SafetyLevel</code>. Destructive operations require Human-in-the-Loop (HITL).</li>
 <li><strong>Principle - Zero-Trust Privacy</strong>: The <code>AIPrivacySession</code> is the absolute boundary. Real identifiers (MACs, names) MUST NEVER reach the LLM.</li>
 <li><strong>Principle - Post-Execution De-anonymization</strong>: Use <code>toolkit.privacy_session.deanonymize_text()</code> only when generating final reports for humans.</li>

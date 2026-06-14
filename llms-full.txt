@@ -45,6 +45,7 @@ xovis/
         tcp_server.py
         transmission_check.py
         udp_server.py
+        utils.py
     mcp/
         server.py
     models/
