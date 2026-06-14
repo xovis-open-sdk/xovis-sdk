@@ -1,7 +1,7 @@
 name: xovis-mcp
 displayName: Xovis SDK MCP Server
 description: Unofficial Xovis Hardware integration via MCP. Features zero-trust format-preserving pseudonymization (AIPrivacySession) and human-in-the-loop safety guardrails (XovisSafetyGuardrail) for critical operations.
-version: 1.0.0a10
+version: 1.0.0a11
 homepage: https://github.com/xovis-open-sdk/xovis-sdk
 category: Data
 categories:
@@ -47,7 +47,7 @@ startCommand:
     (config) => ({
       command: 'uvx',
       args: [
-        '--from', 'xovis-sdk==1.0.0a10',
+        '--from', 'xovis-sdk[mcp]==1.0.0a11',
         'xovis-mcp'
       ],
       env: {
