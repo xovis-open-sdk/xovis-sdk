@@ -15,7 +15,7 @@ The hot path for ingestion of Live-Push tracking telemetry (up to 12.5Hz). Contr
 - **Principle - Absolute Throughput**: Use native `asyncio` and `orjson` for lock-free deserialization.
 - **Principle - Zero-Copy Handling**: Strictly no Pydantic validation in this path to prevent CPU saturation.
 - **Technical Detail - Unified Ingestor**: Use the `DataPlaneIngestor` utility (in `utils.py`) for parsing and routing. It handles:
-    - **Stream Handling**: `raw_decode` for concatenated TCP streams.
+    - **TCP Data Handling**: `raw_decode` for concatenated TCP data.
     - **Packet Handling**: Fast `orjson` parsing for HTTP, UDP, and MQTT.
     - **Binary Fallback**: Automatic wrapping of non-JSON data into `recording_data` frames.
 

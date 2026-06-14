@@ -98,3 +98,4 @@ test_results.log
 # === OS Files ===
 .DS_Store
 Thumbs.db
+/device_state.json

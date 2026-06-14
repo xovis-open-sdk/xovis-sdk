@@ -36,7 +36,7 @@ async def configure_sensor(device: DeviceClient) -> str:
     # Configuration mutations can be safely executed here:
     # await device.time.update({"time_zone": "Europe/Zurich"})
 
-    return f"Processed {info.type} (Firmware: {info.sw_version})"
+    return f"Processed {info.type} (Firmware: {info.fw_version})"
 
 
 async def main():

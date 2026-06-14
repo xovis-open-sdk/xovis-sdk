@@ -79,11 +79,11 @@ The engine designed for high-frequency Live-Push (up to 12.5Hz) ingestion of liv
 - **Objective**: Zero-copy, maximum throughput, non-blocking ingestion.
 - **Engine**: Pure native `asyncio` enhanced by `orjson` for high-performance JSON deserialization.
 - **DataPush Variety**: Supports multiple transmission types:
-    - **Live-Push**: High-speed coordinate streams at up to **12.5Hz**.
+    - **Live-Push**: High-speed coordinate data at up to **12.5Hz**.
     - **Logic-Push**: Minutely state transitions and counts.
     - **Status & Recording**: Diagnostic health and configuration-based data offloading.
 - **Protocol Fidelity**: Unified ingestion strategy across HTTP, UDP, TCP, and MQTT.
-    - **Stream Handling**: Optimized to handle raw, concatenated JSON streams (TCP) via a **Sliding String Buffer** and `json.JSONDecoder().raw_decode()`.
+    - **Data Handling**: Optimized to handle raw, concatenated JSON data (TCP) via a **Sliding String Buffer** and `json.JSONDecoder().raw_decode()`.
     - **Packet Handling**: Uses `orjson` for discrete packet ingestion (HTTP, UDP, MQTT) to minimize CPU overhead.
 - **Key Features**:
     - **High Throughput**: Telemetry is instantly offloaded to `XovisSink` protocols.
@@ -136,7 +136,7 @@ The Xovis SDK supports multiple DataPush types, each optimized for different ana
 
 | Push Type | Frequency (Typical) | Scheduling Strategy | Best For                             |
 | :--- | :--- | :--- |:-------------------------------------|
-| **Live-Push** | Up to 12.5Hz | Real-time Stream | Low-latency tracking, scene-events   |
+| **Live-Push** | Up to 12.5Hz | Real-time Data | Low-latency tracking, scene-events   |
 | **Logic-Push** | 1 minute | `INTERVAL` / `PERIODIC` | State transitions, counts, occupancy |
 | **Status-Push** | 5 minutes | `INTERVAL` | Device health, connection monitoring |
 | **Recording** | Manual / Config | `IMMEDIATE` | Validation, event auditing           |

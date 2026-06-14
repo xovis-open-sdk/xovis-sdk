@@ -11,12 +11,12 @@ To handle 12.5Hz Live-Push DataPushes without destabilizing, while simultaneousl
 ### 1. The Data Plane (High-Frequency Telemetry Ingestion)
 
 **Path:** `src/xovis/datapush/`
-The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, UDP, and MQTT DataPush streams.
+The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, UDP, and MQTT DataPush ingestion.
 
 * **Core Engine:** Pure native asyncio (`asyncio.start_server`, `asyncio.DatagramProtocol`) and `orjson` for lock-free deserialization.
 * **Unified Ingestion:** Leverages the `DataPlaneIngestor` to standardize processing across all transport layers.
 * **Parsing Strategy:** 
-    - **TCP Streams**: Uses a sliding string buffer with `json.JSONDecoder().raw_decode()` to slice frames out of raw concatenated JSON streams.
+    - **TCP Data**: Uses a sliding string buffer with `json.JSONDecoder().raw_decode()` to slice frames out of raw concatenated JSON data.
     - **Discrete Packets**: Uses `orjson.loads()` for HTTP, UDP, and MQTT to minimize CPU overhead.
 * **Binary Fallback**: Automatically wraps non-JSON payloads (e.g. recordings) in a `recording_data` pseudo-frame.
 * **Data Packing:** STRICTLY NO Pydantic validation is allowed in this hot path.

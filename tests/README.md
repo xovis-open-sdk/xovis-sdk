@@ -19,11 +19,11 @@ The test suite is built progressively. CI/CD pipelines must execute these tiers 
 * **Impact:** Marked with `@pytest.mark.destructive`. Requires strict idempotency protocols and proactive capability checks to prevent execution on unsupported hardware (e.g., lensless Spider NUCs).
 * **Key Files:** `test_scene.py`, `test_analytics.py`, `test_datapush.py`, `test_users.py`, `test_itxpt.py`, `test_datapush_agents_matrix.py`, `test_datapush_connections_matrix.py`, `test_history.py`, `test_update.py`.
 
-### Tier 3: The Data Plane (`tests/streams/`)
+### Tier 3: The Data Plane (`tests/datapush/`)
 **Objective:** Validate high-frequency telemetry pipelines and backpressure handling.
 * **Scope:** `XovisTCPServer`, `XovisHTTPServer` (Webhooks), `XovisUDPServer` (Datagrams), and asynchronous data delivery via the `XovisSink` protocol.
 * **Impact:** High network utilization. Requires isolated asynchronous event loops and exhaustive parameterized matrices combining protocols, schedulers, and retry schemas.
-* **Key Files:** `test_stream_tcp_raw.py`, `test_stream_udp_raw.py`, `test_stream_http_webhook.py`, `test_stream_matrix_exhaustive.py`.
+* **Key Files:** `test_dp_tcp_raw_parsing.py`, `test_dp_matrix_universal.py`, `test_dp_server_compliance.py`.
 
 ### Tier 4: Endurance & Data Integrity
 **Objective:** Cross-reference telemetry streams to guarantee firmware and pipeline alignment over extended durations.

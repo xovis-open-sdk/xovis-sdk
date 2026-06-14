@@ -48,7 +48,8 @@ async def main():
 
             # The SDK strictly partitions geometries, agents, and analytics by context
             geometries = await ms_context.scene.get_all_geometries()
-            logger.info(f"Context '{first_ms_name}' possesses {len(geometries.zones)} zones")
+            zones = [g for g in geometries.geometries if g.type.name == "ZONE"] if geometries.geometries else []
+            logger.info(f"Context '{first_ms_name}' possesses {len(zones)} zones")
         else:
             logger.info("No Multisensor contexts found on this device.")
 

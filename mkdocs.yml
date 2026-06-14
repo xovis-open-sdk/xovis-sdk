@@ -95,7 +95,7 @@ nav:
           - Core: api/python/core.md
           - Device: api/python/device.md
           - Hub: api/python/hub.md
-          - Streams: api/python/datapush.md
+          - DataPush: api/python/datapush.md
           - Skills: api/python/skills.md
   - CLI: cli.md
   - Project Structure: project_structure.md

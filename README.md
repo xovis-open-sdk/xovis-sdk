@@ -27,7 +27,7 @@ This SDK is architected for enterprise-scale fleet orchestration. Due to the hig
 
 ## Overview
 
-Integrating native Xovis DataPush protocols and REST APIs into enterprise data pipelines typically requires substantial boilerplate, complex state management, and strict network handling to maintain real-time Live-Push ingestion (up to 12.5Hz). 
+Integrating native Xovis DataPush protocols and REST APIs into enterprise data pipelines typically requires substantial boilerplate, complex state management, and strict network handling to maintain real-time DataPush ingestion (up to 12.5Hz). 
 
 This SDK abstracts the complexities of the Xovis hardware into a unified, modern, and type-safe "Universal Translator" architecture. It completely decouples raw edge telemetry from downstream infrastructure, enabling engineers to focus strictly on spatial analytics, fleet orchestration, and data warehousing.
 
@@ -94,7 +94,7 @@ graph TB
 
 The SDK is strictly quadrifurcated to prevent blocking the asynchronous Python event loop during high-frequency operations while enabling autonomous systems:
 
-1. **The Data Plane:** A zero-copy, lock-free telemetry ingestion engine. Bypasses standard JSON validation in the hot path, converting edge streams (TCP, UDP Datagrams, and HTTP Webhooks) directly into optimized structures for downstream sinks. Supports **Live-Push (up to 12.5Hz)** coordinates and minutely **Logic-Push** events.
+1. **The Data Plane:** A zero-copy, lock-free telemetry ingestion engine. Bypasses standard JSON validation in the hot path, converting edge data (TCP, UDP Datagrams, and HTTP Webhooks) directly into optimized structures for downstream sinks. Supports **Live-Push (up to 12.5Hz)** coordinates and minutely **Logic-Push** events.
 2. **The Control Plane:** A resilient, asynchronous HTTP engine wrapping the Xovis Edge and HUB APIs. It implements a version-agnostic **Manual Bridge Layer** that abstracts firmware-specific JSON variations into stable SDK properties. Supports complex Custom Logic (RPN filters, age histograms), spatial entities (Lines, Masks, Blocked Spaces), core business logic (Logics, Layers, ObjectTypes), high-frequency DataPush pipelines (Agents, Connections, manual triggers), automated OAuth2 token lifecycles, proactive hardware capability probing, intelligent error mapping for hardware-level restrictions (HTTP 403), and strict Pydantic V2 schema enforcement.
 3. **The Topology & State Plane:** A memory-efficient graph engine. It models complex multisensor parent-/child relations and provides an **offline-first Native State Bucket**. It features **Firmware Autonomy** via a passive discovery crawler that identifies unknown hardware API fields during synchronization, ensuring the "Universal Translator" remains compatible with new releases.
 4. **The Agentic Layer (AI Toolkit):** A Universal Tool Adapter leveraging Pydantic V2 to expose SDK methods as strictly validated JSON schemas or asynchronous callable primitives. This grants autonomous orchestration capabilities to modern AI frameworks and LLMs natively. Includes the **Native Bucket Memory Plane** for zero-latency hardware observation.
@@ -275,7 +275,7 @@ xovis-cli datapush --protocol TCP --port 9000
 
 We welcome contributions from systems engineers and data scientists. The `xovis-sdk` adheres to the absolute highest tier of enterprise SDET standards:
 
-1. **The 4-Tier SDET Matrix:** The SDK is guarded by a comprehensive Software Development Engineer in Test (SDET) suite, strictly isolated into Smoke (Stateless - including `XovisTime` normalization), Stateful Configuration (CRUD - consolidated Tier 2), Data Plane (Streams), and Endurance/Integrity (Validation).
+1. **The 4-Tier SDET Matrix:** The SDK is guarded by a comprehensive Software Development Engineer in Test (SDET) suite, strictly isolated into Smoke (Stateless - including `XovisTime` normalization), Stateful Configuration (CRUD - consolidated Tier 2), Data Plane (High-Frequency), and Endurance/Integrity (Validation).
 2. **Strict Idempotency:** All E2E hardware tests (`@pytest.mark.destructive`) execute a pre-flight state sweep and guarantee a hard teardown via strict `try...finally` boundaries to prevent physical hardware exhaustion.
 3. **Clean Code Philosophy (Zero-Comment, Max-Docstring):** The codebase strictly prohibits inline developer chatter. Architectural intent, Pydantic constraints, and plane boundaries are formalized exclusively through rigorous Google-style docstrings.
 
