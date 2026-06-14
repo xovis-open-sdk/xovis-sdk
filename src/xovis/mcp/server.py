@@ -69,7 +69,7 @@ async def handle_list_tools() -> list[Tool]:
         # Synch the SDK safety levels to tool descriptions for Smithery/client awareness
         config = toolkit._tools_map.get(tool["name"], {})
         safety_level = config.get("safety_level")
-        
+
         description = tool["description"]
         if safety_level:
             description = f"[{safety_level.name}] {description}"
@@ -137,7 +137,6 @@ def main() -> None:
     """
     Synchronous entry point for console_scripts.
     """
-    import asyncio
     asyncio.run(main_async())
 
 
