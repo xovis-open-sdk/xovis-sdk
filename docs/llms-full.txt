@@ -1,0 +1,86 @@
+# xovis-sdk - Full Agentic Context
+
+## SDK Structure
+```
+xovis/
+    api/
+        core/
+            auth.py
+            exceptions.py
+            http.py
+            tui.py
+        device/
+            resources/
+                analytics.py
+                datapush.py
+                history.py
+                images.py
+                images_private.py
+                itxpt.py
+                network.py
+                privacy.py
+                scene.py
+                system.py
+                time_config.py
+                update.py
+                users.py
+            cache.py
+            client.py
+            discovery.py
+            models.py
+            sync.py
+            topology.py
+        hub/
+            resources/
+                base.py
+                hub_device.py
+                hub_license.py
+            cache.py
+            client.py
+            sync.py
+    datapush/
+        http_server.py
+        mqtt_client.py
+        sinks.py
+        tcp_client.py
+        tcp_server.py
+        transmission_check.py
+        udp_server.py
+        utils.py
+    mcp/
+        server.py
+    models/
+        device_auto/
+            versions/
+            DeviceManagementService.py
+            DoorStateService.py
+            PassengerCountingService.py
+        device.py
+        hub_device.py
+    skills/
+        crewai_adapter.py
+        discovery.py
+        langchain_adapter.py
+        toolkit.py
+    tui/
+        screens/
+            ai_privacy.py
+            bucket_modal.py
+            confirm_modal.py
+            device_dashboard.py
+            fleet_explorer.py
+            scanner_modal.py
+        widgets/
+            datapush_studio.py
+        app.py
+    utils/
+        loop.py
+        privacy.py
+        time.py
+    cli.py
+    config.py
+```
+
+## Key Models & Protocols
+- See `src/xovis/models/` for Pydantic V2 schemas.
+- See `src/xovis/datapush/sinks.py` for the `XovisSink` protocol.
