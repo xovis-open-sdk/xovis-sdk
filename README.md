@@ -1,17 +1,15 @@
 # Xovis SDK
 
-[![PyPI version](https://badge.fury.io/py/xovis-sdk.svg)](https://pypi.org/project/xovis-sdk/1.0.0a0/)
-[![GitHub](https://img.shields.io/badge/GitHub-xovis--sdk-181717?logo=github)](https://github.com/xovis-open-sdk/xovis-sdk)
-[![npm version](https://badge.fury.io/js/xovis-sdk.svg)](https://badge.fury.io/js/xovis-sdk)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-<br>
-[![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/)
-[![LangGraph Ready](https://img.shields.io/badge/LangGraph-Ready-1C3C3C.svg?logo=langchain&logoColor=white)](https://langchain.com/)
-[![OpenAI Compatible](https://img.shields.io/badge/OpenAI-Compatible-412991.svg?logo=openai&logoColor=white)](https://openai.com/)
-<br>
-[![Anthropic Compatible](https://img.shields.io/badge/Anthropic-Compatible-D2B8A3.svg?logo=anthropic&logoColor=black)](https://www.anthropic.com/)
-[![CrewAI Ready](https://img.shields.io/badge/CrewAI-Ready-FF4B4B.svg?logo=google-cloud&logoColor=white)](https://crewai.com/)
-[![Cursor Optimized](https://img.shields.io/badge/Cursor-Optimized-000000.svg?logo=python&logoColor=white)](https://cursor.sh/)
+<div align="center">
+
+| **Core SDK** | **Integrations** | **Agentic Layer** |
+|:---:|:---:|:---:|
+| [![PyPI version](https://badge.fury.io/py/xovis-sdk.svg)](https://pypi.org/project/xovis-sdk/1.0.0a1/) | [![Smithery](https://img.shields.io/badge/Smithery-Verified-brightgreen.svg)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) |
+| [![GitHub](https://img.shields.io/badge/GitHub-xovis--sdk-181717?logo=github)](https://github.com/xovis-open-sdk/xovis-sdk) | [![OpenAI Compatible](https://img.shields.io/badge/OpenAI-Compatible-412991.svg?logo=openai&logoColor=white)](https://openai.com/) | [![LangGraph Ready](https://img.shields.io/badge/LangGraph-Ready-1C3C3C.svg?logo=langchain&logoColor=white)](https://langchain.com/) |
+| [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) | [![Anthropic Compatible](https://img.shields.io/badge/Anthropic-Compatible-D2B8A3.svg?logo=anthropic&logoColor=black)](https://www.anthropic.com/) | [![CrewAI Ready](https://img.shields.io/badge/CrewAI-Ready-FF4B4B.svg?logo=google-cloud&logoColor=white)](https://crewai.com/) |
+| [![npm version](https://badge.fury.io/js/xovis-sdk.svg)](https://badge.fury.io/js/xovis-sdk) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) | [![Cursor Optimized](https://img.shields.io/badge/Cursor-Optimized-000000.svg?logo=python&logoColor=white)](https://cursor.sh/) |
+
+</div>
 
 An enterprise-grade integration SDK for Xovis 3D Sensors and the Xovis HUB Cloud infrastructure.
 
@@ -100,14 +98,6 @@ The SDK is strictly quadrifurcated to prevent blocking the asynchronous Python e
 2. **The Control Plane:** A resilient, asynchronous HTTP engine wrapping the Xovis Edge and HUB APIs. It implements a version-agnostic **Manual Bridge Layer** that abstracts firmware-specific JSON variations into stable SDK properties. Supports complex Custom Logic (RPN filters, age histograms), spatial entities (Lines, Masks, Blocked Spaces), core business logic (Logics, Layers, ObjectTypes), high-frequency DataPush pipelines (Agents, Connections, manual triggers), automated OAuth2 token lifecycles, proactive hardware capability probing, intelligent error mapping for hardware-level restrictions (HTTP 403), and strict Pydantic V2 schema enforcement.
 3. **The Topology & State Plane:** A memory-efficient graph engine. It models complex multisensor parent-/child relations and provides an **offline-first Native State Bucket**. It features **Firmware Autonomy** via a passive discovery crawler that identifies unknown hardware API fields during synchronization, ensuring the "Universal Translator" remains compatible with new releases.
 4. **The Agentic Layer (AI Toolkit):** A Universal Tool Adapter leveraging Pydantic V2 to expose SDK methods as strictly validated JSON schemas or asynchronous callable primitives. This grants autonomous orchestration capabilities to modern AI frameworks and LLMs natively. Includes the **Native Bucket Memory Plane** for zero-latency hardware observation.
-
-## Installation
-
-```bash
-pip install "xovis-sdk[uvloop]"
-```
-
-*(Note: `uvloop` is highly recommended for Linux/macOS deployments to maximize socket throughput).*
 
 ## Core Capabilities & API Preview
 
@@ -254,6 +244,15 @@ async def autonomous_agent():
         await fleet_toolkit.execute_tool("fleet_reboot", {"confirmation": True})
 
 ```
+
+### Model Context Protocol (MCP)
+
+The Xovis SDK includes a first-class MCP server, allowing AI agents (like Claude Desktop and Cursor) to directly orchestrate hardware.
+
+**Quick Install with Smithery:**
+[![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk)
+
+Alternatively, install manually: `npx -y smithery install xovis-sdk`
 
 ## Developer Experience & Type Safety (CLI)
 

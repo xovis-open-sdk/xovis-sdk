@@ -12,6 +12,7 @@ import json
 import logging
 
 from xovis.datapush.sinks import XovisSink
+from xovis.datapush.utils import DataPlaneIngestor
 
 logger = logging.getLogger("xovis_sdk")
 
@@ -126,14 +127,10 @@ class XovisTCPServer:
                         frame, index = decoder.raw_decode(buffer)
                         buffer = buffer[index:]
 
-                        if "connection_test" in frame:
-                            logger.debug("Received connection test")
-                            continue
-
                         # Check if the frame actually contains data we care about
                         # Some Xovis frames might be heartbeat/metadata only
                         logger.debug(f"Dispatching frame from {peer}: {list(frame.keys())}")
-                        asyncio.create_task(self._route_to_sinks(frame))
+                        asyncio.create_task(DataPlaneIngestor.route_to_sinks(frame, self.sinks))
 
                     except json.JSONDecodeError:
                         # If we can't decode, it might be partial or truly malformed.
@@ -152,25 +149,3 @@ class XovisTCPServer:
             await writer.wait_closed()
             logger.info(f"Sensor disconnected: {peer}")
 
-    async def _route_to_sinks(self, frame: dict):
-        """
-        Broadcasts a parsed payload to all attached telemetry sinks.
-
-        Args:
-            frame (dict): The parsed JSON frame containing telemetry data.
-        """
-        events = frame.get("events", [])
-        tasks = []
-        for sink in self.sinks:
-            try:
-                tasks.append(sink.on_frame(frame))
-                if events:
-                    tasks.append(sink.on_events(events))
-            except Exception as e:
-                logger.error(f"Sink dispatch error: {e}")
-
-        if tasks:
-            results = await asyncio.gather(*tasks, return_exceptions=True)
-            for res in results:
-                if isinstance(res, Exception):
-                    logger.error(f"Sink execution error: {res}")

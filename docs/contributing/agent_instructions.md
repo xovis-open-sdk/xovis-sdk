@@ -12,9 +12,12 @@ To maintain the high-performance and reliable nature of the SDK, every contribut
 The hot path for ingestion of live tracking telemetry (12.5Hz). Contributions here prioritize throughput and non-blocking execution.
 
 - **Objective**: Zero-blocking ingestion and high-speed data offloading.
-- **Principle - Absolute Throughput**: Use native `asyncio` (enhanced by `uvloop` on Linux/macOS or `ProactorEventLoopPolicy` on Windows).
+- **Principle - Absolute Throughput**: Use native `asyncio` and `orjson` for lock-free deserialization.
 - **Principle - Zero-Copy Handling**: Strictly no Pydantic validation in this path to prevent CPU saturation.
-- **Technical Detail - Protocol Fidelity**: Implements a **Sliding String Buffer** (see Deep-Dives) to handle raw, concatenated JSON streams.
+- **Technical Detail - Unified Ingestor**: Use the `DataPlaneIngestor` utility (in `utils.py`) for parsing and routing. It handles:
+    - **Stream Handling**: `raw_decode` for concatenated TCP streams.
+    - **Packet Handling**: Fast `orjson` parsing for HTTP, UDP, and MQTT.
+    - **Binary Fallback**: Automatic wrapping of non-JSON data into `recording_data` frames.
 
 ### 2. The Control Plane (Configuration Management)
 **Path:** `src/xovis/api/`

@@ -9,6 +9,7 @@ import json
 import logging
 import os
 from enum import Enum
+from pathlib import Path
 from typing import Any, Optional, Union
 
 from pydantic import BaseModel, Field, create_model
@@ -535,8 +536,8 @@ class XovisAIToolkit:
 
     def _apply_user_safety_overrides(self):
         """Loads user overrides from the UI config file."""
-        config_path = ".xovis_ai_privacy.json"
-        if os.path.exists(config_path):
+        config_path = Path(".xovis/ai_privacy.json")
+        if config_path.exists():
             try:
                 with open(config_path) as f:
                     data = json.load(f)

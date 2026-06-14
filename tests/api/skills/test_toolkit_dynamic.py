@@ -155,7 +155,9 @@ async def test_toolkit_specialized_blocking():
 @pytest.mark.asyncio
 async def test_toolkit_user_overrides(tmp_path):
     """Test that toolkit applies user safety overrides from config file."""
-    config_file = tmp_path / ".xovis_ai_privacy.json"
+    config_dir = tmp_path / ".xovis"
+    config_dir.mkdir()
+    config_file = config_dir / "ai_privacy.json"
 
     config_data = {"tool_mappings": [{"tool": "system_get_status", "safety": "BLOCKED"}]}
     config_file.write_text(json.dumps(config_data))
@@ -178,7 +180,7 @@ async def test_toolkit_user_overrides(tmp_path):
         setattr(mock_client, attr, MagicMock(name=attr))
 
     # We need to trick XovisAIToolkit to look at our tmp_path
-    # The code uses a hardcoded path ".Redacted/ai_privacy_config.json"
+    # The code uses a hardcoded path ".xovis/ai_privacy.json"
     # We can temporarily patch the path or change the working directory
 
     old_cwd = os.getcwd()

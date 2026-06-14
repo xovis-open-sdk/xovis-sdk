@@ -101,7 +101,7 @@ class AIPrivacyScreen(Screen):
 
     def _get_config_path(self) -> Path:
         """Returns the path to the privacy configuration file."""
-        return Path(".Redacted/ai_privacy.json")
+        return Path(".xovis/ai_privacy.json")
 
     def _save_config(self) -> None:
         """Serializes the current UI state to disk."""

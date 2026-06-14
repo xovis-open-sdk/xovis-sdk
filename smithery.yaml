@@ -1,0 +1,31 @@
+# Xovis SDK - MCP Server Configuration for Smithery
+# High-performance hardware orchestration bridge
+
+startCommand:
+  type: stdio
+  # This relies on the [project.scripts] defined in pyproject.toml
+  command: xovis-mcp
+  args: []
+  env:
+    # CORE: Connectivity to Xovis Sensor (Device Plane)
+    XOVIS_MCP_HOST: "127.0.0.1"
+    XOVIS_MCP_USER: "admin"
+    XOVIS_MCP_PASS: "password"
+    
+    # ADVANCED: Connectivity to Xovis HUB (State & Topology Plane)
+    # If these are set, they take precedence over Device Plane variables.
+    XOVIS_HUB_CLIENT_ID: ""
+    XOVIS_HUB_CLIENT_SECRET: ""
+
+# Metadata for AI/Agentic Layer discovery
+name: xovis-mcp
+description: Enterprise-grade MCP server for Xovis 3D Sensors, Spiders and HUB orchestration.
+version: 1.0.0a1
+author: Xovis Open SDK Team <xovis.sdk@proton.me>
+homepage: https://xovis-open-sdk.github.io/xovis-sdk/
+
+# Quadrifurcated Architecture Compliance: Agentic Layer
+capabilities:
+  tools: true
+  resources: true
+  prompts: true

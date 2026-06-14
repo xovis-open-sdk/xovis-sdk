@@ -1,5 +1,13 @@
 # Model Context Protocol (MCP)
 
+<div align="center">
+
+| **Status** | **Discovery** | **Installation** |
+|:---:|:---:|:---:|
+| [![Smithery](https://img.shields.io/badge/Smithery-Verified-brightgreen.svg)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
+
+</div>
+
 The `xovis.mcp` module is the standardized bridge for **Autonomous Desktop Agents**. It implements the Anthropic Model Context Protocol (MCP), allowing AI-native IDEs and desktop applications to orchestrate Xovis hardware natively via standard I/O.
 
 ## Architectural Intent

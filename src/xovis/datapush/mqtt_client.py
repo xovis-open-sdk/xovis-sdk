@@ -7,7 +7,6 @@ dispatch them to attached sinks while natively handling network backpressure.
 """
 
 import asyncio
-import json
 import logging
 import ssl
 from typing import Optional
@@ -15,6 +14,7 @@ from typing import Optional
 import aiomqtt
 
 from xovis.datapush.sinks import XovisSink
+from xovis.datapush.utils import DataPlaneIngestor
 
 logger = logging.getLogger("xovis_sdk.mqtt")
 
@@ -99,18 +99,9 @@ class XovisMQTTClient:
                         break
 
                     try:
-                        payload = message.payload.decode("utf-8")
-                        frame = json.loads(payload)
+                        frame = DataPlaneIngestor.parse_frame(message.payload)
+                        asyncio.create_task(DataPlaneIngestor.route_to_sinks(frame, self.sinks))
 
-                        # Intercept Connection Tests to prevent Sink crashes
-                        if "connection_test" in frame:
-                            logger.debug("Received connection test payload via MQTT")
-                            continue
-
-                        asyncio.create_task(self._route_to_sinks(frame))
-
-                    except json.JSONDecodeError:
-                        logger.error("Received malformed JSON over MQTT")
                     except Exception as e:
                         logger.error(f"Error processing MQTT message: {e}")
 
@@ -125,18 +116,3 @@ class XovisMQTTClient:
         """Terminates the active connection loop."""
         self._running = False
 
-    async def _route_to_sinks(self, frame: dict) -> None:
-        """
-        Broadcasts the parsed payload to all attached telemetry sinks.
-
-        Args:
-            frame (dict): The parsed JSON frame containing telemetry data.
-        """
-        events = frame.get("events", [])
-        tasks = []
-        for sink in self.sinks:
-            tasks.append(sink.on_frame(frame))
-            if events:
-                tasks.append(sink.on_events(events))
-        if tasks:
-            await asyncio.gather(*tasks, return_exceptions=True)

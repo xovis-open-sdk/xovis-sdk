@@ -14,6 +14,7 @@ import orjson
 from aiohttp import web
 
 from xovis.datapush.sinks import XovisSink
+from xovis.datapush.utils import DataPlaneIngestor
 
 logger = logging.getLogger("xovis_sdk.http")
 
@@ -120,25 +121,13 @@ class XovisHTTPServer:
             if not body_bytes:
                 return web.Response(status=200, text="OK")
 
-            try:
-                frame_data = orjson.loads(body_bytes)
-            except (orjson.JSONDecodeError, getattr(orjson, "JSONDecodeError", type(None))):
-                # If JSON fails, check if this might be a binary recording push
-                # We still want to notify sinks about the raw data
-                logger.debug(f"Received non-JSON payload of {len(body_bytes)} bytes")
-                # We wrap it in a pseudo-frame for the sink matrix
-                frame_data = {"recording_data": body_bytes}
+            frame_data = DataPlaneIngestor.parse_frame(body_bytes)
 
             # Support firmware batching (Logics payloads are sometimes arrays)
             frames = frame_data if isinstance(frame_data, list) else [frame_data]
 
             for frame in frames:
-                logger.debug(f"Received frame structure: {list(frame.keys())}")
-                if "connection_test" in frame:
-                    logger.debug("Received connection test")
-                    continue  # CRITICAL FIX: Do not return here, process the rest of the batch!
-
-                asyncio.create_task(self._route_to_sinks(frame))
+                asyncio.create_task(DataPlaneIngestor.route_to_sinks(frame, self.sinks))
 
             return web.Response(status=200, text="OK")
 
@@ -146,25 +135,3 @@ class XovisHTTPServer:
             logger.error(f"HTTP stream error: {e}")
             return web.Response(status=500, text="Internal Server Error")
 
-    async def _route_to_sinks(self, frame: dict):
-        """
-        Broadcasts a parsed payload to all attached telemetry sinks.
-
-        Args:
-            frame (dict): The parsed JSON frame containing telemetry data.
-        """
-        events = frame.get("events", [])
-        tasks = []
-        for sink in self.sinks:
-            try:
-                tasks.append(sink.on_frame(frame))
-                if events:
-                    tasks.append(sink.on_events(events))
-            except Exception as e:
-                logger.error(f"Sink dispatch error: {e}")
-
-        if tasks:
-            results = await asyncio.gather(*tasks, return_exceptions=True)
-            for res in results:
-                if isinstance(res, Exception):
-                    logger.error(f"Sink execution error: {res}")

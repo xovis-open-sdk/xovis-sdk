@@ -7,11 +7,11 @@ of discrete JSON packets, residing strictly within the Data Plane.
 """
 
 import asyncio
-import json
 import logging
 from typing import Optional
 
 from xovis.datapush.sinks import XovisSink
+from xovis.datapush.utils import DataPlaneIngestor
 
 logger = logging.getLogger("xovis_sdk.udp")
 
@@ -73,43 +73,14 @@ class XovisUDPProtocol(asyncio.DatagramProtocol):
                 pass
 
         try:
-            body = data.decode("utf-8", errors="ignore")
-            logger.debug(f"Received UDP datagram from {addr}: {body}")
-            frame = json.loads(body)
+            logger.debug(f"Received UDP datagram from {addr}: {len(data)} bytes")
+            frame = DataPlaneIngestor.parse_frame(data)
 
-            if "connection_test" in frame:
-                logger.debug("Received connection test")
-                return
+            asyncio.create_task(DataPlaneIngestor.route_to_sinks(frame, self.sinks))
 
-            asyncio.create_task(self._route_to_sinks(frame))
-
-        except json.JSONDecodeError as e:
-            logger.error(f"Malformed UDP JSON received from {addr}: {e}")
         except Exception as e:
             logger.error(f"UDP stream error from {addr}: {e}")
 
-    async def _route_to_sinks(self, frame: dict):
-        """
-        Broadcasts the parsed payload to all attached sinks.
-
-        Args:
-            frame (dict): The parsed JSON frame containing telemetry data.
-        """
-        events = frame.get("events", [])
-        tasks = []
-        for sink in self.sinks:
-            try:
-                tasks.append(sink.on_frame(frame))
-                if events:
-                    tasks.append(sink.on_events(events))
-            except Exception as e:
-                logger.error(f"Sink dispatch error: {e}")
-
-        if tasks:
-            results = await asyncio.gather(*tasks, return_exceptions=True)
-            for res in results:
-                if isinstance(res, Exception):
-                    logger.error(f"Sink execution error: {res}")
 
 
 class XovisUDPServer:

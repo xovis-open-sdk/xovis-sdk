@@ -10,11 +10,15 @@ To handle 12.5Hz DataPushes without destabilizing, while simultaneously orchestr
 
 ### 1. The Data Plane (High-Frequency Telemetry Ingestion)
 
-**Path:** `src/xovis/streams/`
-The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, and UDP DataPush streams.
+**Path:** `src/xovis/datapush/`
+The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, UDP, and MQTT DataPush streams.
 
-* **Core Engine:** Pure native asyncio (`asyncio.start_server`, `asyncio.DatagramProtocol`) enhanced by `uvloop` (where available) or `WindowsProactorEventLoopPolicy`.
-* **Parsing Strategy:** Uses a sliding string buffer with `json.JSONDecoder().raw_decode()` to slice frames out of raw concatenated JSON streams. Do NOT use `orjson` for frame extraction.
+* **Core Engine:** Pure native asyncio (`asyncio.start_server`, `asyncio.DatagramProtocol`) and `orjson` for lock-free deserialization.
+* **Unified Ingestion:** Leverages the `DataPlaneIngestor` to standardize processing across all transport layers.
+* **Parsing Strategy:** 
+    - **TCP Streams**: Uses a sliding string buffer with `json.JSONDecoder().raw_decode()` to slice frames out of raw concatenated JSON streams.
+    - **Discrete Packets**: Uses `orjson.loads()` for HTTP, UDP, and MQTT to minimize CPU overhead.
+* **Binary Fallback**: Automatically wraps non-JSON payloads (e.g. recordings) in a `recording_data` pseudo-frame.
 * **Data Packing:** STRICTLY NO Pydantic validation is allowed in this hot path.
 * **Network I/O:** Telemetry frames are delivered to sinks in real-time. Efficient batching and lock-free archiving are enforced.
 

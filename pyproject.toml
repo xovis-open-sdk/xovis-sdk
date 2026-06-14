@@ -12,28 +12,57 @@ authors = [
     { name = "Xovis Open SDK Team", email = "xovis.sdk@proton.me" },
 ]
 license = { text = "MIT" }
+
+# SEO & PyPI Discovery
+keywords = ["xovis", "people-counting", "people-tracking", "stereoscopic", "iot", "mcp", "ai", "edge-computing"]
+
+# PyPI Badges and Metadata
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+# CORE DEPENDENCIES (Lightning fast, zero AI bloat)
 dependencies = [
     "httpx>=0.28.0",
     "aiomqtt>=2.0.0",
     "pydantic>=2.10.0",
     "orjson>=3.10.0",
     "tenacity>=9.0.0",
-    "mcp>=1.2.0",
-    "aiohttp>=3.9.0",
 ]
 
 [project.urls]
+Homepage = "https://xovis-open-sdk.github.io/xovis-sdk/"
 Documentation = "https://xovis-open-sdk.github.io/xovis-sdk/"
 Repository = "https://github.com/xovis-open-sdk/xovis-sdk"
+"Bug Tracker" = "https://github.com/xovis-open-sdk/xovis-sdk/issues"
+
 
 [project.optional-dependencies]
-test = [
-    "pytest>=8.3.0",
-    "pytest-asyncio>=0.24.0",
-    "respx>=0.22.0",
-    "ruff",
-    "datamodel-code-generator>=0.26.0",
+# --- AGENTIC & AI FIREWALL ---
+langchain = [
+    "langchain-core>=0.1.0",
 ]
+crewai = [
+    "crewai>=0.11.0",
+]
+mcp = [
+    "mcp>=1.2.0",
+    "aiohttp>=3.9.0",
+]
+# Meta-group for data scientists who want everything
+ai = ["xovis-sdk[langchain,crewai,mcp]"]
+
+# --- INFRASTRUCTURE & UI ---
 tui = [
     "textual>=0.50.0",
     "questionary>=2.0.0",
@@ -45,21 +74,28 @@ uvloop = [
     "uvloop>=0.19.0; sys_platform != 'win32'",
 ]
 
-ai = [
-    "langchain-core>=0.1.0",
-    "crewai>=0.11.0"
+# --- DEVELOPMENT ---
+test = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "respx>=0.22.0",
+    "ruff",
+    "datamodel-code-generator>=0.26.0",
 ]
-
 docs = [
     "mkdocs-material>=9.5.0",
     "mkdocstrings[python]>=0.24.0",
     "mkdocs-mermaid2-plugin>=0.6.0",
     "mkdocs-static-i18n>=1.2.0",
 ]
+# Provide an 'all' install for core contributors
+all = ["xovis-sdk[ai,tui,windows-sso,uvloop,test,docs]"]
+
 
 [project.scripts]
 xovis-cli = "xovis.cli:main"
 xovis-mcp = "xovis.mcp.server:main"
+
 
 [tool.ruff]
 line-length = 150
@@ -79,7 +115,7 @@ ignore-paths = ["src/xovis/models/.*_auto\\.py"]
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = [
-    "C0114", # Missing module docstring (we use check-docs for this)
+    "C0114", # Missing module docstring
     "C0115", # Missing class docstring
     "C0116", # Missing function docstring
     "R0903", # Too few public methods

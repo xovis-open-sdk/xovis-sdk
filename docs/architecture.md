@@ -2,6 +2,9 @@
 
 The `xovis-sdk` is strictly **quadrifurcated** into four distinct planes. This decoupling ensures high-frequency telemetry remains unblocked by slow control operations, while fleet-wide state is managed independently of the hardware's physical lens topology.
 
+!!! info "Xovis HUB Pro"
+    Operating the SDK on the Cloud HUB free tier may result in rate limit exhaustion during bulk operations. A **Xovis HUB Pro** subscription is suggested for production environments.
+
 ### System Data Flow
 
 ```mermaid
@@ -72,11 +75,14 @@ graph TB
 The engine designed for ultra-high-frequency (12.5Hz) ingestion of live tracking telemetry from physical sensors.
 
 - **Objective**: Zero-copy, maximum throughput, non-blocking ingestion.
-- **Engine**: Pure native `asyncio` enhanced by `uvloop` (Linux/macOS) or `ProactorEventLoopPolicy` (Windows).
-- **Protocol Fidelity**: Optimized to handle raw, concatenated JSON streams directly from the hardware via a **Sliding String Buffer**.
+- **Engine**: Pure native `asyncio` enhanced by `orjson` for high-performance JSON deserialization.
+- **Protocol Fidelity**: Unified ingestion strategy across HTTP, UDP, TCP, and MQTT.
+    - **Stream Handling**: Optimized to handle raw, concatenated JSON streams (TCP) via a **Sliding String Buffer** and `json.JSONDecoder().raw_decode()`.
+    - **Packet Handling**: Uses `orjson` for discrete packet ingestion (HTTP, UDP, MQTT) to minimize CPU overhead.
 - **Key Features**:
     - **High Throughput**: Telemetry is instantly offloaded to `XovisSink` protocols.
-    - **URI Integrity**: Hardware-native routing for maximum compatibility with edge devices.
+    - **Binary Fallback**: Automatically wraps non-JSON payloads (e.g., binary recordings) into a standardized `recording_data` frame.
+    - **Connection Filtering**: Centralized logic to intercept and ignore sensor heartbeat/connection tests before they reach sinks.
 
 ### 2. The Control Plane (Configuration Management)
 **Module:** `src/xovis/api/`

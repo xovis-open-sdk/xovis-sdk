@@ -12,6 +12,7 @@ import json
 import logging
 
 from xovis.datapush.sinks import XovisSink
+from xovis.datapush.utils import DataPlaneIngestor
 
 logger = logging.getLogger("xovis_sdk.tcp_client")
 
@@ -113,12 +114,7 @@ class XovisTCPClient:
                         frame, index = decoder.raw_decode(buffer)
                         buffer = buffer[index:]
 
-                        # Intercept Connection Tests to prevent Sink crashes
-                        if "connection_test" in frame:
-                            logger.debug(f"Received connection test from {self.host}")
-                            continue
-
-                        asyncio.create_task(self._route_to_sinks(frame))
+                        asyncio.create_task(DataPlaneIngestor.route_to_sinks(frame, self.sinks))
 
                     except json.JSONDecodeError:
                         if not buffer.startswith(("{", "[")):
@@ -131,18 +127,3 @@ class XovisTCPClient:
             await writer.wait_closed()
             logger.info(f"Disconnected from {self.host}:{self.port}")
 
-    async def _route_to_sinks(self, frame: dict) -> None:
-        """
-        Broadcasts the parsed payload to all attached telemetry sinks.
-
-        Args:
-            frame (dict): The parsed JSON frame containing telemetry data.
-        """
-        events = frame.get("events", [])
-        tasks = []
-        for sink in self.sinks:
-            tasks.append(sink.on_frame(frame))
-            if events:
-                tasks.append(sink.on_events(events))
-        if tasks:
-            await asyncio.gather(*tasks, return_exceptions=True)
