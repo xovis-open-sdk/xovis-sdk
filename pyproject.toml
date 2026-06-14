@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "xovis-sdk"
-version = "1.0.0a4"
+version = "1.0.0a5"
 description = "Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -147,3 +147,4 @@ asyncio_default_fixture_loop_scope = "function"
 markers = [
     "destructive: tests that modify hardware state",
 ]
+

@@ -1,6 +1,6 @@
 {
   "name": "xovis-sdk",
-  "version": "1.0.0a4",
+  "version": "1.0.0a5",
   "description": "Unofficial Xovis Hardware integration for In-Store Analytics, People Flow, and Data Warehousing via MCP.",
   "keywords": [
     "xovis",
@@ -29,3 +29,4 @@
     "smithery:publish": "npx @smithery/cli@latest mcp publish . -n @xovis-sdk/xovis-mcp"
   }
 }
+
