@@ -1,4 +1,4 @@
-name: Publish to PyPI and NPM
+name: Publish to PyPI, NPM, and Smithery
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
 
 jobs:
   publish:
-    name: Upload release to PyPI and NPM
+    name: Upload release to PyPI, NPM, and Smithery
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'xovis-open-sdk'
-    environment: pypi
+    if: github.repository_owner == 'xovis-open-sdk' # Strict security guard to protect tenant execution
+    environment: pypi # Bound environment for trusted cryptographic identity tokens
     permissions:
       id-token: write
       contents: read
@@ -50,7 +50,20 @@ jobs:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Install Node Dependencies
+        run: npm ci || npm install
+
       - name: Publish to NPM (with Provenance)
-        # The --provenance flag tells NPM to use the OIDC id-token
-        # instead of looking for a traditional NPM_TOKEN secret.
+        # The --provenance flag leverages the OIDC id-token write scope
+        # establishing an immutable build lineage chain back to this runner.
         run: npm publish --provenance --access public
+
+      # ==========================================
+      # 3. SMITHERY MCP REGISTRY PUBLISH
+      # ==========================================
+      - name: Publish to Smithery MCP Registry
+        # Dispatches the unified compilation payload to the Smithery indexing plane.
+        # This securely bridges our layer translations directly onto their consumer routing catalog.
+        run: npm run smithery:publish
+        env:
+          SMITHERY_API_KEY: ${{ secrets.SMITHERY_API_KEY }}
