@@ -26,7 +26,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "sync-docs": "python scripts/sync_project_structure.py",
     "smithery:login": "npx @smithery/cli@latest login",
-    "smithery:publish": "npx @smithery/cli@latest mcp publish . -n @xovis-sdk/xovis-mcp"
+    "smithery:publish": "npx @smithery/cli@latest mcp publish https://github.com/xovis-open-sdk/xovis-sdk -n @xovis-sdk/xovis-mcp"
   }
 }
 
