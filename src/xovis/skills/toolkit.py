@@ -77,22 +77,22 @@ class GetTopologyGraphArgs(BaseModel):
 
 
 class RebootDeviceArgs(BaseModel):
-    confirmation: bool = Field(default=False)
-    delay_seconds: Optional[int] = Field(default=0)
+    confirmation: bool = Field(default=False, description="Require True for RESTRICTED/CRITICAL tools.")
+    delay_seconds: Optional[int] = Field(default=0, description="Optional delay before rebooting.")
 
 
 class FactoryResetArgs(BaseModel):
-    confirmation: bool = Field(...)
+    confirmation: bool = Field(..., description="Require True for RESTRICTED/CRITICAL tools.")
 
 
 class UpdateNetworkArgs(BaseModel):
-    confirmation: bool = Field(...)
-    hostname: Optional[str] = Field(None)
-    dhcp: Optional[bool] = Field(None)
+    confirmation: bool = Field(..., description="Require True for RESTRICTED/CRITICAL tools.")
+    hostname: Optional[str] = Field(None, description="Optional hostname to update.")
+    dhcp: Optional[bool] = Field(None, description="Optional boolean to enable/disable DHCP.")
 
 
 class FleetRebootArgs(BaseModel):
-    confirmation: bool = Field(...)
+    confirmation: bool = Field(..., description="Require True for RESTRICTED/CRITICAL tools.")
 
 
 class GetFleetSummaryArgs(BaseModel):

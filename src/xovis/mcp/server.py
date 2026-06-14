@@ -125,7 +125,7 @@ async def handle_list_tools() -> list[Tool]:
         raw_schema = tool["args_model"].model_json_schema()
         normalized_schema = _normalize_schema(raw_schema)
 
-        mcp_name = tool["name"].replace("_", ".", 1)
+        mcp_name = f"xovis.{tool['name'].replace('_', '.', 1)}"
 
         mcp_tools.append(
             Tool(
@@ -162,6 +162,8 @@ async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Seque
     args = arguments or {}
     client = _get_active_client_context()
 
+    if name.startswith("xovis."):
+        name = name[6:]
     original_name = name.replace(".", "_", 1)
 
     try:
