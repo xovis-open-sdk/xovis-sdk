@@ -853,7 +853,7 @@
   <span class="md-ellipsis">
     
   
-    Streams
+    DataPush
   
 
     
@@ -1648,16 +1648,16 @@
 <h1 id="engineering-guidelines">Engineering Guidelines</h1>
 <p>This document defines the architectural principles, boundaries, and technical rules for the <code>xovis-sdk</code>. It serves as a deep-dive reference for engineers and agents building or extending the SDK's core capabilities.</p>
 <h2 id="core-philosophy-the-quadrifurcated-architecture">Core Philosophy: The Quadrifurcated Architecture</h2>
-<p>To handle 12.5Hz DataPushes without destabilizing, while simultaneously orchestrating complex multisensor graph topologies and cloud fleets, the <code>xovis-sdk</code> architecture is strictly quadrifurcated into four distinct operational planes. <strong>Never mix the design patterns of these planes.</strong></p>
+<p>To handle 12.5Hz Live-Push DataPushes without destabilizing, while simultaneously orchestrating complex multisensor graph topologies and cloud fleets, the <code>xovis-sdk</code> architecture is strictly quadrifurcated into four distinct operational planes. <strong>Never mix the design patterns of these planes.</strong></p>
 <hr />
 <h3 id="1-the-data-plane-high-frequency-telemetry-ingestion">1. The Data Plane (High-Frequency Telemetry Ingestion)</h3>
 <p><strong>Path:</strong> <code>src/xovis/datapush/</code>
-The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, UDP, and MQTT DataPush streams.</p>
+The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, UDP, and MQTT DataPush ingestion.</p>
 <ul>
 <li><strong>Core Engine:</strong> Pure native asyncio (<code>asyncio.start_server</code>, <code>asyncio.DatagramProtocol</code>) and <code>orjson</code> for lock-free deserialization.</li>
 <li><strong>Unified Ingestion:</strong> Leverages the <code>DataPlaneIngestor</code> to standardize processing across all transport layers.</li>
 <li><strong>Parsing Strategy:</strong> <ul>
-<li><strong>TCP Streams</strong>: Uses a sliding string buffer with <code>json.JSONDecoder().raw_decode()</code> to slice frames out of raw concatenated JSON streams.</li>
+<li><strong>TCP Data</strong>: Uses a sliding string buffer with <code>json.JSONDecoder().raw_decode()</code> to slice frames out of raw concatenated JSON data.</li>
 <li><strong>Discrete Packets</strong>: Uses <code>orjson.loads()</code> for HTTP, UDP, and MQTT to minimize CPU overhead.</li>
 </ul>
 </li>

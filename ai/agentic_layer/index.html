@@ -853,7 +853,7 @@
   <span class="md-ellipsis">
     
   
-    Streams
+    DataPush
   
 
     
@@ -1792,19 +1792,43 @@
 
 
 <h1 id="agentic-layer-skills">Agentic Layer (Skills)</h1>
-<div align="center">
-
-| **Status** | **Discovery** | **Installation** |
-| :---: | :---: | :---: |
-| [![Smithery](https://img.shields.io/badge/Smithery-Verified-brightgreen.svg)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
-
-| **Compatibility** | **Frameworks** | **Optimized For** |
-| :---: | :---: | :---: |
-| [![OpenAI Compatible](https://img.shields.io/badge/OpenAI-Compatible-412991.svg?logo=openai&logoColor=white)](https://openai.com/) | [![LangGraph Ready](https://img.shields.io/badge/LangGraph-Ready-1C3C3C.svg?logo=langchain&logoColor=white)](https://langchain.com/) | [![Cursor Optimized](https://img.shields.io/badge/Cursor-Optimized-000000.svg?logo=python&logoColor=white)](https://cursor.sh/) |
-| [![Anthropic Compatible](https://img.shields.io/badge/Anthropic-Compatible-D2B8A3.svg?logo=anthropic&logoColor=black)](https://www.anthropic.com/) | [![CrewAI Ready](https://img.shields.io/badge/CrewAI-Ready-FF4B4B.svg?logo=google-cloud&logoColor=white)](https://crewai.com/) | |
-
-</div>
-
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Status</strong></th>
+<th style="text-align: center;"><strong>Discovery</strong></th>
+<th style="text-align: center;"><strong>Installation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://smithery.ai/server/xovis-sdk"><img alt="Smithery: Verified" src="https://img.shields.io/badge/Smithery-Placeholder-orange" /></a></td>
+<td style="text-align: center;"><a href="https://modelcontextprotocol.io/"><img alt="MCP Ready" src="https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&amp;logoColor=white" /></a></td>
+<td style="text-align: center;"><a href="https://smithery.ai/server/xovis-sdk"><img alt="Smithery: Install" src="https://img.shields.io/badge/Smithery-Install--Pending-white" /></a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Compatibility</strong></th>
+<th style="text-align: center;"><strong>Frameworks</strong></th>
+<th style="text-align: center;"><strong>Optimized For</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://openai.com/"><img alt="OpenAI Compatible" src="https://img.shields.io/badge/OpenAI-Compatible-412991.svg?logo=openai&amp;logoColor=white" /></a></td>
+<td style="text-align: center;"><a href="https://langchain.com/"><img alt="LangGraph Ready" src="https://img.shields.io/badge/LangGraph-Ready-1C3C3C.svg?logo=langchain&amp;logoColor=white" /></a></td>
+<td style="text-align: center;"><a href="https://cursor.sh/"><img alt="Cursor Optimized" src="https://img.shields.io/badge/Cursor-Optimized-000000.svg?logo=python&amp;logoColor=white" /></a></td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.anthropic.com/"><img alt="Anthropic Compatible" src="https://img.shields.io/badge/Anthropic-Compatible-D2B8A3.svg?logo=anthropic&amp;logoColor=black" /></a></td>
+<td style="text-align: center;"><a href="https://crewai.com/"><img alt="CrewAI Ready" src="https://img.shields.io/badge/CrewAI-Ready-FF4B4B.svg?logo=google-cloud&amp;logoColor=white" /></a></td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
 <p>The <code>xovis.skills</code> module is the definitive <strong>Agentic Layer</strong> of the Xovis SDK. It modernizes hardware orchestration by transforming physical edge sensors and Cloud HUB fleet operations into standardized, strictly validated toolsets for Large Language Models (LLMs) and autonomous agent frameworks.</p>
 <div class="admonition info">
 <p class="admonition-title">Advanced Integration</p>
@@ -1830,7 +1854,7 @@
 <li><strong>Callable Primitives</strong>: Exports direct references to async functions and their validation models for <strong>LangGraph</strong>, <strong>CrewAI</strong>, and <strong>Cursor/Windsurf</strong>.</li>
 </ul>
 <h3 id="2-xovisagentmemory-state-observation">2. XovisAgentMemory (State Observation)</h3>
-<p>Autonomous agents require environmental context without the 12.5Hz network overhead. By wrapping the <code>HostStateBucket</code>, this plane allows for the injection of minified, JSON-serialized hardware "memories" directly into the System Prompt.</p>
+<p>Autonomous agents require environmental context without the high-frequency Live-Push overhead. By wrapping the <code>HostStateBucket</code>, this plane allows for the injection of minified, JSON-serialized hardware "memories" directly into the System Prompt.</p>
 <h3 id="3-xovisfleettoolkit-distributed-management">3. XovisFleetToolkit (Distributed Management)</h3>
 <p>A specialized orchestrator for <code>HubClient</code> contexts. It exposes high-impact tools such as <code>fleet_reboot</code> and <code>get_fleet_summary</code>, enabling an agent to supervise entire global deployments with fault isolation.</p>
 <h3 id="4-langchain-multi-agent-adapters">4. LangChain &amp; Multi-Agent Adapters</h3>
@@ -1891,7 +1915,11 @@ Figure: AI Tool Safety configuration in the Xovis Open SDK Mission Control.</p>
 <li><strong>OPEN</strong>: Read-only observation tools (e.g., <code>get_system_info</code>, <code>get_topology_graph</code>, <code>aggregate_geometries</code>).</li>
 <li><strong>RESTRICTED</strong>: Operations causing temporary disruption (e.g., <code>reboot_device</code>, <code>delete_all_geometries</code>). Enforces a warning and programmatic delay.</li>
 <li><strong>CRITICAL</strong>: Destructive operations (e.g., <code>factory_reset</code>, <code>update_network_settings</code>, <code>clear_sensor_db</code>). Requires explicit Human-in-the-Loop (HITL) confirmation.</li>
-<li><strong>BLOCKED</strong>: Hardcoded forbidden endpoints (e.g., <code>flash_format</code>, <code>reboot_rescue</code>) to prevent hardware damage.</li>
+<li><strong>BLOCKED</strong>: Hardcoded forbidden endpoints (e.g., <code>flash_format</code>, <code>reboot_rescue</code>) to prevent hardware damage.
+eboot_rescue) to prevent hardware damage.
+eboot_rescue) to prevent hardware damage.
+eboot_rescue) to prevent hardware damage.
+eboot_rescue) to prevent hardware damage.</li>
 </ul>
 </li>
 <li><strong>Enterprise Safety Policy</strong>: Implements hardcoded overrides for high-risk operations, ensuring safety logic is robust against dynamic discovery heuristics.</li>
@@ -1917,7 +1945,8 @@ Figure: AI Privacy and Tool Safety management screen.</p>
 <li><strong>Dry Run Mode</strong>: Allows for safe agent training by intercepting and simulating hardware-modifying commands.</li>
 </ul>
 <h4 id="ai-scope-fleet-whitelist">AI Scope (Fleet Whitelist)</h4>
-<p>Autonomous agents can be further restricted by whitelisting specific sensors in the <strong>Fleet Explorer</strong>. Using the <code>ctrl+a</code> (Toggle AI Scope) shortcut, you can define exactly which devices are visible and accessible to the AI.</p>
+<p>Autonomous agents can be further restricted by whitelisting specific sensors in the <strong>Fleet Explorer</strong>. Using the <code>ctrl+a</code> (Toggle AI Scope) shortcut, you can define exactly which devices are visible and accessible to the AI. This whitelist serves as a <strong>Security Boundary</strong>, ensuring the agent cannot reason about or interact with hardware outside its authorized scope.</p>
+<p>While this whitelist enforces <strong>Security</strong>, the same interface is used for <strong>Functional</strong> configuration including device discovery, bucket creation, and topology detection. For details on these technical capabilities, see the <a href="../../cli/#ui">Mission Control TUI documentation</a>.</p>
 <p><img alt="Fleet Explorer AI Scope" src="../img/fleet_explorer.png" />
 Figure: Whitelisting devices in the Fleet Explorer.</p>
 <p><img alt="Fleet List" src="../img/fleet_list.png" />

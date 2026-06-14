@@ -853,7 +853,7 @@
   <span class="md-ellipsis">
     
   
-    Streams
+    DataPush
   
 
     
@@ -1641,13 +1641,13 @@
 <p>To maintain the high-performance and reliable nature of the SDK, every contribution must adhere to these four architectural planes. <strong>Never mix the design patterns of these planes.</strong></p>
 <h3 id="1-the-data-plane-high-frequency-telemetry">1. The Data Plane (High-Frequency Telemetry)</h3>
 <p><strong>Path:</strong> <code>src/xovis/datapush/</code></p>
-<p>The hot path for ingestion of live tracking telemetry (12.5Hz). Contributions here prioritize throughput and non-blocking execution.</p>
+<p>The hot path for ingestion of Live-Push tracking telemetry (up to 12.5Hz). Contributions here prioritize throughput and non-blocking execution.</p>
 <ul>
 <li><strong>Objective</strong>: Zero-blocking ingestion and high-speed data offloading.</li>
 <li><strong>Principle - Absolute Throughput</strong>: Use native <code>asyncio</code> and <code>orjson</code> for lock-free deserialization.</li>
 <li><strong>Principle - Zero-Copy Handling</strong>: Strictly no Pydantic validation in this path to prevent CPU saturation.</li>
 <li><strong>Technical Detail - Unified Ingestor</strong>: Use the <code>DataPlaneIngestor</code> utility (in <code>utils.py</code>) for parsing and routing. It handles:<ul>
-<li><strong>Stream Handling</strong>: <code>raw_decode</code> for concatenated TCP streams.</li>
+<li><strong>TCP Data Handling</strong>: <code>raw_decode</code> for concatenated TCP data.</li>
 <li><strong>Packet Handling</strong>: Fast <code>orjson</code> parsing for HTTP, UDP, and MQTT.</li>
 <li><strong>Binary Fallback</strong>: Automatic wrapping of non-JSON data into <code>recording_data</code> frames.</li>
 </ul>

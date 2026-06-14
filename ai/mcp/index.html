@@ -853,7 +853,7 @@
   <span class="md-ellipsis">
     
   
-    Streams
+    DataPush
   
 
     
@@ -1714,14 +1714,22 @@
 
 
 <h1 id="model-context-protocol-mcp">Model Context Protocol (MCP)</h1>
-<div align="center">
-
-| **Status** | **Discovery** | **Installation** |
-|:---:|:---:|:---:|
-| [![Smithery](https://img.shields.io/badge/Smithery-Verified-brightgreen.svg)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
-
-</div>
-
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Status</strong></th>
+<th style="text-align: center;"><strong>Discovery</strong></th>
+<th style="text-align: center;"><strong>Installation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://smithery.ai/server/xovis-sdk"><img alt="Smithery: Verified" src="https://img.shields.io/badge/Smithery-Placeholder-orange" /></a></td>
+<td style="text-align: center;"><a href="https://modelcontextprotocol.io/"><img alt="MCP Ready" src="https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&amp;logoColor=white" /></a></td>
+<td style="text-align: center;"><a href="https://smithery.ai/server/xovis-sdk"><img alt="Smithery: Install" src="https://img.shields.io/badge/Smithery-Install--Pending-white" /></a></td>
+</tr>
+</tbody>
+</table>
 <p>The <code>xovis.mcp</code> module is the standardized bridge for <strong>Autonomous Desktop Agents</strong>. It implements the Anthropic Model Context Protocol (MCP), allowing AI-native IDEs and desktop applications to orchestrate Xovis hardware natively via standard I/O.</p>
 <h2 id="architectural-intent">Architectural Intent</h2>
 <p>The MCP server transforms the Xovis SDK from a library into a <strong>Live Resource Provider</strong>. By exposing the <code>XovisAIToolkit</code> over a JSON-RPC 2.0 boundary, it enables agents like Claude Desktop, Cursor, and Windsurf to "attach" to a local sensor network, query topology, and execute configuration changes without requiring the agent to write and execute its own Python scripts for every interaction.</p>
