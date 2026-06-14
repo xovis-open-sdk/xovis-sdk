@@ -148,4 +148,3 @@ class XovisTCPServer:
             writer.close()
             await writer.wait_closed()
             logger.info(f"Sensor disconnected: {peer}")
-

@@ -45,7 +45,7 @@ class DataPlaneIngestor:
             # If it's already a dict (e.g. from TCP raw_decode), just return it
             if isinstance(data, dict):
                 return data
-            
+
             # Fallback for binary recordings
             logger.debug(f"Received non-JSON payload of {len(data)} bytes")
             return {"recording_data": data if isinstance(data, bytes) else data.encode("utf-8")}

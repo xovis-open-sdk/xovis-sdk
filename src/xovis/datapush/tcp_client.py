@@ -126,4 +126,3 @@ class XovisTCPClient:
             writer.close()
             await writer.wait_closed()
             logger.info(f"Disconnected from {self.host}:{self.port}")
-

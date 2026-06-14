@@ -115,4 +115,3 @@ class XovisMQTTClient:
     async def stop(self) -> None:
         """Terminates the active connection loop."""
         self._running = False
-

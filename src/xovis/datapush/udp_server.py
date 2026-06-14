@@ -82,7 +82,6 @@ class XovisUDPProtocol(asyncio.DatagramProtocol):
             logger.error(f"UDP stream error from {addr}: {e}")
 
 
-
 class XovisUDPServer:
     """
     High-performance UDP Ingestion Engine for Xovis Telemetry.

@@ -134,4 +134,3 @@ class XovisHTTPServer:
         except Exception as e:
             logger.error(f"HTTP stream error: {e}")
             return web.Response(status=500, text="Internal Server Error")
-
