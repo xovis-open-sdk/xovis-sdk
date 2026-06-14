@@ -8,7 +8,7 @@ across all transport layers (HTTP, UDP, TCP, MQTT).
 
 import asyncio
 import logging
-from typing import List, Any, Dict, Union
+from typing import Any, Dict, List, Union
 
 import orjson
 
