@@ -45,7 +45,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Package
-        run: pip install -e ".[test,tui]"
+        run: pip install -e ".[all]"
       - name: Run Non-Destructive Tests
         run: pytest tests/ -m "not destructive"
       - name: Run Destructive Tests (Mocked)

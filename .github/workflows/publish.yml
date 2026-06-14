@@ -24,8 +24,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip build pytest ruff pydantic orjson
-          pip install -e ".[test,tui]"
+          python -m pip install --upgrade pip build
+          pip install -e ".[all]"
 
       - name: Run Quality Check (Lint)
         run: ruff check .
