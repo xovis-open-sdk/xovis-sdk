@@ -238,6 +238,47 @@ class XovisAIToolkit:
 
     def _auto_discover_tools(self):
         """Crawls the SDK using reflection to dynamically generate AI tool schemas."""
+        from typing import get_args, get_origin
+
+        from xovis.models.device_auto import stable_models
+
+        def _resolve_type(annot, manager):
+            from typing import Any
+
+            if isinstance(annot, str):
+                models = getattr(manager, "models", None)
+                if models and hasattr(models, annot):
+                    return getattr(models, annot)
+                if hasattr(stable_models, annot):
+                    return getattr(stable_models, annot)
+                from xovis.models import device as device_models
+
+                if hasattr(device_models, annot):
+                    return getattr(device_models, annot)
+                return Any
+            if hasattr(annot, "__forward_arg__"):
+                arg = annot.__forward_arg__
+                models = getattr(manager, "models", None)
+                if models and hasattr(models, arg):
+                    return getattr(models, arg)
+                if hasattr(stable_models, arg):
+                    return getattr(stable_models, arg)
+                from xovis.models import device as device_models
+
+                if hasattr(device_models, arg):
+                    return getattr(device_models, arg)
+                return Any
+
+            origin = get_origin(annot)
+            if origin is not None:
+                args = get_args(annot)
+                resolved_args = tuple(_resolve_type(arg, manager) for arg in args)
+                try:
+                    return origin[resolved_args]
+                except Exception:
+                    return annot
+            return annot
+
         dummy = self.client if isinstance(self.client, DeviceClient) else DeviceClient("dummy", "admin", "pass")
 
         # Explicitly check for manager existence to avoid failures on incomplete mocks
@@ -427,9 +468,10 @@ class XovisAIToolkit:
                     if param_name in ("self", "cls"):
                         continue
                     annot = param.annotation if param.annotation != inspect.Parameter.empty else Any
+                    resolved_annot = _resolve_type(annot, manager)
                     default = ... if param.default == inspect.Parameter.empty else param.default
                     desc = param_docs.get(param_name, f"Parameter {param_name}")
-                    fields[param_name] = (annot, Field(default, description=desc))
+                    fields[param_name] = (resolved_annot, Field(default, description=desc))
 
                 fields["mac"] = (
                     Optional[str],
