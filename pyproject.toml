@@ -82,6 +82,7 @@ test = [
     "pytest-asyncio>=0.24.0",
     "respx>=0.22.0",
     "ruff",
+    "bandit",
     "datamodel-code-generator>=0.26.0",
 ]
 docs = [

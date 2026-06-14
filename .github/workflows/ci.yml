@@ -77,4 +77,4 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
       - name: Run Bandit Scan
-        run: uv run bandit -r src/ -ll
+        run: uv run --extra test bandit -r src/ -ll
