@@ -66,10 +66,18 @@ async def handle_list_tools() -> list[Tool]:
 
     mcp_tools = []
     for tool in callable_tools:
+        # Synch the SDK safety levels to tool descriptions for Smithery/client awareness
+        config = toolkit._tools_map.get(tool["name"], {})
+        safety_level = config.get("safety_level")
+        
+        description = tool["description"]
+        if safety_level:
+            description = f"[{safety_level.name}] {description}"
+
         mcp_tools.append(
             Tool(
                 name=tool["name"],
-                description=tool["description"],
+                description=description,
                 inputSchema=tool["args_model"].model_json_schema(),
             )
         )
@@ -106,7 +114,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Seque
         return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
 
 
-async def main() -> None:
+async def main_async() -> None:
     """
     Initializes the standard I/O datapush and boots the MCP server lifecycle.
     """
@@ -125,5 +133,13 @@ async def main() -> None:
         )
 
 
+def main() -> None:
+    """
+    Synchronous entry point for console_scripts.
+    """
+    import asyncio
+    asyncio.run(main_async())
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
