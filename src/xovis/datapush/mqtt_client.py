@@ -100,6 +100,13 @@ class XovisMQTTClient:
 
                     try:
                         frame = DataPlaneIngestor.parse_frame(message.payload)
+                        # Filter out non-JSON frames (binary recordings) for MQTT
+                        # unless they are explicitly identified as such.
+                        # MQTT usually expects structured JSON for telemetry.
+                        if "recording_data" in frame and len(frame) == 1:
+                            logger.debug("Ignoring non-JSON MQTT payload")
+                            continue
+
                         asyncio.create_task(DataPlaneIngestor.route_to_sinks(frame, self.sinks))
 
                     except Exception as e:
