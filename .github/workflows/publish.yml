@@ -27,7 +27,7 @@ jobs:
         run: uv python install 3.11
 
       - name: Run Quality Check (Lint)
-        run: uv run ruff check .
+        run: uv run --extra test ruff check .
 
       - name: Run Quality Check (Tests)
         run: uv run --extra all pytest tests/ -m "not destructive"

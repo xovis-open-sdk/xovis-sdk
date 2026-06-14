@@ -21,9 +21,9 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
       - name: Run Ruff Check
-        run: uv run ruff check .
+        run: uv run --extra test ruff check .
       - name: Run Ruff Format Check
-        run: uv run ruff format --check .
+        run: uv run --extra test ruff format --check .
 
   test:
     name: Test (Python ${{ matrix.python-version }})
