@@ -73,4 +73,5 @@ async def test_history_manager_relative_time_integration() -> None:
             # end_val should be roughly now
             assert end_val > 0
             # begin_val should be roughly 1 hour before end_val
-            assert (end_val - begin_val) == 3600000
+            # Use a small tolerance for time.time() calls between 'begin' and 'end' normalization
+            assert abs((end_val - begin_val) - 3600000) <= 10
