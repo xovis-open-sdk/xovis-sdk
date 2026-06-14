@@ -20,7 +20,7 @@ startCommand:
 # Metadata for AI/Agentic Layer discovery
 name: xovis-mcp
 description: Enterprise-grade MCP server for Xovis 3D Sensors, Spiders and HUB orchestration.
-version: 1.0.0a1
+version: 1.0.0a2
 author: Xovis Open SDK Team <xovis.sdk@proton.me>
 homepage: https://xovis-open-sdk.github.io/xovis-sdk/
 

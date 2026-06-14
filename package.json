@@ -1,6 +1,6 @@
 {
   "name": "xovis-sdk",
-  "version": "1.0.0-rc1",
+  "version": "1.0.0-alpha.2",
   "description": "Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB.",
   "keywords": [
     "xovis",

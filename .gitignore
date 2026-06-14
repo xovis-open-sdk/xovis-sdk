@@ -8,6 +8,7 @@ ENV/
 
 # === Xovis SDK Generated State ===
 device_state_export.json
+package.json
 *.state.json
 src/xovis/device_state.json
 src/xovis/models/xovis_types.py
