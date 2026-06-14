@@ -81,9 +81,6 @@ Figure: AI Tool Safety configuration in the Xovis Open SDK Mission Control.
 *   **AI Privacy Engine**: A stateful, two-way pseudonymization system via `AIPrivacySession`. It replaces sensitive identifiers (MAC addresses, Customer names) with session-bound hashes (e.g., `Id_a1b2c3d4`). The AI only ever sees and interacts with these hashes, and the toolkit "restores" the real values only at the moment of execution. This ensures zero-trust data handling.
 *   **Adaptive Pacing**: Intra-context aggregation loops automatically inject delays (1.0s for Cloud, 0.2s for LAN) to prevent Cloud HUB WAF triggers and sensor OOM crashes. Aggregation loops iterating over `active_contexts` via a `HubClient` MUST include an `asyncio.sleep(1.0)` delay after each request.
 
-![Datapush Studio](img/push_studio.png)
-Figure: Validating Data Plane telemetry via the Datapush Studio.
-
 *   **AI Safety TUI**: Users can configure granular field-level privacy (HASH/BLOCK/ALLOW) and persistent tool-to-safety mappings via the built-in management screen.
 
 ![AI Privacy Settings](img/ai_privacy.png)
