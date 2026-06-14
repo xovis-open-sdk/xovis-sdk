@@ -1,7 +1,7 @@
 name: xovis-mcp
 displayName: Xovis SDK MCP Server
 description: Unofficial Xovis Hardware integration for In-Store Analytics, People Flow, and Data Warehousing via MCP.
-version: 1.0.0a3
+version: 1.0.0a4
 category: Data
 
 startCommand:
@@ -34,7 +34,7 @@ startCommand:
     (config) => ({
       command: 'uvx',
       args: [
-        '--from', 'xovis-sdk==1.0.0a3',
+        '--from', 'xovis-sdk==1.0.0a4',
         'xovis-cli', 'mcp'
       ],
       env: {
@@ -45,3 +45,4 @@ startCommand:
         XOVIS_MCP_PASS: config.XOVIS_MCP_PASS || ""
       }
     })
+
