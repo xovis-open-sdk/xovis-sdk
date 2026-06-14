@@ -2,7 +2,7 @@
 
 | **Status** | **Discovery** | **Installation** |
 | :---: | :---: | :---: |
-| [![Smithery: Verified](https://img.shields.io/badge/Smithery-Placeholder-orange)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery: Install](https://img.shields.io/badge/Smithery-Install--Pending-white)](https://smithery.ai/server/xovis-sdk) |
+| [![Smithery Verified](https://smithery.ai/badge/xovis-sdk/xovis-mcp)](https://smithery.ai/servers/xovis-sdk/xovis-mcp) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Registry_Install-0052FF.svg?logo=server&logoColor=white)](https://smithery.ai/servers/xovis-sdk/xovis-mcp) |
 
 | **Compatibility** | **Frameworks** | **Optimized For** |
 | :---: | :---: | :---: |
