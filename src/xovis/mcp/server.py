@@ -15,7 +15,7 @@ from typing import Any, Union
 import mcp.server.stdio
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
-from mcp.types import TextContent, Tool
+from mcp.types import TextContent, Tool, ToolAnnotations
 
 from xovis.api.device.client import DeviceClient
 from xovis.api.hub.client import HubClient
@@ -75,8 +75,14 @@ def _normalize_schema(schema: Any) -> Any:
                         prop_val["type"] = "object"
 
         # Recurse into all dictionary values
-        for key, value in schema.items():
+        for key, value in list(schema.items()):
             schema[key] = _normalize_schema(value)
+            
+        # Clean up types after recursion
+        if isinstance(schema.get("type"), list):
+            types = [t for t in schema["type"] if t != "null"]
+            if types:
+                schema["type"] = types[0]
 
     elif isinstance(schema, list):
         for i, item in enumerate(schema):
@@ -107,17 +113,34 @@ async def handle_list_tools() -> list[Tool]:
         safety_level = config.get("safety_level")
 
         description = tool["description"]
+        read_only = False
+        destructive = False
         if safety_level:
             description = f"[{safety_level.name}] {description}"
+            if safety_level.name == "OPEN":
+                read_only = True
+            elif safety_level.name in ("CRITICAL", "RESTRICTED", "BLOCKED"):
+                destructive = True
 
         raw_schema = tool["args_model"].model_json_schema()
         normalized_schema = _normalize_schema(raw_schema)
+        
+        mcp_name = tool["name"].replace("_", ".", 1)
 
         mcp_tools.append(
             Tool(
-                name=tool["name"],
+                name=mcp_name,
                 description=description,
                 inputSchema=normalized_schema,
+                outputSchema={
+                    "type": "object", 
+                    "properties": {"result": {"type": "string", "description": "The result payload from the hardware"}},
+                    "description": "Output payload"
+                },
+                annotations=ToolAnnotations(
+                    readOnlyHint=read_only,
+                    destructiveHint=destructive
+                )
             )
         )
     return mcp_tools
@@ -141,13 +164,15 @@ async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Seque
     """
     args = arguments or {}
     client = _get_active_client_context()
+    
+    original_name = name.replace(".", "_", 1)
 
     try:
         async with client as active_client:
             guardrail = XovisSafetyGuardrail(enforce_confirmation=True)
             toolkit = XovisAIToolkit(active_client, guardrail=guardrail)
 
-            result = await toolkit.execute_tool(name, args)
+            result = await toolkit.execute_tool(original_name, args)
             return [TextContent(type="text", text=result)]
     except Exception as e:
         return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
@@ -163,7 +188,7 @@ async def main_async() -> None:
             write_stream,
             InitializationOptions(
                 server_name="xovis-mcp",
-                server_version="1.0.0rc1",
+                server_version="1.0.0a16",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},
