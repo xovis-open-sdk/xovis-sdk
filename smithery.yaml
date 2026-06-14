@@ -1,31 +1,47 @@
-# Xovis SDK - MCP Server Configuration for Smithery
-# High-performance hardware orchestration bridge
+# smithery.yaml
+name: xovis-sdk-mcp
+displayName: Xovis SDK MCP Server
+description: Unofficial Xovis Hardware and Cloud Hub Integration for MCP
+version: 1.0.0a2
+category: Development
 
 startCommand:
   type: stdio
-  # This relies on the [project.scripts] defined in pyproject.toml
-  command: xovis-mcp
-  args: []
-  env:
-    # CORE: Connectivity to Xovis Sensor (Device Plane)
-    XOVIS_MCP_HOST: "127.0.0.1"
-    XOVIS_MCP_USER: "admin"
-    XOVIS_MCP_PASS: "password"
-    
-    # ADVANCED: Connectivity to Xovis HUB (State & Topology Plane)
-    # If these are set, they take precedence over Device Plane variables.
-    XOVIS_HUB_CLIENT_ID: ""
-    XOVIS_HUB_CLIENT_SECRET: ""
-
-# Metadata for AI/Agentic Layer discovery
-name: xovis-mcp
-description: Enterprise-grade MCP server for Xovis 3D Sensors, Spiders and HUB orchestration.
-version: 1.0.0a2
-author: Xovis Open SDK Team <xovis.sdk@proton.me>
-homepage: https://xovis-open-sdk.github.io/xovis-sdk/
-
-# Quadrifurcated Architecture Compliance: Agentic Layer
-capabilities:
-  tools: true
-  resources: true
-  prompts: true
+  
+  # Prompts Smithery UI/CLI to collect required credentials
+  configSchema:
+    type: object
+    properties:
+      XOVIS_CLIENT_ID:
+        type: string
+        description: "Xovis Cloud Hub Client ID (Auth0)"
+      XOVIS_CLIENT_SECRET:
+        type: string
+        description: "Xovis Cloud Hub Client Secret (Auth0)"
+      NTLM_AUTH:
+        type: string
+        default: "true"
+        description: "Use Windows SSO for local devices (true/false)"
+      DC_USERNAME:
+        type: string
+        description: "Device Connector Username (if NTLM is false)"
+      DC_PASSWORD:
+        type: string
+        description: "Device Connector Password (if NTLM is false)"
+        
+  # Dynamically pull the published PyPI artifact
+  commandFunction: |-
+    (config) => ({
+      command: 'uvx',
+      args: [
+        '--from', 'xovis-sdk==1.0.0a2',
+        'xovis-mcp'
+      ],
+      env: {
+        XOVIS_CLIENT_ID: config.XOVIS_CLIENT_ID,
+        XOVIS_CLIENT_SECRET: config.XOVIS_CLIENT_SECRET,
+        NTLM_AUTH: config.NTLM_AUTH,
+        DC_USERNAME: config.DC_USERNAME,
+        DC_PASSWORD: config.DC_PASSWORD
+      }
+    })
