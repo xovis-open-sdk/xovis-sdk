@@ -77,7 +77,7 @@ def _normalize_schema(schema: Any) -> Any:
         # Recurse into all dictionary values
         for key, value in list(schema.items()):
             schema[key] = _normalize_schema(value)
-            
+
         # Clean up types after recursion
         if isinstance(schema.get("type"), list):
             types = [t for t in schema["type"] if t != "null"]
@@ -124,7 +124,7 @@ async def handle_list_tools() -> list[Tool]:
 
         raw_schema = tool["args_model"].model_json_schema()
         normalized_schema = _normalize_schema(raw_schema)
-        
+
         mcp_name = tool["name"].replace("_", ".", 1)
 
         mcp_tools.append(
@@ -133,14 +133,11 @@ async def handle_list_tools() -> list[Tool]:
                 description=description,
                 inputSchema=normalized_schema,
                 outputSchema={
-                    "type": "object", 
+                    "type": "object",
                     "properties": {"result": {"type": "string", "description": "The result payload from the hardware"}},
-                    "description": "Output payload"
+                    "description": "Output payload",
                 },
-                annotations=ToolAnnotations(
-                    readOnlyHint=read_only,
-                    destructiveHint=destructive
-                )
+                annotations=ToolAnnotations(readOnlyHint=read_only, destructiveHint=destructive),
             )
         )
     return mcp_tools
@@ -164,7 +161,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Seque
     """
     args = arguments or {}
     client = _get_active_client_context()
-    
+
     original_name = name.replace(".", "_", 1)
 
     try:
@@ -188,7 +185,7 @@ async def main_async() -> None:
             write_stream,
             InitializationOptions(
                 server_name="xovis-mcp",
-                server_version="1.0.0a16",
+                server_version="1.0.0a17",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},
