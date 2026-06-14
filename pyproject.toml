@@ -45,6 +45,7 @@ Homepage = "https://xovis-open-sdk.github.io/xovis-sdk/"
 Documentation = "https://xovis-open-sdk.github.io/xovis-sdk/"
 Repository = "https://github.com/xovis-open-sdk/xovis-sdk"
 "Bug Tracker" = "https://github.com/xovis-open-sdk/xovis-sdk/issues"
+Smithery = "https://smithery.ai/server/xovis-sdk"
 
 
 [project.optional-dependencies]
