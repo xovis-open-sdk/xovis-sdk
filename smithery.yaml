@@ -34,7 +34,7 @@ startCommand:
     (config) => ({
       command: 'uvx',
       args: [
-        '--from', 'xovis-sdk==1.0.0a2',
+        '--from', 'xovis-sdk==1.0.0a3',
         'xovis-cli', 'mcp'
       ],
       env: {
