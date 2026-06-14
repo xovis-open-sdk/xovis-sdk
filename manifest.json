@@ -1,0 +1,56 @@
+{
+  "manifest_version": "0.1",
+  "name": "Xovis SDK MCP Server",
+  "version": "1.0.0-a16",
+  "description": "Unofficial Xovis Hardware integration via MCP. Features zero-trust format-preserving pseudonymization (AIPrivacySession) and human-in-the-loop safety guardrails (XovisSafetyGuardrail) for critical operations.",
+  "author": { "name": "Xovis Open SDK Team" },
+  "server": {
+    "type": "python",
+    "entry_point": "src/xovis/mcp/server.py",
+    "mcp_config": {
+      "command": "uvx",
+      "args": ["--from", "xovis-sdk[mcp]==1.0.0a16", "xovis-mcp"],
+      "env": {
+        "XOVIS_HUB_CLIENT_ID": "${user_config.XOVIS_HUB_CLIENT_ID}",
+        "XOVIS_HUB_CLIENT_SECRET": "${user_config.XOVIS_HUB_CLIENT_SECRET}",
+        "XOVIS_MCP_HOST": "${user_config.XOVIS_MCP_HOST}",
+        "XOVIS_MCP_USER": "${user_config.XOVIS_MCP_USER}",
+        "XOVIS_MCP_PASS": "${user_config.XOVIS_MCP_PASS}"
+      }
+    }
+  },
+  "user_config": {
+    "XOVIS_HUB_CLIENT_ID": {
+      "type": "string",
+      "title": "Hub Client ID",
+      "description": "Client ID for Auth0 Xovis Hub.",
+      "required": false
+    },
+    "XOVIS_HUB_CLIENT_SECRET": {
+      "type": "string",
+      "title": "Hub Client Secret",
+      "description": "Client Secret for Auth0 Xovis Hub.",
+      "required": false
+    },
+    "XOVIS_MCP_HOST": {
+      "type": "string",
+      "title": "Local Host IP",
+      "description": "IP of your local Xovis Sensor.",
+      "default": "127.0.0.1",
+      "required": false
+    },
+    "XOVIS_MCP_USER": {
+      "type": "string",
+      "title": "Local User",
+      "description": "Username for your local Xovis Sensor.",
+      "default": "admin",
+      "required": false
+    },
+    "XOVIS_MCP_PASS": {
+      "type": "string",
+      "title": "Local Pass",
+      "description": "Password for your local Xovis Sensor.",
+      "required": false
+    }
+  }
+}
