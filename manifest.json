@@ -9,7 +9,7 @@
     "entry_point": "src/xovis/mcp/server.py",
     "mcp_config": {
       "command": "uvx",
-      "args": ["--from", "xovis-sdk[mcp]==1.0.0a19", "xovis-mcp"],
+      "args": ["-q", "--from", "xovis-sdk[mcp]==1.0.0a19", "xovis-mcp"],
       "env": {
         "XOVIS_HUB_CLIENT_ID": "${user_config.XOVIS_HUB_CLIENT_ID}",
         "XOVIS_HUB_CLIENT_SECRET": "${user_config.XOVIS_HUB_CLIENT_SECRET}",
