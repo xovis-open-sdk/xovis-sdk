@@ -28,11 +28,23 @@ async def generate_manifest_tools() -> None:
     serialized_tools_basic = []
     serialized_tools_full = []
     for tool in mcp_tools:
-        # 1. Basic tool for top-level tools array (name and description only)
+        # 1. Basic tool for top-level tools array (must have inputSchema to satisfy schema validation)
         basic_tool = {
             "name": tool.name,
             "description": tool.description,
+            "inputSchema": tool.inputSchema,
         }
+        if tool.outputSchema:
+            basic_tool["outputSchema"] = tool.outputSchema
+        if tool.annotations:
+            annotations_dict = {}
+            if hasattr(tool.annotations, "readOnlyHint") and tool.annotations.readOnlyHint is not None:
+                annotations_dict["readOnlyHint"] = tool.annotations.readOnlyHint
+            if hasattr(tool.annotations, "destructiveHint") and tool.annotations.destructiveHint is not None:
+                annotations_dict["destructiveHint"] = tool.annotations.destructiveHint
+            if annotations_dict:
+                basic_tool["annotations"] = annotations_dict
+
         serialized_tools_basic.append(basic_tool)
 
         # 2. Full tool for static_responses in _meta
