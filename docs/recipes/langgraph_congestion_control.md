@@ -9,18 +9,20 @@ from typing import Annotated, TypedDict
 from langgraph.graph import StateGraph, END
 from langchain_openai import ChatOpenAI
 
-from xovis.api.device.client import DeviceClient
+from xovis import SmartDeviceClient
 from xovis.skills.toolkit import XovisAIToolkit, XovisAgentMemory
-from xovis.skills.langchain_adapter import get_langchain_tools
 
 class AgentState(TypedDict):
     messages: Annotated[list, "The message history."]
     hardware_state: str
 
 async def process_hardware_loop():
-    async with DeviceClient("10.0.0.50", "admin", "password") as device:
+    # Utilizing SmartDeviceClient for robust hybrid local/remote routing
+    async with SmartDeviceClient(mac_address="00:26:8c:12:34:56", host="10.0.0.50") as device:
         toolkit = XovisAIToolkit(device)
-        tools = get_langchain_tools(toolkit)
+        
+        # Retrieving LangChain tools dynamically via the unified adapter registry
+        tools = toolkit.get_tools("langchain")
         llm = ChatOpenAI(model="gpt-4o").bind_tools(tools)
 
         memory = XovisAgentMemory(device.cache._state)

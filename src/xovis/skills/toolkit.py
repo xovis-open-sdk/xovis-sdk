@@ -236,6 +236,9 @@ class XovisAIToolkit:
         # 4. Apply UI-configured safety overrides
         self._apply_user_safety_overrides()
 
+        self._adapters = {}
+        self._register_default_adapters()
+
     def _auto_discover_tools(self):
         """Crawls the SDK using reflection to dynamically generate AI tool schemas."""
         from typing import get_args, get_origin
@@ -908,3 +911,49 @@ class XovisAIToolkit:
                 }
             )
         return callable_tools
+
+    def _register_default_adapters(self) -> None:
+        """
+        Registers the default, built-in framework adapters.
+
+        This method populates the internal adapters mapping with lazy-loaded
+        converters for LangChain and CrewAI to prevent hard imports.
+        """
+        def _load_langchain_tools(toolkit: "XovisAIToolkit") -> list[Any]:
+            from xovis.skills.langchain_adapter import get_langchain_tools
+            return get_langchain_tools(toolkit)
+
+        def _load_crewai_tools(toolkit: "XovisAIToolkit") -> list[Any]:
+            from xovis.skills.crewai_adapter import get_crewai_tools
+            return get_crewai_tools(toolkit)
+
+        self.register_adapter("langchain", _load_langchain_tools)
+        self.register_adapter("crewai", _load_crewai_tools)
+
+    def register_adapter(self, name: str, adapter_func: Any) -> None:
+        """
+        Registers a custom framework adapter.
+
+        Args:
+            name (str): The unique name of the framework (e.g., 'llamaindex').
+            adapter_func (Callable[[XovisAIToolkit], Any]): A function that accepts
+                the XovisAIToolkit instance and returns framework-compatible tools.
+        """
+        self._adapters[name] = adapter_func
+
+    def get_tools(self, adapter_name: str) -> Any:
+        """
+        Retrieves tools formatted for a registered framework adapter.
+
+        Args:
+            adapter_name (str): The name of the registered adapter (e.g., 'langchain').
+
+        Returns:
+            Any: The list or collection of framework-specific tool objects.
+
+        Raises:
+            ValueError: If the requested adapter is not registered.
+        """
+        if adapter_name not in self._adapters:
+            raise ValueError(f"Adapter '{adapter_name}' is not registered.")
+        return self._adapters[adapter_name](self)

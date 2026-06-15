@@ -19,6 +19,7 @@ While the core models provide structure, the SDK supports **Dynamic Type Generat
 
 ### Why use dynamic types?
 Because every Xovis installation is unique (with different Agent names, Zone IDs, and Line configurations), static SDK code cannot know your specific topology. By generating a local `xovis_types.py` module, you gain:
+
 - **IDE Autocomplete**: See your actual sensor names in your editor.
 - **Static Validation**: Tools like `mypy` or `pyright` can catch invalid references before you run the code.
 - **Strict Literals**: Enforce that only existing zones or agents are used in your logic.

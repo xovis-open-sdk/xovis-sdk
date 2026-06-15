@@ -13,13 +13,16 @@ To handle 12.5Hz Live-Push DataPushes without destabilizing, while simultaneousl
 **Path:** `src/xovis/datapush/`
 The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, UDP, and MQTT DataPush ingestion.
 
-* **Core Engine:** Pure native asyncio (`asyncio.start_server`, `asyncio.DatagramProtocol`) and `orjson` for lock-free deserialization.
-* **Unified Ingestion:** Leverages the `DataPlaneIngestor` to standardize processing across all transport layers.
+* **Core Engine:** Pure native asyncio (servers like `asyncio.start_server`, `asyncio.DatagramProtocol` and active client connection loops) with `orjson` and `json.JSONDecoder` for lock-free deserialization.
+* **Active vs. Passive Ingestion:**
+    - **Passive Receivers (Servers)**: Run in the SDK's process to ingest telemetry pushed directly by the sensors (`XovisTCPServer`, `XovisUDPServer`, `XovisHTTPServer`).
+    - **Active Receivers (Clients)**: Connect or subscribe outward to retrieve telemetry from remote interfaces (`XovisTCPClient` connecting to sensors in SERVER mode, `XovisMQTTClient` subscribing to external brokers).
+* **Unified Ingestion:** Leverages the `DataPlaneIngestor` to standardize parsing and sink routing across all transport layers.
 * **Parsing Strategy:** 
-    - **TCP Data**: Uses a sliding string buffer with `json.JSONDecoder().raw_decode()` to slice frames out of raw concatenated JSON data.
-    - **Discrete Packets**: Uses `orjson.loads()` for HTTP, UDP, and MQTT to minimize CPU overhead.
-* **Binary Fallback**: Automatically wraps non-JSON payloads (e.g. recordings) in a `recording_data` pseudo-frame.
-* **Data Packing:** STRICTLY NO Pydantic validation is allowed in this hot path.
+    - **TCP Streaming Data (Server & Client)**: Uses a sliding string buffer combined with standard library `json.JSONDecoder().raw_decode()` to safely carve out concatenated, newline-free JSON frames. This is mandatory for TCP because of MTU fragmentation.
+    - **Discrete Messages (Server & Client)**: Uses `orjson.loads()` via the centralized `DataPlaneIngestor.parse_frame` helper for UDP datagrams, HTTP webhooks, and MQTT topic payloads to minimize deserialization overhead.
+* **Binary Fallback**: Automatically wraps non-JSON payloads (e.g. binary recordings) in a `recording_data` pseudo-frame.
+* **Data Packing:** STRICTLY NO Pydantic validation is allowed in this hot path to ensure zero-blocking of high-frequency streams.
 * **Network I/O:** Telemetry frames are delivered to sinks in real-time. Efficient batching and lock-free archiving are enforced.
 
 ---

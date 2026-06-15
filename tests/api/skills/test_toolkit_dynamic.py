@@ -270,3 +270,25 @@ async def test_toolkit_safety_heuristics_extended():
     assert toolkit._tools_map["system_update_something"]["safety_level"] == SafetyLevel.RESTRICTED
     assert toolkit._tools_map["system_get_something"]["safety_level"] == SafetyLevel.OPEN
     assert toolkit._tools_map["system_factory_reset"]["safety_level"] == SafetyLevel.CRITICAL
+
+
+@pytest.mark.asyncio
+async def test_toolkit_adapter_registration():
+    """
+    Verifies the registration and dynamic retrieval of AI framework adapters.
+    """
+    mock_client = MagicMock(spec=DeviceClient)
+    for attr in ["system", "network", "time", "update", "users", "itxpt", "singlesensor"]:
+        setattr(mock_client, attr, None)
+
+    toolkit = XovisAIToolkit(client=mock_client)
+
+    def custom_adapter(tk: XovisAIToolkit) -> str:
+        return f"custom_{len(tk._tools_map)}"
+
+    toolkit.register_adapter("custom", custom_adapter)
+    assert toolkit.get_tools("custom").startswith("custom_")
+
+    with pytest.raises(ValueError) as excinfo:
+        toolkit.get_tools("unknown_adapter")
+    assert "is not registered" in str(excinfo.value)

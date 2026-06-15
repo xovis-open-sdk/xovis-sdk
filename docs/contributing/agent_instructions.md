@@ -53,11 +53,13 @@ The safety-first integration layer for autonomous agents and MCP.
 ## Contributor Standards
 
 ### Coding Style
+
 - **Zero-Inline-Comment, Max-Docstring**: Code must be self-explanatory. Use rigorous Google-style docstrings for architectural intent.
 - **Pacing & Limits**: Always respect `_pacing_delay()` in E2E tests and production loops to prevent hardware saturation.
 
 ### Testing Requirements
 The SDK uses a four-tier testing strategy. All PRs must include relevant tests:
+
 1. **Tier 1**: Smoke tests for baseline connectivity.
 2. **Tier 2**: CRUD validation (DSC/Idempotency).
 3. **Tier 4**: Long-term stability and data alignment.
