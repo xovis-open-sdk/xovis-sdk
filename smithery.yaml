@@ -1,7 +1,7 @@
 name: xovis-mcp
 displayName: Xovis SDK MCP Server
 description: Unofficial Xovis Hardware integration via MCP that seamlessly bridges the Xovis Python SDK to autonomous AI agents. Features zero-trust format-preserving pseudonymization (AIPrivacySession) and human-in-the-loop safety guardrails (XovisSafetyGuardrail) for critical operations.
-version: 1.0.0a21
+version: 1.0.0a22
 homepage: https://github.com/xovis-open-sdk/xovis-sdk
 category: Data
 categories:
@@ -48,7 +48,7 @@ startCommand:
       command: 'uvx',
       args: [
         '-q',
-        '--from', 'xovis-sdk[mcp]==1.0.0a21',
+        '--from', 'xovis-sdk[mcp]==1.0.0a22',
         'xovis-mcp'
       ],
       env: {
