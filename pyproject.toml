@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "xovis-sdk"
-version = "1.0.0a22"
+version = "1.0.0a23"
 description = "Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB."
 readme = "README.md"
 requires-python = ">=3.11"
