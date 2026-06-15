@@ -66,7 +66,12 @@ class HardwareSyncer:
                 logger.info(f"Exporting host state to {state_path}...")
                 await client.cache.sync()
                 state = client.cache._state
-                state_path.write_text(state.model_dump_json(indent=2))
+                state_json = state.model_dump_json(indent=2)
+                state_path.write_text(state_json)
+
+                # Also save unified device_state.json in resource_dir
+                unified_state_path = self.resource_dir / "device_state.json"
+                unified_state_path.write_text(state_json)
 
                 logger.info("Hardware warmup completed successfully.")
                 return True
