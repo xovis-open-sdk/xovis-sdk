@@ -75,3 +75,31 @@ async def test_mcp_error_handling_sanitization():
         data = json.loads(response[0].text)
         assert "error" in data
         assert "Internal Connection Failure" in data["error"]
+
+
+def test_mcp_name_translation():
+    """
+    Tier 2 - MCP Naming Test: Validates the custom bidirectional dot-notation tree translation schema.
+    """
+    from xovis.mcp.server import _from_mcp_name, _to_mcp_name
+
+    # Test cases mapping internal name -> expected mcp name
+    test_cases = {
+        "get_system_info": "xovis.system.get_info",
+        "get_agent_memory": "xovis.system.get_memory",
+        "get_fleet_summary": "xovis.fleet.get_summary",
+        "reboot_fleet": "xovis.fleet.reboot",
+        "aggregate_geometries": "xovis.aggregate.geometries",
+        "aggregate_historical_counts": "xovis.aggregate.historical_counts",
+        "system_reboot": "xovis.system.reboot",
+        "network_update_ipv4": "xovis.network.update_ipv4",
+        "analytics_get_counts": "xovis.analytics.get_counts",
+        "privacy_get_state": "xovis.privacy.get_state",
+    }
+
+    for original, expected in test_cases.items():
+        mcp_name = _to_mcp_name(original)
+        assert mcp_name == expected, f"Failed translating '{original}' to MCP name. Got '{mcp_name}', expected '{expected}'"
+
+        reversed_orig = _from_mcp_name(expected)
+        assert reversed_orig == original, f"Failed reversing MCP name '{expected}'. Got '{reversed_orig}', expected '{original}'"

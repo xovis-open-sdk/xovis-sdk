@@ -5,8 +5,7 @@ Welcome to the **xovis-sdk** documentation. This is an enterprise-grade, high-pe
 Compliance Note: This project is an independent, open-source initiative. It is not officially affiliated with, maintained by, or endorsed by Xovis AG.
 
 [![GitHub](https://img.shields.io/badge/GitHub-xovis--sdk-181717?logo=github)](https://github.com/xovis-open-sdk/xovis-sdk)
-[![PyPI](https://img.shields.io/pypi/v/xovis-sdk?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/xovis-sdk/1.0.0a18/)
-[![Smithery Verified](https://smithery.ai/badge/xovis-sdk/xovis-mcp)](https://smithery.ai/servers/xovis-sdk/xovis-mcp)
+[![PyPI](https://img.shields.io/pypi/v/xovis-sdk?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/xovis-sdk/1.0.0a19/)
 
 
 [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/)
@@ -15,6 +14,8 @@ Compliance Note: This project is an independent, open-source initiative. It is n
 [![Anthropic Compatible](https://img.shields.io/badge/Anthropic-Compatible-D2B8A3.svg?logo=anthropic&logoColor=black)](https://www.anthropic.com/)
 [![CrewAI Ready](https://img.shields.io/badge/CrewAI-Ready-FF4B4B.svg?logo=google-cloud&logoColor=white)](https://crewai.com/)
 [![Cursor Optimized](https://img.shields.io/badge/Cursor-Optimized-000000.svg?logo=python&logoColor=white)](https://cursor.sh/)
+
+[![Smithery Verified](https://smithery.ai/badge/xovis-sdk/xovis-mcp)](https://smithery.ai/servers/xovis-sdk/xovis-mcp)
 
 ## Key Features
 

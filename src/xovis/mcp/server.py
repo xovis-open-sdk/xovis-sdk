@@ -91,10 +91,73 @@ def _normalize_schema(schema: Any) -> Any:
     return schema
 
 
+def _to_mcp_name(original_name: str) -> str:
+    """Translates an internal tool name to a clean 3-part dot-notation tree structure.
+
+    Args:
+        original_name (str): The raw, snake_case tool name within the SDK toolkit.
+
+    Returns:
+        str: A dot-notated tool name matching 'xovis.<category>.<action>'.
+    """
+    custom_mappings = {
+        "get_system_info": "xovis.system.get_info",
+        "get_agent_memory": "xovis.system.get_memory",
+        "get_fleet_summary": "xovis.fleet.get_summary",
+        "reboot_fleet": "xovis.fleet.reboot",
+    }
+    if original_name in custom_mappings:
+        return custom_mappings[original_name]
+
+    if original_name.startswith("aggregate_"):
+        action = original_name[len("aggregate_") :]
+        return f"xovis.aggregate.{action}"
+
+    for category in ["system", "network", "analytics", "privacy", "datapush", "scene", "history", "update", "users", "itxpt"]:
+        if original_name.startswith(f"{category}_"):
+            action = original_name[len(f"{category}_") :]
+            return f"xovis.{category}.{action}"
+
+    return f"xovis.{original_name.replace('_', '.', 1)}"
+
+
+def _from_mcp_name(mcp_name: str) -> str:
+    """Reverses the clean dot-notation tree structure back to the original SDK tool name.
+
+    Args:
+        mcp_name (str): The dot-notated MCP tool identifier.
+
+    Returns:
+        str: The matching internal SDK tool name.
+    """
+    reverse_mappings = {
+        "xovis.system.get_info": "get_system_info",
+        "xovis.system.get_memory": "get_agent_memory",
+        "xovis.fleet.get_summary": "get_fleet_summary",
+        "xovis.fleet.reboot": "reboot_fleet",
+    }
+    if mcp_name in reverse_mappings:
+        return reverse_mappings[mcp_name]
+
+    if mcp_name.startswith("xovis.aggregate."):
+        action = mcp_name[len("xovis.aggregate.") :]
+        return f"aggregate_{action}"
+
+    for category in ["system", "network", "analytics", "privacy", "datapush", "scene", "history", "update", "users", "itxpt"]:
+        prefix = f"xovis.{category}."
+        if mcp_name.startswith(prefix):
+            action = mcp_name[len(prefix) :]
+            return f"{category}_{action}"
+
+    name = mcp_name
+    if name.startswith("xovis."):
+        name = name[6:]
+    return name.replace(".", "_", 1)
+
+
 @server.list_tools()
 async def handle_list_tools() -> list[Tool]:
-    """
-    Exposes the SDK tool registry to the connected MCP client.
+    """Exposes the SDK tool registry to the connected MCP client.
 
     Bypasses the async context manager to extract Pydantic validation
     schemas statically, preventing network latency from hanging discovery.
@@ -108,7 +171,6 @@ async def handle_list_tools() -> list[Tool]:
 
     mcp_tools = []
     for tool in callable_tools:
-        # Synch the SDK safety levels to tool descriptions for Smithery/client awareness
         config = toolkit._tools_map.get(tool["name"], {})
         safety_level = config.get("safety_level")
 
@@ -125,7 +187,7 @@ async def handle_list_tools() -> list[Tool]:
         raw_schema = tool["args_model"].model_json_schema()
         normalized_schema = _normalize_schema(raw_schema)
 
-        mcp_name = f"xovis.{tool['name'].replace('_', '.', 1)}"
+        mcp_name = _to_mcp_name(tool["name"])
 
         mcp_tools.append(
             Tool(
@@ -145,8 +207,7 @@ async def handle_list_tools() -> list[Tool]:
 
 @server.call_tool()
 async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Sequence[TextContent]:
-    """
-    Executes a requested hardware orchestration tool.
+    """Executes a requested hardware orchestration tool.
 
     Dynamically resolves the connection context, enforces runtime safety
     guardrails, and handles clean session closures following execution.
@@ -162,9 +223,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Seque
     args = arguments or {}
     client = _get_active_client_context()
 
-    if name.startswith("xovis."):
-        name = name[6:]
-    original_name = name.replace(".", "_", 1)
+    original_name = _from_mcp_name(name)
 
     try:
         async with client as active_client:
@@ -187,7 +246,7 @@ async def main_async() -> None:
             write_stream,
             InitializationOptions(
                 server_name="xovis-mcp",
-                server_version="1.0.0a17",
+                server_version="1.0.0a19",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},
