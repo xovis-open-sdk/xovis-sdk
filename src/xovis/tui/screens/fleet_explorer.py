@@ -182,7 +182,8 @@ class XovisFleetTable(Screen):
         Creates a mapping of MAC addresses to their respective AI and Cache
         states and saves it to ~/.xovis_tui_state.json.
         """
-        state_path = os.path.expanduser("~/.xovis_tui_state.json")
+        from pathlib import Path
+        state_path = Path.home() / ".xovis_tui_state.json"
         state_map = {}
         for device in self._fleet_data:
             mac_upper = device.mac_address.upper()
@@ -203,7 +204,8 @@ class XovisFleetTable(Screen):
         if not self._hub_client:
             return
 
-        state_path = os.path.expanduser("~/.xovis_tui_state.json")
+        from pathlib import Path
+        state_path = Path.home() / ".xovis_tui_state.json"
         saved_state = {}
         if os.path.exists(state_path):
             try:
@@ -602,7 +604,12 @@ class XovisFleetTable(Screen):
             return
 
         action, name = result
-        file_path = os.path.join(os.getcwd(), f"{name}.state.json")
+        from pathlib import Path
+        res_dir = Path("_local_ressources")
+        if res_dir.exists() and os.access(res_dir, os.W_OK):
+            file_path = str((res_dir / f"{name}.state.json").resolve())
+        else:
+            file_path = os.path.join(os.getcwd(), f"{name}.state.json")
 
         try:
             if action == "save":
