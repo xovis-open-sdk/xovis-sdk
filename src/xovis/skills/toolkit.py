@@ -919,12 +919,15 @@ class XovisAIToolkit:
         This method populates the internal adapters mapping with lazy-loaded
         converters for LangChain and CrewAI to prevent hard imports.
         """
+
         def _load_langchain_tools(toolkit: "XovisAIToolkit") -> list[Any]:
             from xovis.skills.langchain_adapter import get_langchain_tools
+
             return get_langchain_tools(toolkit)
 
         def _load_crewai_tools(toolkit: "XovisAIToolkit") -> list[Any]:
             from xovis.skills.crewai_adapter import get_crewai_tools
+
             return get_crewai_tools(toolkit)
 
         self.register_adapter("langchain", _load_langchain_tools)

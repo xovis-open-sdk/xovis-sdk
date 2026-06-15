@@ -744,14 +744,10 @@ class SmartDeviceClient:
                 return self._client
             except Exception as e:
                 raise ConnectionError(
-                    f"Could not connect to device {self.mac_address} via LAN (host={self.host}) "
-                    f"or via Cloud Hub Tunnel: {e}"
+                    f"Could not connect to device {self.mac_address} via LAN (host={self.host}) or via Cloud Hub Tunnel: {e}"
                 ) from e
 
-        raise ConnectionError(
-            f"Device {self.mac_address} offline/unreachable on LAN (host={self.host}) "
-            f"and no HubClient is available for fallback."
-        )
+        raise ConnectionError(f"Device {self.mac_address} offline/unreachable on LAN (host={self.host}) and no HubClient is available for fallback.")
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """
