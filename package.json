@@ -1,6 +1,6 @@
 {
   "name": "xovis-sdk",
-  "version": "1.0.0a19",
+  "version": "1.0.0a20",
   "description": "Unofficial Xovis Hardware integration via MCP. Features zero-trust format-preserving pseudonymization (AIPrivacySession) and human-in-the-loop safety guardrails (XovisSafetyGuardrail) for critical operations.",
   "keywords": [
     "xovis",
