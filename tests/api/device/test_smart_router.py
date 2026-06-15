@@ -6,6 +6,7 @@ under varying network connectivity and configuration states.
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 
 from xovis.api.device.client import DeviceClient, SmartDeviceClient

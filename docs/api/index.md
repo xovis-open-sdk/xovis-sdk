@@ -1,11 +1,10 @@
 # API Reference
 
-**Compliance Note:** This project is an independent, open-source initiative. It is not officially affiliated with, maintained by, or endorsed by Xovis AG.
-
 The Xovis SDK provides multiple ways to interact with the hardware and cloud infrastructure.
 
 !!! tip "Xovis HUB Pro"
     For enterprise-scale fleet orchestration via the `HubClient`, a **Xovis HUB Pro** subscription is recommended to ensure stable rate limits for high-concurrency operations.
+    <br><br>**Compliance Note:** This project is an independent, open-source initiative. It is not officially affiliated with, maintained by, or endorsed by Xovis AG.
 
 ## 📡 Edge & Hub API (OpenAPI)
 
@@ -29,14 +28,10 @@ The Python SDK is organized according to the **quadrifurcated architecture**.
 
 The Xovis SDK provides a native MCP server for seamless AI integration.
 
-<div align="center">
+| **Discovery** | **Installation** |
+|:---:|:---:|
+| [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
 
-| **Status** | **Discovery** | **Installation** |
-|:---:|:---:|:---:|
-| [![Smithery](https://img.shields.io/badge/Smithery-Verified-brightgreen.svg)](https://smithery.ai/server/xovis-sdk) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
-
-</div>
-
-- **Manual Setup:** See [MCP Configuration](../README.md#manual-mcp-setup)
+- **Manual Setup:** See [MCP Configuration](../ai/mcp.md#deployment-configuration)
 
 For a detailed module-level overview, see the [Core SDK](python/core.md) documentation.

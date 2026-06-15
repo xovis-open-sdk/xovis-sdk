@@ -183,6 +183,7 @@ class XovisFleetTable(Screen):
         states and saves it to ~/.xovis_tui_state.json.
         """
         from pathlib import Path
+
         state_path = Path.home() / ".xovis_tui_state.json"
         state_map = {}
         for device in self._fleet_data:
@@ -205,6 +206,7 @@ class XovisFleetTable(Screen):
             return
 
         from pathlib import Path
+
         state_path = Path.home() / ".xovis_tui_state.json"
         saved_state = {}
         if os.path.exists(state_path):
@@ -605,6 +607,7 @@ class XovisFleetTable(Screen):
 
         action, name = result
         from pathlib import Path
+
         res_dir = Path("_local_ressources")
         if res_dir.exists() and os.access(res_dir, os.W_OK):
             file_path = str((res_dir / f"{name}.state.json").resolve())

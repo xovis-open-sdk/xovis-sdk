@@ -2,10 +2,6 @@
 
 The `xovis-sdk` is strictly **quadrifurcated** into four distinct planes. This decoupling ensures high-frequency telemetry remains unblocked by slow control operations, while fleet-wide state is managed independently of the hardware's physical lens topology.
 
-
-!!! info "Xovis HUB Pro"
-    Operating the SDK on the Cloud HUB free tier may result in rate limit exhaustion during bulk operations. A **Xovis HUB Pro** subscription is suggested for production environments.
-
 ### System Data Flow
 
 ```mermaid
@@ -18,7 +14,7 @@ graph TB
     end
 
     subgraph "Data Plane (High Frequency)"
-        B[XovisTCPServer / XovisUDPServer / XovisHTTPServer]
+        B[Servers & Clients / TCP, UDP, HTTP, MQTT]
         S[XovisSink]
     end
 
@@ -38,7 +34,7 @@ graph TB
     end
 
     %% Data Connections
-    A -->|Live-Push up to 12.5Hz| B
+    A -->|Data-Push up to 12.5Hz| B
     B -->|Sliding Buffer Extraction| S
 
     %% Control Connections
@@ -72,76 +68,33 @@ graph TB
     If you are interested in collaborating on the SDK or want to understand the technical rules governing each plane, please refer to the [Contributor Architecture & Guidelines](contributing/agent_instructions.md).
 
 ### 1. The Data Plane (Telemetry Ingestion)
-**Module:** `src/xovis/datapush/`
 
-The engine designed for high-frequency Live-Push (up to 12.5Hz) ingestion of live tracking telemetry from physical sensors.
+The **Data Plane** handles ultra-high-frequency (12.5Hz) ingestion of live tracking coordinates, telemetry, and binary recordings using pure native, non-blocking `asyncio`. It supports passive ingestion servers (for incoming TCP streams, UDP datagrams, and HTTP Webhooks) and active ingestion clients (for outgoing TCP connection polling and MQTT broker topic subscriptions), utilizing a high-performance sliding string buffer to parse concatenated JSON streams. All parsed frames are instantly delivered to downstream sinks to ensure the ingestion stream remains unblocked.
 
-- **Objective**: Zero-copy, maximum throughput, non-blocking ingestion.
-- **Engine**: Pure native `asyncio` enhanced by `orjson` for high-performance JSON deserialization.
-- **DataPush Variety**: Supports multiple transmission types:
-    - **Live-Push**: High-speed coordinate data at up to **12.5Hz**.
-    - **Logic-Push**: Minutely state transitions and counts.
-    - **Status & Recording**: Diagnostic health and configuration-based data offloading.
-- **Protocol Fidelity**: Unified ingestion strategy across HTTP, UDP, TCP, and MQTT.
-    - **Data Handling**: Optimized to handle raw, concatenated JSON data (TCP) via a **Sliding String Buffer** and `json.JSONDecoder().raw_decode()`.
-    - **Packet Handling**: Uses `orjson` for discrete packet ingestion (HTTP, UDP, MQTT) to minimize CPU overhead.
-- **Key Features**:
-    - **High Throughput**: Telemetry is instantly offloaded to `XovisSink` protocols.
-    - **Binary Fallback**: Automatically wraps non-JSON payloads (e.g., binary recordings) into a standardized `recording_data` frame.
-    - **Connection Filtering**: Centralized logic to intercept and ignore sensor heartbeat/connection tests before they reach sinks.
-
-### 2. The Control Plane (Configuration Management)
-**Module:** `src/xovis/api/`
-
-Low-frequency REST API wrappers for configuring the Xovis HUB Cloud and physical Edge sensors.
-
-- **Objective**: Robustness, strict schema adherence, and resilience.
-- **Engine**: `httpx` for networking and `Pydantic V2` for comprehensive model validation.
-- **Safety**: Integrates with the `XovisSafetyGuardrail` to ensure operational security.
-- **Key Features**:
-    - **Proactive Probing**: Caches hardware capabilities to optimize performance and reliability.
-    - **XovisTime Utility**: Standardizes all time-sensitive inputs into UTC Unix milliseconds.
-    - **Cloud Tunneling**: Provides secure access to edge devices through the Cloud HUB proxy.
-
-### 3. The State & Topology Plane (Fleet Orchestration)
-**Module:** `src/xovis/api/device/`
-
-A stateful, topology-aware engine that abstracts complex sensor graphs into human-readable mappings.
-
-- **Objective**: Transparent management of multisensor environments and offline-first state persistence. The [Xovis Mission Control TUI](cli.md#ui) serves as the primary visual interface for configuring these buckets and detecting hardware topologies.
-- **Engine**: `TopologyManager` + `ConfigCacheManager`.
-- **Logic**:
-    - **Context Isolation**: Distinguishes between physical lenses (`singlesensor`) and virtual stitched environments (`multisensors`).
-    - **Offline Persistence**: Enables zero-latency lookups via localized state caching.
-    - **Dynamic Discovery**: Automatically identifies hardware topologies and registers them for easy access.
-
-### 4. The Agentic Layer (AI Orchestration)
-**Module:** `src/xovis/skills/`
-
-The integration layer for autonomous agents, LLMs, and the Model Context Protocol (MCP).
-
-- **Objective**: Bridging hardware operations with natural language reasoning while maintaining enterprise safety.
-- **Engine**: `XovisAIToolkit` + `AIPrivacySession`.
-- **Safety Tiering**:
-    - **Privacy Pseudonymization**: Protects sensitive identifiers before they reach external models.
-    - **Tool Mapping**: Categorizes every operation into clear safety levels (OPEN, RESTRICTED, CRITICAL, BLOCKED).
-    - **MCP Integration**: Exposes the SDK as a standardized toolset for AI-enabled environments.
+**Deep Dive:** Ready to master the high-speed telemetry engine? Read the [Data Plane Blueprints](architecture/data_plane.md).
 
 ---
 
+### 2. The Control Plane (Configuration Management)
 
-### DataPush Frequencies & Scheduling
+The **Control Plane** provides low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors. It utilizes `httpx` async pooling, token authentication caching with stateful locks, and proactive hardware capability probing to guarantee operational safety. This plane also exposes the `SmartDeviceClient`—a hybrid router that automatically probes local network paths before securely falling back to cloud-proxied HUB tunnel routes.
 
-The Xovis SDK supports multiple DataPush types, each optimized for different analytical needs. While Live-Push offers the highest frequency, other types are scheduled based on the agent's Scheduler configuration.
+**Deep Dive:** Want to build robust configuration and control flows? Read the [Control Plane Blueprints](architecture/control_plane.md).
 
-| Push Type | Frequency (Typical) | Scheduling Strategy | Best For                             |
-| :--- | :--- | :--- |:-------------------------------------|
-| **Live-Push** | Up to 12.5Hz | Real-time Data | Low-latency tracking, scene-events   |
-| **Logic-Push** | 1 minute | `INTERVAL` / `PERIODIC` | State transitions, counts, occupancy |
-| **Status-Push** | 5 minutes | `INTERVAL` | Device health, connection monitoring |
-| **Recording** | Manual / Config | `IMMEDIATE` | Validation, event auditing           |
+---
 
-### Scheduling & Performance
-For non-live data, the SDK's `Scheduler` provides high flexibility:
-- **Fastest Interval**: The `INTERVAL` strategy can be configured as fast as **5 seconds** for near-real-time state monitoring.
-- **Immediate Execution**: The `IMMEDIATE` strategy ensures data is dispatched as soon as the hardware event occurs (for event-driven types) or upon manual trigger.
+### 3. The State & Topology Plane (Fleet Orchestration)
+
+The **State & Topology Plane** acts as the stateful, topology-aware fleet engine of the SDK. It abstracts physical lenses (`singlesensor`) and virtual stitched environments (`multisensors`) into isolated, structured contexts. It manages persistent configuration cache buckets, offloads local disk I/O to background threads to protect the async event loop, and synthesizes directed network topology graphs.
+
+**Deep Dive:** Learn how the SDK manages complex device networks and state. Read the [State & Topology Blueprints](architecture/state_topology.md).
+
+---
+
+### 4. The Agentic Layer (AI Orchestration)
+
+The **Agentic Layer** serves as the safety-first integration boundary for autonomous agents, LLMs, and the Model Context Protocol (MCP). It features an explicit, safety-tiered tool mapping (OPEN, RESTRICTED, CRITICAL, BLOCKED) to prevent destructive execution, and enforces strict GDPR-compliant format-preserving pseudonymization of sensitive hardware identifiers, customer names, etc.
+
+**Deep Dive:** Discover how the SDK safely exposes hardware capabilities to AI models. Read the [Agentic Layer Blueprints](architecture/agentic_layer.md).
+
+---

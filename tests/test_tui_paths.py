@@ -89,6 +89,7 @@ async def test_fleet_explorer_bucket_action_path_resolution(tmp_path, monkeypatc
 
         def query_one_mock(selector, *args, **kwargs):
             from textual.widgets import DataTable, Input
+
             if selector in (Input, "Input") or (isinstance(selector, type) and issubclass(selector, Input)):
                 return mock_input
             return mock_table

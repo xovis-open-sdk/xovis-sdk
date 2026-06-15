@@ -368,18 +368,14 @@ async def test_fleet_explorer_local_scan(mock_hub_client):
     # Mock discovered clients
     mock_discovered_client = AsyncMock()
     mock_discovered_client._http_client.base_url = "http://192.168.1.100:80"
-    mock_discovered_client.info = AsyncMock(return_value={
-        "mac_address": "AA:BB:CC:11:22:33",
-        "name": "Discovered Sensor",
-        "type": "PC3",
-        "fw_version": "5.10.0"
-    })
+    mock_discovered_client.info = AsyncMock(
+        return_value={"mac_address": "AA:BB:CC:11:22:33", "name": "Discovered Sensor", "type": "PC3", "fw_version": "5.10.0"}
+    )
 
     mock_device_client.topology.scan = AsyncMock(return_value=[mock_discovered_client])
 
     # We patch the DeviceClient inside xovis.api.device.client
-    with patch("xovis.api.device.client.DeviceClient", return_value=mock_device_client) as mock_client_cls, \
-         patch("asyncio.sleep", return_value=None):
+    with patch("xovis.api.device.client.DeviceClient", return_value=mock_device_client) as mock_client_cls, patch("asyncio.sleep", return_value=None):
         await screen._worker_local_scan(start_ip="192.168.1.100", count=5)
 
         # Assert DeviceClient is initialized with the correct IP address
