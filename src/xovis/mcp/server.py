@@ -171,6 +171,13 @@ async def handle_list_tools() -> list[Tool]:
 
     mcp_tools = []
     for tool in callable_tools:
+        # Only expose bridge (aggregate_*) and system/fleet-specific high-level tools
+        if not (
+            tool["name"].startswith("aggregate_")
+            or tool["name"] in ("get_system_info", "get_agent_memory", "get_fleet_summary", "reboot_fleet")
+        ):
+            continue
+
         config = toolkit._tools_map.get(tool["name"], {})
         safety_level = config.get("safety_level")
 
@@ -225,6 +232,13 @@ async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Seque
 
     original_name = _from_mcp_name(name)
 
+    # Restrict execution to only allowed bridge/wrapped/fleet tools via MCP
+    if not (
+        original_name.startswith("aggregate_")
+        or original_name in ("get_system_info", "get_agent_memory", "get_fleet_summary", "reboot_fleet")
+    ):
+        return [TextContent(type="text", text=json.dumps({"error": f"Tool '{name}' is not exposed via MCP."}))]
+
     try:
         async with client as active_client:
             guardrail = XovisSafetyGuardrail(enforce_confirmation=True)
@@ -246,7 +260,7 @@ async def main_async() -> None:
             write_stream,
             InitializationOptions(
                 server_name="xovis-mcp",
-                server_version="1.0.0a19",
+                server_version="1.0.0a24",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},

@@ -43,7 +43,7 @@ async def test_mcp_leak_prevention():
             mock_toolkit_instance.execute_tool = AsyncMock(return_value=sanitized_json)
 
             # Act
-            response = await handle_call_tool("get_device_info", {"id": "Id_hashed_mac"})
+            response = await handle_call_tool("xovis.system.get_info", {"mac": "00:1E:C0:A0:22:35"})
 
             # Assert
             assert len(response) == 1
@@ -56,7 +56,7 @@ async def test_mcp_leak_prevention():
             assert "Id_hashed_mac" in text_result
 
             # Verify toolkit was called correctly
-            mock_toolkit_instance.execute_tool.assert_called_once_with("get_device_info", {"id": "Id_hashed_mac"})
+            mock_toolkit_instance.execute_tool.assert_called_once_with("get_system_info", {"mac": "00:1E:C0:A0:22:35"})
 
 
 @pytest.mark.asyncio
@@ -69,7 +69,7 @@ async def test_mcp_error_handling_sanitization():
         mock_get_context.return_value = mock_client
         mock_client.__aenter__.side_effect = Exception("Internal Connection Failure: 10.10.10.5")
 
-        response = await handle_call_tool("any_tool", {})
+        response = await handle_call_tool("xovis.system.get_info", {})
 
         assert len(response) == 1
         data = json.loads(response[0].text)
