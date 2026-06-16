@@ -42,6 +42,7 @@ class FleetDevice:
         in_ai_scope (bool): Indicates if the device is targeted for AI queues.
         is_cached (bool): Indicates if the device topology is stored in RAM.
         is_selected (bool): User-toggled selection flag for bulk operations.
+        ip_address (str): The IP address of the device.
     """
 
     mac_address: str
@@ -57,6 +58,7 @@ class FleetDevice:
     in_ai_scope: bool = False
     is_cached: bool = False
     is_selected: bool = False
+    ip_address: str = ""
 
 
 class XovisFleetTable(Screen):
@@ -180,7 +182,9 @@ class XovisFleetTable(Screen):
         Creates a mapping of MAC addresses to their respective AI and Cache
         states and saves it to ~/.xovis_tui_state.json.
         """
-        state_path = os.path.expanduser("~/.xovis_tui_state.json")
+        from pathlib import Path
+
+        state_path = Path.home() / ".xovis_tui_state.json"
         state_map = {}
         for device in self._fleet_data:
             mac_upper = device.mac_address.upper()
@@ -201,7 +205,9 @@ class XovisFleetTable(Screen):
         if not self._hub_client:
             return
 
-        state_path = os.path.expanduser("~/.xovis_tui_state.json")
+        from pathlib import Path
+
+        state_path = Path.home() / ".xovis_tui_state.json"
         saved_state = {}
         if os.path.exists(state_path):
             try:
@@ -258,6 +264,7 @@ class XovisFleetTable(Screen):
                 in_ai_scope=device_state.get("ai", False),
                 is_cached=existing_is_cached,
                 is_selected=existing_is_selected,
+                ip_address=getattr(d, "ip", "") or "",
             )
             fetched_devices.append(device_entry)
 
@@ -265,6 +272,7 @@ class XovisFleetTable(Screen):
         for lan_device in self._lan_devices.values():
             if lan_device.mac_address in hub_macs:
                 hub_macs[lan_device.mac_address].source = "Both"
+                hub_macs[lan_device.mac_address].ip_address = lan_device.ip_address
             else:
                 fetched_devices.append(lan_device)
 
@@ -530,7 +538,7 @@ class XovisFleetTable(Screen):
         await asyncio.sleep(1.5)
 
         try:
-            from xovis.api.device.client import DeviceClient
+            from xovis.api.device.client import SmartDeviceClient
 
             discovery_master = None
             for dev in self._fleet_data:
@@ -543,8 +551,10 @@ class XovisFleetTable(Screen):
                 table.loading = False
                 return
 
-            async with DeviceClient(
+            async with SmartDeviceClient(
+                mac_address=discovery_master.mac_address,
                 host=discovery_master.ip_address,
+                hub_client=self._hub_client,
                 username=os.getenv("XOVIS_DEVICE_USERNAME", "admin"),
                 password=os.getenv("XOVIS_DEVICE_PASSWORD", "pass"),
             ) as client:
@@ -596,7 +606,13 @@ class XovisFleetTable(Screen):
             return
 
         action, name = result
-        file_path = os.path.join(os.getcwd(), f"{name}.state.json")
+        from pathlib import Path
+
+        res_dir = Path("_local_ressources")
+        if res_dir.exists() and os.access(res_dir, os.W_OK):
+            file_path = str((res_dir / f"{name}.state.json").resolve())
+        else:
+            file_path = os.path.join(os.getcwd(), f"{name}.state.json")
 
         try:
             if action == "save":
@@ -690,8 +706,22 @@ class XovisFleetTable(Screen):
                 mac = raw_mac.upper()
 
                 async with concurrency_limit:
+                    host_ip = None
+                    for dev in self._fleet_data:
+                        if dev.mac_address.upper() == mac:
+                            host_ip = dev.ip_address
+                            break
+
                     try:
-                        async with await client.connect_device(mac) as device:
+                        from xovis.api.device.client import SmartDeviceClient
+
+                        async with SmartDeviceClient(
+                            mac_address=mac,
+                            host=host_ip,
+                            hub_client=client,
+                            username=os.getenv("XOVIS_DEVICE_USERNAME", "admin"),
+                            password=os.getenv("XOVIS_DEVICE_PASSWORD", "pass"),
+                        ) as device:
                             graph = await device.topology.get_ms_graph()
 
                             is_master = False
@@ -714,6 +744,8 @@ class XovisFleetTable(Screen):
                                         topology_map[child_mac] = []
                                     if mac not in topology_map[child_mac]:
                                         topology_map[child_mac].append(mac)
+
+                        await asyncio.sleep(1.0)
 
                     except Exception as probe_error:
                         logging.warning(f"Failed to probe {mac}: {probe_error}", exc_info=True)

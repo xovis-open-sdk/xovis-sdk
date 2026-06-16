@@ -652,3 +652,111 @@ class DeviceClient:
             loop = asyncio.get_running_loop()
             for sig in (signal.SIGINT, signal.SIGTERM):
                 loop.add_signal_handler(sig, lambda: asyncio.create_task(self.aclose()))
+
+
+class SmartDeviceClient:
+    """
+    Asynchronous connection router for Xovis devices.
+
+    This class provides a hybrid routing strategy across the control and state planes.
+    It encapsulates a decision loop: first probing local LAN/SSDP cache for a direct IP connection,
+    and falling back to the Hub Cloud proxy tunnel if unreachable locally.
+
+    Attributes:
+        mac_address (str): The physical MAC address (GUID) of the target device.
+        host (Optional[str]): Known IP address or hostname of the sensor on the local LAN.
+        hub_client (Optional[Any]): HubClient instance to use for the secure tunnel fallback.
+        username (str): The local authentication username. Defaults to "admin".
+        password (str): The local authentication password. Defaults to "pass".
+        kwargs (Any): Additional connection and configuration arguments passed to the clients.
+    """
+
+    def __init__(
+        self,
+        mac_address: str,
+        host: Optional[str] = None,
+        hub_client: Optional[Any] = None,
+        username: str = "admin",
+        password: str = "pass",
+        **kwargs: Any,
+    ) -> None:
+        """
+        Initializes the SmartDeviceClient router.
+
+        Args:
+            mac_address (str): The MAC address of the target device.
+            host (Optional[str], optional): The local IP address of the target device. Defaults to None.
+            hub_client (Optional[Any], optional): An optional HubClient instance. Defaults to None.
+            username (str): Local username for LAN connection. Defaults to "admin".
+            password (str): Local password for LAN connection. Defaults to "pass".
+            **kwargs (Any): Extra client options.
+        """
+        self.mac_address = mac_address
+        self.host = host
+        self.hub_client = hub_client
+        self.username = username
+        self.password = password
+        self.kwargs = kwargs
+        self._client: Optional[DeviceClient] = None
+
+    async def __aenter__(self) -> DeviceClient:
+        """
+        Establishes connection to the device using the optimal route.
+
+        Checks if the local IP is reachable by performing a brief handshake.
+        If the local connection fails or no local host is provided, falls back
+        to routing via the Hub Cloud proxy tunnel.
+
+        Returns:
+            DeviceClient: An active, authenticated device client instance.
+
+        Raises:
+            ConnectionError: If both local connection and remote tunnel fallback fail,
+                or if no valid connection route can be established.
+        """
+        if self.host:
+            probe_kwargs = self.kwargs.copy()
+            probe_kwargs["timeout"] = 2.0
+            probe_client = DeviceClient(
+                host=self.host,
+                username=self.username,
+                password=self.password,
+                **probe_kwargs,
+            )
+            try:
+                async with probe_client:
+                    pass
+                self._client = DeviceClient(
+                    host=self.host,
+                    username=self.username,
+                    password=self.password,
+                    **self.kwargs,
+                )
+                await self._client.__aenter__()
+                return self._client
+            except Exception:
+                pass
+
+        if self.hub_client:
+            try:
+                self._client = await self.hub_client.connect_device(self.mac_address)
+                await self._client.__aenter__()
+                return self._client
+            except Exception as e:
+                raise ConnectionError(
+                    f"Could not connect to device {self.mac_address} via LAN (host={self.host}) or via Cloud Hub Tunnel: {e}"
+                ) from e
+
+        raise ConnectionError(f"Device {self.mac_address} offline/unreachable on LAN (host={self.host}) and no HubClient is available for fallback.")
+
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """
+        Gracefully releases the connected device client resources.
+
+        Args:
+            exc_type (Any): The exception type if an error occurred.
+            exc_val (Any): The exception value.
+            exc_tb (Any): The traceback object.
+        """
+        if self._client:
+            await self._client.__aexit__(exc_type, exc_val, exc_tb)

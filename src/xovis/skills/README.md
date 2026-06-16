@@ -20,6 +20,7 @@ The primary entry point for both single-device and fleet-wide orchestration. It 
 *   **OpenAI GPT-5.5 Optimized**: Generates strict JSON schemas via `get_openai_tools()`.
 *   **Latest Anthropic Models Ready**: Provides the flat `input_schema` format required by the Messages API via `get_anthropic_tools()`.
 *   **Callable Primitives**: Exports direct references to async functions and their validation models for **LangGraph**, **CrewAI**, and **Cursor/Windsurf**.
+*   **Dynamic Adapter Registry**: Allows custom or third-party framework adapters (e.g., LlamaIndex, AutoGen) to be registered via `toolkit.register_adapter(name, func)` and dynamically retrieved using `toolkit.get_tools(name)`. Standard built-in adapters (`langchain` and `crewai`) are pre-registered and lazy-loaded by default.
 
 ### 2. XovisAgentMemory (State Observation)
 Autonomous agents require environmental context without the 12.5Hz network overhead. By wrapping the `HostStateBucket`, this plane allows for the injection of minified, JSON-serialized hardware "memories" directly into the System Prompt.
@@ -29,19 +30,21 @@ A specialized orchestrator for `HubClient` contexts. It exposes high-impact tool
 
 ### 4. LangChain & Multi-Agent Adapters
 Bridges the SDK's native toolkit with modern agent frameworks.
-*   **LangChain**: Native `StructuredTools` for LangGraph reasoning loops.
-*   **CrewAI / AutoGPT**: Dedicated adapters providing `BaseTool` abstractions for multi-agent coordination.
+
+*   **LangChain**: Native `StructuredTools` for LangGraph reasoning loops. Retrieved dynamically via `toolkit.get_tools("langchain")`.
+*   **CrewAI / AutoGPT**: Dedicated adapters providing `BaseTool` abstractions for multi-agent coordination. Retrieved dynamically via `toolkit.get_tools("crewai")`.
+*   **Custom Frameworks**: Users can register custom adapters natively on the toolkit using `toolkit.register_adapter(name, func)`.
 
 ## Integration & Implementation
 
 ### LLM Provider Support Matrix
 
-| Provider | Method | Format |
+| Provider | Method / Dynamic Key | Format |
 | :--- | :--- | :--- |
 | **OpenAI** | `get_openai_tools()` | Nested `{"type": "function", ...}` |
 | **Anthropic** | `get_anthropic_tools()` | Flat `{"name", "description", "input_schema"}` |
-| **LangChain** | `get_langchain_tools()` | List of `StructuredTool` objects |
-| **CrewAI** | `get_crewai_tools()` | List of `BaseTool` objects |
+| **LangChain** | `get_tools("langchain")` | List of `StructuredTool` objects |
+| **CrewAI** | `get_tools("crewai")` | List of `BaseTool` objects |
 | **LangGraph** | `get_callable_tools()` | List of `{"name", "callable", "args_model"}` |
 | **Cursor / IDEs**| `get_callable_tools()` | Direct function primitives |
 
@@ -80,6 +83,26 @@ guardrail = XovisSafetyGuardrail(
 # 2. factory_reset is now impossible for the agent to call
 # 3. The agent can ONLY see/manage devices belonging to RetailCorp-DACH
 toolkit = XovisAIToolkit(client, guardrail=guardrail)
+```
+
+#### Implementation Example (Dynamic Adapter Registration):
+```python
+from xovis.skills.toolkit import XovisAIToolkit
+
+toolkit = XovisAIToolkit(client)
+
+# 1. Retrieve pre-registered, lazy-loaded LangChain tools dynamically
+langchain_tools = toolkit.get_tools("langchain")
+
+# 2. Register a custom third-party framework adapter (e.g., LlamaIndex)
+def llamaindex_adapter(tk: XovisAIToolkit):
+    # Convert toolkit._tools_map to LlamaIndex-native ToolSpec objects
+    return [convert_to_llamaindex(name, config) for name, config in tk._tools_map.items()]
+
+toolkit.register_adapter("llamaindex", llamaindex_adapter)
+
+# 3. Retrieve custom tools dynamically
+llamaindex_tools = toolkit.get_tools("llamaindex")
 ```
 
 ### 6. AI Privacy Filter (Automatic Sanitization)

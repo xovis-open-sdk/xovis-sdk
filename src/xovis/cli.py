@@ -626,6 +626,23 @@ def main() -> None:
     package_dir = Path(__file__).parent.resolve()
     default_output = str(package_dir / "models" / "xovis_types.py")
 
+    # Priority-based lookup for default source path
+    local_resources_dir = Path("_local_ressources")
+    resolved_default_source = None
+    if (local_resources_dir / "hub_fleet_state.json").exists():
+        resolved_default_source = str(local_resources_dir / "hub_fleet_state.json")
+    elif (local_resources_dir / "device_state.json").exists():
+        resolved_default_source = str(local_resources_dir / "device_state.json")
+    else:
+        # Check for state_*.json in local resources
+        state_files = sorted(list(local_resources_dir.glob("state_*.json"))) if local_resources_dir.exists() else []
+        if state_files:
+            resolved_default_source = str(state_files[0])
+        elif Path("device_state.json").exists():
+            resolved_default_source = str(Path("device_state.json").resolve())
+        else:
+            resolved_default_source = str(package_dir / "device_state.json")
+
     parser = argparse.ArgumentParser(
         description=f"{F.BOLD}Xovis SDK CLI - Enterprise Developer Tools{F.RESET}",
         epilog="Empowering the State & Topology Plane with static typing and compliance checks.",
@@ -644,7 +661,7 @@ def main() -> None:
     type_parser.add_argument(
         "--source",
         type=str,
-        default=str(package_dir / "device_state.json"),
+        default=resolved_default_source,
         help="Path to the exported HostStateBucket JSON file.",
     )
     type_parser.add_argument(
@@ -764,7 +781,7 @@ def main() -> None:
 
     if args.command in ["generate-types", "gen-types"]:
         # Support legacy direct call without subcommand
-        source = getattr(args, "source", str(package_dir / "device_state.json"))
+        source = getattr(args, "source", resolved_default_source)
         output = getattr(args, "output", default_output)
         dry_run = getattr(args, "dry_run", False)
         host = getattr(args, "host", None)

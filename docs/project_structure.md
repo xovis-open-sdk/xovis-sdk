@@ -9,6 +9,8 @@ xovis-sdk/
 |   |   *- publish.yml
 |   +- CODEOWNERS
 |   *- PULL_REQUEST_TEMPLATE.md
++- bundle_dir
+|   *- manifest.json
 +- docs
 |   +- ai
 |   |   +- img
@@ -18,7 +20,8 @@ xovis-sdk/
 |   |   |   +- fleet_list.png
 |   |   |   *- push_studio.png
 |   |   +- agentic_layer.md
-|   |   *- mcp.md
+|   |   +- mcp.md
+|   |   *- safety_guardrails.md
 |   +- api
 |   |   +- python
 |   |   |   +- core.md
@@ -31,6 +34,12 @@ xovis-sdk/
 |   |   +- index.md
 |   |   *- reference.md
 |   +- architecture
+|   |   +- agentic_layer.md
+|   |   +- control_plane.md
+|   |   +- data_plane.md
+|   |   *- state_topology.md
+|   +- archive
+|   |   *- architecture_v1_consolidated.md
 |   +- assets
 |   |   *- images
 |   |       *- logo.jpg
@@ -63,7 +72,8 @@ xovis-sdk/
 |   +- prepare_docs.py
 |   +- sync_models.py
 |   +- sync_project_structure.py
-|   *- test_docs.py
+|   +- test_docs.py
+|   *- update_version_badges.py
 +- src
 |   +- xovis
 |   |   +- api
@@ -172,6 +182,7 @@ xovis-sdk/
 |   |   |   +- test_network.py
 |   |   |   +- test_privacy.py
 |   |   |   +- test_scene.py
+|   |   |   +- test_smart_router.py
 |   |   |   +- test_spider_granularity.py
 |   |   |   +- test_system.py
 |   |   |   +- test_time.py
@@ -190,6 +201,7 @@ xovis-sdk/
 |   |   |   *- test_time_parser.py
 |   |   +- __init__.py
 |   |   +- test_cache_complete.py
+|   |   +- test_cli_paths.py
 |   |   *- test_routing.py
 |   +- datapush
 |   |   +- __init__.py
@@ -207,6 +219,7 @@ xovis-sdk/
 |   +- __init__.py
 |   +- conftest.py
 |   +- test_tui_fleet.py
+|   +- test_tui_paths.py
 |   *- verify_examples.py
 +- .env.example
 +- .gitignore
@@ -214,9 +227,12 @@ xovis-sdk/
 +- LICENSE
 +- README.md
 +- docs_check.txt
++- manifest.json
 +- mkdocs.yml
 +- pyproject.toml
 +- requirements.txt
++- server.mcpb
 +- smithery.yaml
++- test_toolkit.py
 *- uv.lock
 ```

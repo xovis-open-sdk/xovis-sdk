@@ -70,7 +70,13 @@ class BucketModal(ModalScreen[tuple[str, str]]):
         super().__init__()
         self.suggested_name = suggested_name
         self.device_count = device_count
-        self.target_dir = os.getcwd()
+        from pathlib import Path
+
+        res_dir = Path("_local_ressources")
+        if res_dir.exists() and os.access(res_dir, os.W_OK):
+            self.target_dir = str(res_dir.resolve())
+        else:
+            self.target_dir = os.getcwd()
 
     def compose(self) -> ComposeResult:
         """Hydrates the modal layout.

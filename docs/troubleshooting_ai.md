@@ -1,6 +1,6 @@
 # Troubleshooting AI Implementations
 
-When providing the `xovis-sdk` to autonomous agents (like Claude or GPT-4o), you may encounter specific architectural failure modes. Ensure your agent prompts or instructions account for these strict parameters.
+When providing the `xovis-sdk` to autonomous agents (like Claude or GPT-5.5), you may encounter specific architectural failure modes. Ensure your agent prompts or instructions account for these strict parameters.
 
 ### 1. HTTP 403 Forbidden (Privacy & WAF)
 **Symptom:** The agent attempts to fetch analytics or historical data, but the API rejects it with an HTML-formatted error.

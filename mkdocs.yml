@@ -2,6 +2,9 @@ site_name: xovis-sdk
 site_description: Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB.
 site_author: Xovis Open SDK Team
 
+exclude_docs: |
+  archive/*
+
 theme:
   name: material
   logo: assets/images/logo.jpg
@@ -35,6 +38,9 @@ markdown_extensions:
   - admonition
   - pymdownx.details
   - md_in_html
+  - toc:
+      slugify: !!python/name:pymdownx.slugs.uslugify ""
+  - attr_list
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -84,7 +90,12 @@ plugins:
 
 nav:
   - Overview: index.md
-  - Architecture: architecture.md
+  - Architecture:
+      - Overview: architecture.md
+      - Data Plane: architecture/data_plane.md
+      - Control Plane: architecture/control_plane.md
+      - State & Topology Plane: architecture/state_topology.md
+      - Agentic Layer: architecture/agentic_layer.md
   - API Reference:
       - Introduction: api/index.md
       - REST API (Scalar):
@@ -101,6 +112,7 @@ nav:
   - Project Structure: project_structure.md
   - AI & Agents:
       - Introduction: ai/agentic_layer.md
+      - Safety & Guardrails: ai/safety_guardrails.md
       - Model Context Protocol: ai/mcp.md
       - Troubleshooting: troubleshooting_ai.md
   - Recipes:

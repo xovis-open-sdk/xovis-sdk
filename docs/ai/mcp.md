@@ -2,7 +2,7 @@
 
 | **Status** | **Discovery** | **Installation** |
 |:---:|:---:|:---:|
-| [![Smithery Verified](https://smithery.ai/badge/xovis-sdk/xovis-mcp)](https://smithery.ai/servers/xovis-sdk/xovis-mcp) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Registry_Install-0052FF.svg?logo=server&logoColor=white)](https://smithery.ai/servers/xovis-sdk/xovis-mcp) |
+| [![Smithery Verified](https://smithery.ai/badge/xovis-sdk/xovis-mcp)](https://smithery.ai/servers/xovis-sdk/xovis-mcp) | [![MCP Ready](https://img.shields.io/badge/MCP-Ready-5B32A8.svg?logo=server&logoColor=white)](https://modelcontextprotocol.io/) | [![Smithery Install](https://img.shields.io/badge/Smithery-Install-orange.svg)](https://smithery.ai/server/xovis-sdk) |
 
 The `xovis.mcp` module is the standardized bridge for **Autonomous Desktop Agents**. It implements the Anthropic Model Context Protocol (MCP), allowing AI-native IDEs and desktop applications to orchestrate Xovis hardware natively via standard I/O.
 
@@ -36,7 +36,7 @@ Before using the MCP server, you MUST generate the local resource types. The MCP
 
 For a detailed explanation of the type generation system and the CLI commands, see the [CLI Documentation](../cli.md#generate-types).
 
-## Deployment & Configuration
+## Deployment & Configuration {: #deployment-configuration }
 
 ### IDE Integration (Cursor / Windsurf)
 To enable native hardware control within your AI-native IDE, add the following to your configuration:

@@ -335,3 +335,59 @@ async def test_fleet_explorer_omni_filter(mock_hub_client):
         # Only 1 device is ONLINE (00:11:22), so prompt says ALL 1 VISIBLE
         assert "ALL 1 VISIBLE" in prompt
         assert "Skipping OFFLINE" in prompt
+
+
+@pytest.mark.asyncio
+async def test_fleet_explorer_local_scan(mock_hub_client):
+    """Verifies that the local scan worker resolves and uses the device's ip_address."""
+    screen = XovisFleetTable(hub_client=mock_hub_client)
+    screen.notify = MagicMock()
+    screen._apply_filter = MagicMock()
+    screen.query_one = MagicMock()
+
+    # Populate fleet data with a device containing a valid ip_address
+    screen._fleet_data = [
+        FleetDevice(
+            mac_address="00:11:22:33:44:55",
+            status="🟢 ONLINE",
+            customer="Xovis",
+            group="Office",
+            name="Kitchen",
+            model="PC2S",
+            firmware="5.9.2",
+            ms_role="Standalone",
+            ms_parent_mac="",
+            ip_address="192.168.1.50",
+        )
+    ]
+
+    # Mock DeviceClient
+    mock_device_client = AsyncMock()
+    mock_device_client.__aenter__.return_value = mock_device_client
+
+    # Mock discovered clients
+    mock_discovered_client = AsyncMock()
+    mock_discovered_client._http_client.base_url = "http://192.168.1.100:80"
+    mock_discovered_client.info = AsyncMock(
+        return_value={"mac_address": "AA:BB:CC:11:22:33", "name": "Discovered Sensor", "type": "PC3", "fw_version": "5.10.0"}
+    )
+
+    mock_device_client.topology.scan = AsyncMock(return_value=[mock_discovered_client])
+
+    # We patch the DeviceClient inside xovis.api.device.client
+    with patch("xovis.api.device.client.DeviceClient", return_value=mock_device_client) as mock_client_cls, patch("asyncio.sleep", return_value=None):
+        await screen._worker_local_scan(start_ip="192.168.1.100", count=5)
+
+        # Assert DeviceClient is initialized with the correct IP address
+        assert mock_client_cls.call_count == 2
+        last_call_kwargs = mock_client_cls.call_args_list[-1].kwargs
+        assert last_call_kwargs["host"] == "192.168.1.50"
+        assert last_call_kwargs["username"] == "admin"
+        assert last_call_kwargs["password"] == "pass"
+
+    # Assert that the discovered device is added to lan_devices and contains ip_address
+    assert "AA:BB:CC:11:22:33" in screen._lan_devices
+    lan_dev = screen._lan_devices["AA:BB:CC:11:22:33"]
+    assert lan_dev.ip_address == "192.168.1.100"
+    assert lan_dev.status == "🟢 LOCAL"
+    assert lan_dev.source == "LAN"
