@@ -234,17 +234,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../architecture/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
   
   Architecture
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -452,9 +453,27 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../architecture/" class="md-nav__link">
+    
+    
+    
+    
+      
+      
         
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -468,7 +487,163 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/control_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/state_topology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State & Topology Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/agentic_layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agentic Layer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1053,6 +1228,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../ai/safety_guardrails/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety & Guardrails
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../ai/mcp/" class="md-nav__link">
         
   
@@ -1356,7 +1559,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-the-state-topology-plane-fleet-engine" class="md-nav__link">
+  <a href="#3-the-state--topology-plane-fleet-engine" class="md-nav__link">
     <span class="md-ellipsis">
       
         3. The State &amp; Topology Plane (Fleet Engine)
@@ -1389,7 +1592,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-enterprise-coding-documentation-standards" class="md-nav__link">
+  <a href="#6-enterprise-coding--documentation-standards" class="md-nav__link">
     <span class="md-ellipsis">
       
         6. Enterprise Coding &amp; Documentation Standards
@@ -1558,7 +1761,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-the-state-topology-plane-fleet-engine" class="md-nav__link">
+  <a href="#3-the-state--topology-plane-fleet-engine" class="md-nav__link">
     <span class="md-ellipsis">
       
         3. The State &amp; Topology Plane (Fleet Engine)
@@ -1591,7 +1794,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-enterprise-coding-documentation-standards" class="md-nav__link">
+  <a href="#6-enterprise-coding--documentation-standards" class="md-nav__link">
     <span class="md-ellipsis">
       
         6. Enterprise Coding &amp; Documentation Standards
@@ -1654,15 +1857,20 @@
 <p><strong>Path:</strong> <code>src/xovis/datapush/</code>
 The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP Webhook, UDP, and MQTT DataPush ingestion.</p>
 <ul>
-<li><strong>Core Engine:</strong> Pure native asyncio (<code>asyncio.start_server</code>, <code>asyncio.DatagramProtocol</code>) and <code>orjson</code> for lock-free deserialization.</li>
-<li><strong>Unified Ingestion:</strong> Leverages the <code>DataPlaneIngestor</code> to standardize processing across all transport layers.</li>
-<li><strong>Parsing Strategy:</strong> <ul>
-<li><strong>TCP Data</strong>: Uses a sliding string buffer with <code>json.JSONDecoder().raw_decode()</code> to slice frames out of raw concatenated JSON data.</li>
-<li><strong>Discrete Packets</strong>: Uses <code>orjson.loads()</code> for HTTP, UDP, and MQTT to minimize CPU overhead.</li>
+<li><strong>Core Engine:</strong> Pure native asyncio (servers like <code>asyncio.start_server</code>, <code>asyncio.DatagramProtocol</code> and active client connection loops) with <code>orjson</code> and <code>json.JSONDecoder</code> for lock-free deserialization.</li>
+<li><strong>Active vs. Passive Ingestion:</strong><ul>
+<li><strong>Passive Receivers (Servers)</strong>: Run in the SDK's process to ingest telemetry pushed directly by the sensors (<code>XovisTCPServer</code>, <code>XovisUDPServer</code>, <code>XovisHTTPServer</code>).</li>
+<li><strong>Active Receivers (Clients)</strong>: Connect or subscribe outward to retrieve telemetry from remote interfaces (<code>XovisTCPClient</code> connecting to sensors in SERVER mode, <code>XovisMQTTClient</code> subscribing to external brokers).</li>
 </ul>
 </li>
-<li><strong>Binary Fallback</strong>: Automatically wraps non-JSON payloads (e.g. recordings) in a <code>recording_data</code> pseudo-frame.</li>
-<li><strong>Data Packing:</strong> STRICTLY NO Pydantic validation is allowed in this hot path.</li>
+<li><strong>Unified Ingestion:</strong> Leverages the <code>DataPlaneIngestor</code> to standardize parsing and sink routing across all transport layers.</li>
+<li><strong>Parsing Strategy:</strong> <ul>
+<li><strong>TCP Streaming Data (Server &amp; Client)</strong>: Uses a sliding string buffer combined with standard library <code>json.JSONDecoder().raw_decode()</code> to safely carve out concatenated, newline-free JSON frames. This is mandatory for TCP because of MTU fragmentation.</li>
+<li><strong>Discrete Messages (Server &amp; Client)</strong>: Uses <code>orjson.loads()</code> via the centralized <code>DataPlaneIngestor.parse_frame</code> helper for UDP datagrams, HTTP webhooks, and MQTT topic payloads to minimize deserialization overhead.</li>
+</ul>
+</li>
+<li><strong>Binary Fallback</strong>: Automatically wraps non-JSON payloads (e.g. binary recordings) in a <code>recording_data</code> pseudo-frame.</li>
+<li><strong>Data Packing:</strong> STRICTLY NO Pydantic validation is allowed in this hot path to ensure zero-blocking of high-frequency streams.</li>
 <li><strong>Network I/O:</strong> Telemetry frames are delivered to sinks in real-time. Efficient batching and lock-free archiving are enforced.</li>
 </ul>
 <hr />
@@ -1678,7 +1886,7 @@ Focuses on structural robustness, strict schema adherence, and network resilienc
 <li><strong>Configuration Nuances:</strong> In <code>HTTPConfig</code>, the <code>uri</code> must exclude the port. <code>DataPushAgent</code> instances MUST have <code>enabled=True</code> explicitly set to prevent deactivation via <code>exclude_unset=True</code>.</li>
 </ul>
 <hr />
-<h3 id="3-the-state-topology-plane-fleet-engine">3. The State &amp; Topology Plane (Fleet Engine)</h3>
+<h3 id="3-the-state--topology-plane-fleet-engine">3. The State &amp; Topology Plane (Fleet Engine)</h3>
 <p><strong>Path:</strong> <code>src/xovis/api/device/</code> and <code>src/xovis/api/hub/</code>
 Maintains graph-aware context, stateful caching, and Desired State Configuration (DSC) workflows.</p>
 <ul>
@@ -1708,7 +1916,7 @@ Provides safe, pseudonymized, and strictly validated hardware orchestration for 
 <li><strong>Static Autocomplete:</strong> The <code>xovis-cli</code> generates local <code>xovis_types.py</code> files with partitioned <code>Literal</code> strings.</li>
 </ul>
 <hr />
-<h3 id="6-enterprise-coding-documentation-standards">6. Enterprise Coding &amp; Documentation Standards</h3>
+<h3 id="6-enterprise-coding--documentation-standards">6. Enterprise Coding &amp; Documentation Standards</h3>
 <ul>
 <li><strong>Zero-Inline-Comment, Max-Docstring:</strong> Architectural intent, Pydantic constraints, and plane boundaries MUST be formalized into rigorous Google-style docstrings.</li>
 <li><strong>Clean Code</strong>: Code must explain itself; inline chatter is forbidden.</li>

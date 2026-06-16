@@ -7,26 +7,26 @@
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <meta content="Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB." name="description"/>
 <meta content="Xovis Open SDK Team" name="author"/>
-<link href=".." rel="prev"/>
-<link href="data_plane/" rel="next"/>
-<link href="../assets/images/logo.jpg" rel="icon"/>
+<link href="../control_plane/" rel="prev"/>
+<link href="../agentic_layer/" rel="next"/>
+<link href="../../assets/images/logo.jpg" rel="icon"/>
 <meta content="mkdocs-1.6.1, mkdocs-material-9.7.6" name="generator"/>
-<title>Overview - xovis-sdk</title>
-<link href="../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
-<link href="../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<title>State &amp; Topology Plane - xovis-sdk</title>
+<link href="../../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
 <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-<link href="../assets/_mkdocstrings.css" rel="stylesheet"/>
-<link href="../stylesheets/extra.css" rel="stylesheet"/>
-<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<link href="../../assets/_mkdocstrings.css" rel="stylesheet"/>
+<link href="../../stylesheets/extra.css" rel="stylesheet"/>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
 </head>
 <body data-md-color-accent="cyan" data-md-color-primary="teal" data-md-color-scheme="default" dir="ltr">
 <input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
-<a class="md-skip" href="#quadrifurcated-architecture">
+<a class="md-skip" href="#the-state--topology-plane-fleet-orchestration">
           Skip to content
         </a>
 </div>
@@ -34,8 +34,8 @@
 </div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
-<a aria-label="xovis-sdk" class="md-header__button md-logo" data-md-component="logo" href=".." title="xovis-sdk">
-<img alt="logo" src="../assets/images/logo.jpg"/>
+<a aria-label="xovis-sdk" class="md-header__button md-logo" data-md-component="logo" href="../.." title="xovis-sdk">
+<img alt="logo" src="../../assets/images/logo.jpg"/>
 </a>
 <label class="md-header__button md-icon" for="__drawer">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
@@ -50,7 +50,7 @@
 <div class="md-header__topic" data-md-component="header-topic">
 <span class="md-ellipsis">
             
-              Overview
+              State &amp; Topology Plane
             
           </span>
 </div>
@@ -105,7 +105,7 @@
 <div class="md-grid">
 <ul class="md-tabs__list">
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="..">
+<a class="md-tabs__link" href="../..">
         
   
   
@@ -116,7 +116,7 @@
       </a>
 </li>
 <li class="md-tabs__item md-tabs__item--active">
-<a class="md-tabs__link" href="./">
+<a class="md-tabs__link" href="../">
           
   
   
@@ -125,7 +125,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../api/">
+<a class="md-tabs__link" href="../../api/">
           
   
   
@@ -134,7 +134,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../cli/">
+<a class="md-tabs__link" href="../../cli/">
         
   
   
@@ -145,7 +145,7 @@
       </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../project_structure/">
+<a class="md-tabs__link" href="../../project_structure/">
         
   
   
@@ -156,7 +156,7 @@
       </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../ai/agentic_layer/">
+<a class="md-tabs__link" href="../../ai/agentic_layer/">
           
   
   
@@ -165,7 +165,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../recipes/langgraph_congestion_control/">
+<a class="md-tabs__link" href="../../recipes/langgraph_congestion_control/">
           
   
   
@@ -174,7 +174,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../contributing/engineering_guidelines/">
+<a class="md-tabs__link" href="../../contributing/engineering_guidelines/">
           
   
   
@@ -183,7 +183,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../llms.txt">
+<a class="md-tabs__link" href="../../llms.txt">
         
   
   
@@ -203,14 +203,14 @@
 <div class="md-sidebar__inner">
 <nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
 <label class="md-nav__title" for="__drawer">
-<a aria-label="xovis-sdk" class="md-nav__button md-logo" data-md-component="logo" href=".." title="xovis-sdk">
-<img alt="logo" src="../assets/images/logo.jpg"/>
+<a aria-label="xovis-sdk" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="xovis-sdk">
+<img alt="logo" src="../../assets/images/logo.jpg"/>
 </a>
     xovis-sdk
   </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="..">
+<a class="md-nav__link" href="../..">
 <span class="md-ellipsis">
     
   
@@ -244,13 +244,49 @@
 
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../">
+<span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../data_plane/">
+<span class="md-ellipsis">
+    
+  
+    Data Plane
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../control_plane/">
+<span class="md-ellipsis">
+    
+  
+    Control Plane
+  
+
+    
+  </span>
+</a>
+</li>
 <li class="md-nav__item md-nav__item--active">
 <input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
 <label class="md-nav__link md-nav__link--active" for="__toc">
 <span class="md-ellipsis">
     
   
-    Overview
+    State &amp; Topology Plane
   
 
     
@@ -261,7 +297,7 @@
 <span class="md-ellipsis">
     
   
-    Overview
+    State &amp; Topology Plane
   
 
     
@@ -274,46 +310,38 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#system-data-flow">
+<a class="md-nav__link" href="#interaction-topology-cache-and-statebucket">
 <span class="md-ellipsis">
       
-        System Data Flow
+        Interaction: Topology, Cache, and StateBucket
+      
+    </span>
+</a>
+<nav aria-label="Interaction: Topology, Cache, and StateBucket" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#demystifying-the-terms">
+<span class="md-ellipsis">
+      
+        Demystifying the Terms
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#1-the-data-plane-telemetry-ingestion">
+<a class="md-nav__link" href="#the-core-workflow">
 <span class="md-ellipsis">
       
-        1. The Data Plane (Telemetry Ingestion)
+        The Core Workflow
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#2-the-control-plane-configuration-management">
+<a class="md-nav__link" href="#component-responsibilities">
 <span class="md-ellipsis">
       
-        2. The Control Plane (Configuration Management)
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#3-the-state--topology-plane-fleet-orchestration">
-<span class="md-ellipsis">
-      
-        3. The State &amp; Topology Plane (Fleet Orchestration)
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#4-the-agentic-layer-ai-orchestration">
-<span class="md-ellipsis">
-      
-        4. The Agentic Layer (AI Orchestration)
+        Component Responsibilities
       
     </span>
 </a>
@@ -322,43 +350,19 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="data_plane/">
+<a class="md-nav__link" href="#core-philosophy">
 <span class="md-ellipsis">
-    
-  
-    Data Plane
-  
-
-    
-  </span>
+      
+        Core Philosophy
+      
+    </span>
 </a>
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="control_plane/">
-<span class="md-ellipsis">
-    
-  
-    Control Plane
-  
-
-    
-  </span>
-</a>
+</ul>
+</nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="state_topology/">
-<span class="md-ellipsis">
-    
-  
-    State &amp; Topology Plane
-  
-
-    
-  </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="agentic_layer/">
+<a class="md-nav__link" href="../agentic_layer/">
 <span class="md-ellipsis">
     
   
@@ -396,7 +400,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/">
+<a class="md-nav__link" href="../../api/">
 <span class="md-ellipsis">
     
   
@@ -431,7 +435,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/reference/">
+<a class="md-nav__link" href="../../api/reference/">
 <span class="md-ellipsis">
     
   
@@ -443,7 +447,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/hub_device_ref/">
+<a class="md-nav__link" href="../../api/hub_device_ref/">
 <span class="md-ellipsis">
     
   
@@ -455,7 +459,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/hub_license_ref/">
+<a class="md-nav__link" href="../../api/hub_license_ref/">
 <span class="md-ellipsis">
     
   
@@ -493,7 +497,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/core/">
+<a class="md-nav__link" href="../../api/python/core/">
 <span class="md-ellipsis">
     
   
@@ -505,7 +509,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/device/">
+<a class="md-nav__link" href="../../api/python/device/">
 <span class="md-ellipsis">
     
   
@@ -517,7 +521,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/hub/">
+<a class="md-nav__link" href="../../api/python/hub/">
 <span class="md-ellipsis">
     
   
@@ -529,7 +533,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/datapush/">
+<a class="md-nav__link" href="../../api/python/datapush/">
 <span class="md-ellipsis">
     
   
@@ -541,7 +545,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/skills/">
+<a class="md-nav__link" href="../../api/python/skills/">
 <span class="md-ellipsis">
     
   
@@ -559,7 +563,7 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../cli/">
+<a class="md-nav__link" href="../../cli/">
 <span class="md-ellipsis">
     
   
@@ -571,7 +575,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../project_structure/">
+<a class="md-nav__link" href="../../project_structure/">
 <span class="md-ellipsis">
     
   
@@ -606,7 +610,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../ai/agentic_layer/">
+<a class="md-nav__link" href="../../ai/agentic_layer/">
 <span class="md-ellipsis">
     
   
@@ -618,7 +622,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../ai/safety_guardrails/">
+<a class="md-nav__link" href="../../ai/safety_guardrails/">
 <span class="md-ellipsis">
     
   
@@ -630,7 +634,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../ai/mcp/">
+<a class="md-nav__link" href="../../ai/mcp/">
 <span class="md-ellipsis">
     
   
@@ -642,7 +646,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../troubleshooting_ai/">
+<a class="md-nav__link" href="../../troubleshooting_ai/">
 <span class="md-ellipsis">
     
   
@@ -680,7 +684,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../recipes/langgraph_congestion_control/">
+<a class="md-nav__link" href="../../recipes/langgraph_congestion_control/">
 <span class="md-ellipsis">
     
   
@@ -718,7 +722,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../contributing/engineering_guidelines/">
+<a class="md-nav__link" href="../../contributing/engineering_guidelines/">
 <span class="md-ellipsis">
     
   
@@ -730,7 +734,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../contributing/agent_instructions/">
+<a class="md-nav__link" href="../../contributing/agent_instructions/">
 <span class="md-ellipsis">
     
   
@@ -745,7 +749,7 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../llms.txt">
+<a class="md-nav__link" href="../../llms.txt">
 <span class="md-ellipsis">
     
   
@@ -771,46 +775,50 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#system-data-flow">
+<a class="md-nav__link" href="#interaction-topology-cache-and-statebucket">
 <span class="md-ellipsis">
       
-        System Data Flow
+        Interaction: Topology, Cache, and StateBucket
+      
+    </span>
+</a>
+<nav aria-label="Interaction: Topology, Cache, and StateBucket" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#demystifying-the-terms">
+<span class="md-ellipsis">
+      
+        Demystifying the Terms
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#1-the-data-plane-telemetry-ingestion">
+<a class="md-nav__link" href="#the-core-workflow">
 <span class="md-ellipsis">
       
-        1. The Data Plane (Telemetry Ingestion)
+        The Core Workflow
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#2-the-control-plane-configuration-management">
+<a class="md-nav__link" href="#component-responsibilities">
 <span class="md-ellipsis">
       
-        2. The Control Plane (Configuration Management)
+        Component Responsibilities
       
     </span>
 </a>
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#3-the-state--topology-plane-fleet-orchestration">
-<span class="md-ellipsis">
-      
-        3. The State &amp; Topology Plane (Fleet Orchestration)
-      
-    </span>
-</a>
+</ul>
+</nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#4-the-agentic-layer-ai-orchestration">
+<a class="md-nav__link" href="#core-philosophy">
 <span class="md-ellipsis">
       
-        4. The Agentic Layer (AI Orchestration)
+        Core Philosophy
       
     </span>
 </a>
@@ -822,85 +830,101 @@
 </div>
 <div class="md-content" data-md-component="content">
 <article class="md-content__inner md-typeset">
-<h1 id="quadrifurcated-architecture">Quadrifurcated Architecture</h1>
-<p>The <code>xovis-sdk</code> is strictly <strong>quadrifurcated</strong> into four distinct planes. This decoupling ensures high-frequency telemetry remains unblocked by slow control operations, while fleet-wide state is managed independently of the hardware's physical lens topology.</p>
-<h3 id="system-data-flow">System Data Flow</h3>
-<div class="mermaid">graph TB
-    subgraph "Xovis Hardware Layer"
-        direction TB
-        A[Physical Sensors / Spiders]
-        H[Xovis HUB Cloud]
-        H -- Secure Proxy Tunnel (M2M) --&gt; A
+<h1 id="the-state--topology-plane-fleet-orchestration">The State &amp; Topology Plane (Fleet Orchestration)</h1>
+<p>The State &amp; Topology Plane acts as the stateful, topology-aware "Fleet Engine" of the <code>xovis-sdk</code>. It abstracts physical sensors, lens topologies, and virtual multisensor clusters into highly organized, accessible structures.</p>
+<h2 id="interaction-topology-cache-and-statebucket">Interaction: Topology, Cache, and StateBucket</h2>
+<p>To build robust, offline-first fleet management, the SDK separates structural relationships from the configurations themselves. This is achieved through the coordinated interplay of <strong>Topology</strong>, <strong>Cache</strong>, <strong>Buckets</strong>, and <strong>Managers</strong>.</p>
+<h3 id="demystifying-the-terms">Demystifying the Terms</h3>
+<p>To navigate the State &amp; Topology Plane with confidence, it helps to understand these four core concepts:</p>
+<ol>
+<li><strong>Topology (The Blueprint):</strong> This is the logical and physical map of your network and hardware. It defines which physical lenses (<code>singlesensor</code>) and virtual stitched clusters (<code>multisensors</code>) actually exist. It does not contain configuration data; it only defines the <em>structure</em> of what can be configured.</li>
+<li><strong>Bucket (The Cargo):</strong> A <strong>StateBucket</strong> (e.g., <code>HostStateBucket</code> or <code>ContextStateBucket</code>) is a raw, behaviorless data container. It holds JSON-serialized lists of resources (zones, lines, agents, connections) belonging to a specific context. It is the "payload" or content itself.</li>
+<li><strong>Cache (The Warehouse):</strong> This is the localized storage repository (the in-memory state mapping and the persisted <code>device_state.json</code> file) where all state buckets are stored. It acts as the offline-first single source of truth for the SDK.</li>
+<li><strong>Manager (The Operator):</strong> The active orchestrator (specifically <code>ConfigCacheManager</code> or <code>HubCacheManager</code>) that manages the lifecycle of the cache. It executes the synchronization loops (<code>sync</code>), schedules background updates, handles disk serialization via non-blocking threads, and exposes intuitive dot-notation <code>REPLAccessor</code> layers.</li>
+</ol>
+<hr/>
+<h3 id="the-core-workflow">The Core Workflow</h3>
+<ol>
+<li><strong>Topology Discovery:</strong> The <code>client.topology</code> manager identifies which contexts exist. It discovers if the sensor is a standalone device (<code>singlesensor</code>) or part of a stitched <code>multisensor</code> cluster.</li>
+<li><strong>Cache Synchronization:</strong> When you call <code>await client.cache.sync()</code>, the SDK queries the topology map to find all active physical and virtual context endpoints, fetches their configurations, and populates the localized Cache.</li>
+<li><strong>StateBucket Storage:</strong> For every context identified in the topology, the SDK isolates and populates a localized <code>StateBucket</code> within the Cache containing the specific zones, lines, and agents belonging to that context.</li>
+</ol>
+<div class="mermaid">graph TD
+    subgraph DeviceClient [Device Client Instance]
+        T["<b>Topology Manager</b><br/><i>The Map</i>"]
+        C["<b>Config Cache Manager</b><br/><i>The Orchestrator</i>"]
     end
 
-    subgraph "Data Plane (High Frequency)"
-        B[Servers &amp; Clients / TCP, UDP, HTTP, MQTT]
-        S[XovisSink]
+    subgraph Network [LAN &amp; Remote Network]
+        L[Physical Lens]
+        MS[Multisensor Cluster]
     end
 
-    subgraph "Control &amp; State Plane (SDK Core)"
-        C[DeviceClient]
-        F[HubClient]
-        D[HostStateBucket / ConfigCache]
+    T -- "Scans &amp; Discovers" --&gt; Network
+    C &lt;-- "Uses Map from" --&gt; T
 
-        F -- "connect_device()" --&gt; C
-        C &lt;--&gt; D
+    subgraph Buckets [State Buckets / Contexts]
+        SB1["<b>Bucket: singlesensor</b><br/>Zones, Lines, Agents"]
+        SB2["<b>Bucket: multisensor_1</b><br/>Multisensor Zones, Logics"]
     end
 
-    subgraph "Agentic &amp; Tooling Layer"
-        G[XovisAIToolkit]
-        M[MCP Server / Model Context Protocol]
-        R[REPLAccessor / CLI]
-    end
+    C -- "Populates &amp; Manages" --&gt; Buckets
 
-    %% Data Connections
-    A --&gt;|Data-Push up to 12.5Hz| B
-    B --&gt;|Sliding Buffer Extraction| S
-
-    %% Control Connections
-    A &lt;--&gt;|Local REST API v5| C
-    H &lt;--&gt;|Hub REST API| F
-
-    %% Fleet Integration
-    D -. "Reflect State" .-&gt; R
-    F -. "Fleet Sync" .-&gt; D
-
-    %% AI Integration
-    D --- G
-    F --- G
-    G --- M
-    M --- LLM[LLM / Autonomous Agents]
-
-    %% Styling
-    style A fill:#1e293b,stroke:#38bdf8,stroke-width:2px
-    style H fill:#1e293b,stroke:#38bdf8,stroke-width:2px
-    style B fill:#0f172a,stroke:#2dd4bf,stroke-width:2px
-    style C fill:#0f172a,stroke:#2dd4bf,stroke-width:2px
-    style F fill:#0f172a,stroke:#2dd4bf,stroke-width:2px
-    style G fill:#1e293b,stroke:#818cf8,stroke-width:2px
-    style M fill:#1e293b,stroke:#818cf8,stroke-width:2px
+    SB1 -- "Represents Data for" --&gt; L
+    SB2 -- "Represents Data for" --&gt; MS
 </div>
+<p>When you execute <code>client.cache.export_to_file("device_state.json")</code>, the SDK aggregates all localized <code>StateBuckets</code> structured by the <code>TopologyManager</code> and dumps them into a single, cohesive offline state JSON file.</p>
+<h3 id="component-responsibilities">Component Responsibilities</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Responsibility</th>
+<th style="text-align: left;">Technical Definition</th>
+<th style="text-align: left;">Analogy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Topology</strong></td>
+<td style="text-align: left;"><strong>Structural Logic</strong>: Discovers active network hosts, lens clusters, and synthesizes multisensor graphs.</td>
+<td style="text-align: left;"><code>TopologyManager</code></td>
+<td style="text-align: left;">The <strong>Blueprint</strong> of a building.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Managers</strong></td>
+<td style="text-align: left;"><strong>Life-cycle Management</strong>: Active executor running sync loops, background watchers, and disk serialization.</td>
+<td style="text-align: left;"><code>ConfigCacheManager</code> / <code>HubCacheManager</code></td>
+<td style="text-align: left;">The <strong>Building Manager / Operator</strong> who keeps everything running.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cache</strong></td>
+<td style="text-align: left;"><strong>State Repository</strong>: The in-memory collection and serialized files representing the offline-first state of the fleet.</td>
+<td style="text-align: left;">Local state cache dictionary / <code>device_state.json</code></td>
+<td style="text-align: left;">The <strong>Warehouse</strong> where all assets are stored and indexed.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Buckets</strong></td>
+<td style="text-align: left;"><strong>Data Container</strong>: Isolated Pydantic models containing serialized zones, lines, and agents for a context.</td>
+<td style="text-align: left;"><code>HostStateBucket</code> / <code>ContextStateBucket</code></td>
+<td style="text-align: left;">The <strong>Furniture and People</strong> inside a specific room.</td>
+</tr>
+</tbody>
+</table>
 <hr/>
-<div class="admonition info">
-<p class="admonition-title">For Contributors</p>
-<p>If you are interested in collaborating on the SDK or want to understand the technical rules governing each plane, please refer to the <a href="../contributing/agent_instructions/">Contributor Architecture &amp; Guidelines</a>.</p>
-</div>
-<h3 id="1-the-data-plane-telemetry-ingestion">1. The Data Plane (Telemetry Ingestion)</h3>
-<p>The <strong>Data Plane</strong> handles ultra-high-frequency (12.5Hz) ingestion of live tracking coordinates, telemetry, and binary recordings using pure native, non-blocking <code>asyncio</code>. It supports passive ingestion servers (for incoming TCP streams, UDP datagrams, and HTTP Webhooks) and active ingestion clients (for outgoing TCP connection polling and MQTT broker topic subscriptions), utilizing a high-performance sliding string buffer to parse concatenated JSON streams. All parsed frames are instantly delivered to downstream sinks to ensure the ingestion stream remains unblocked.</p>
-<p><strong>Deep Dive:</strong> Ready to master the high-speed telemetry engine? Read the <a href="data_plane/">Data Plane Blueprints</a>.</p>
-<hr/>
-<h3 id="2-the-control-plane-configuration-management">2. The Control Plane (Configuration Management)</h3>
-<p>The <strong>Control Plane</strong> provides low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors. It utilizes <code>httpx</code> async pooling, token authentication caching with stateful locks, and proactive hardware capability probing to guarantee operational safety. This plane also exposes the <code>SmartDeviceClient</code>—a hybrid router that automatically probes local network paths before securely falling back to cloud-proxied HUB tunnel routes.</p>
-<p><strong>Deep Dive:</strong> Want to build robust configuration and control flows? Read the <a href="control_plane/">Control Plane Blueprints</a>.</p>
-<hr/>
-<h3 id="3-the-state--topology-plane-fleet-orchestration">3. The State &amp; Topology Plane (Fleet Orchestration)</h3>
-<p>The <strong>State &amp; Topology Plane</strong> acts as the stateful, topology-aware fleet engine of the SDK. It abstracts physical lenses (<code>singlesensor</code>) and virtual stitched environments (<code>multisensors</code>) into isolated, structured contexts. It manages persistent configuration cache buckets, offloads local disk I/O to background threads to protect the async event loop, and synthesizes directed network topology graphs.</p>
-<p><strong>Deep Dive:</strong> Learn how the SDK manages complex device networks and state. Read the <a href="state_topology/">State &amp; Topology Blueprints</a>.</p>
-<hr/>
-<h3 id="4-the-agentic-layer-ai-orchestration">4. The Agentic Layer (AI Orchestration)</h3>
-<p>The <strong>Agentic Layer</strong> serves as the safety-first integration boundary for autonomous agents, LLMs, and the Model Context Protocol (MCP). It features an explicit, safety-tiered tool mapping (OPEN, RESTRICTED, CRITICAL, BLOCKED) to prevent destructive execution, and enforces strict GDPR-compliant format-preserving pseudonymization of sensitive hardware identifiers, customer names, etc.</p>
-<p><strong>Deep Dive:</strong> Discover how the SDK safely exposes hardware capabilities to AI models. Read the <a href="agentic_layer/">Agentic Layer Blueprints</a>.</p>
-<hr/>
+<h2 id="core-philosophy">Core Philosophy</h2>
+<p>A standard sensor is more than just a single IP address—it represents an entire network topology of physical lenses, stitched virtual environments, and configuration buckets. This plane manages these relationships seamlessly.</p>
+<ul>
+<li><strong>Rule - Context Isolation:</strong> A device IP is a "Host". A host runs isolated "Contexts". The <code>singlesensor</code> context applies strictly to the physical lens (and MUST gracefully raise <code>HardwareNotSupportedError</code> if the host is a lensless Spider NUC). The <code>multisensors</code> context applies to 0..N virtual stitched environments. Geometries and DataPushes are strictly partitioned by context.</li>
+<li><strong>Rule - Multisensor Cache Rooting:</strong> Virtual contexts discovered via <code>multisensors.sync()</code> MUST be rooted into the persistent <code>HostStateBucket</code> via the <code>@multisensors.setter</code>. This ensures that DataPush agents and connections persist across CRUD operations and are visible to the <code>REPLAccessor</code>.</li>
+<li><strong>Rule - String-Normalized Resolution:</strong> All resource managers MUST normalize context and resource IDs to strings when interacting with the stateful cache. Integer keys are strictly forbidden in the <code>multisensors</code> mapping to prevent resolution failures.</li>
+<li><strong>Rule - Proactive Context Discovery:</strong> Resource managers SHOULD trigger a proactive <code>multisensors.sync()</code> if a targeted virtual context is missing from the local cache, enabling on-the-fly recovery of hardware state.</li>
+<li><strong>Rule - Hardware-Aware Context Routing:</strong> Agents MUST call <code>get_system_info</code> as a mandatory prerequisite to identify the hardware type (Spider vs. PC/PF series). Spider NUCs lack a physical lens and will reject <code>singlesensor</code> requests. <code>SinglesensorContext.datapush</code> must raise <code>HardwareNotSupportedError</code> on lensless hardware.</li>
+<li><strong>Rule - Smart Caching &amp; GC Trap:</strong> The SDK uses a <code>ConfigCacheManager</code> (Device) and <code>HubCacheManager</code> (Hub, with client-side <code>fleet_filter</code> mapping). <strong>CRITICAL:</strong> If <code>BACKGROUND_WATCHER</code> is active, the <code>asyncio.create_task</code> loop MUST be stored in a hard-referenced <code>Set</code> (to prevent Python 3.11+ GC mid-execution) and cleanly cancelled in <code>__aexit__</code>.</li>
+<li><strong>Rule - Offline-First Persistence:</strong> The <code>ConfigCacheManager</code> supports auto-persistence via <code>auto_persist_path</code>. Disk serialization/deserialization MUST be offloaded using <code>asyncio.to_thread</code> to ensure zero blocking of the async event loop.</li>
+<li><strong>Rule - Edge Topology Synthesis:</strong> The <code>TopologyManager</code> synthesizes directed graphs (<code>MSGraph</code>) by concurrently cross-referencing multisensor child clusters with physical local network nodes.</li>
+<li><strong>Rule - Multisensor Discovery Fallbacks:</strong> Global status endpoints (e.g., <code>/multisensors/status</code>) may fail on restrictive hardware. Discovery logic MUST fallback to probing explicit IDs (e.g., 1, 2, 3) to ensure context isolation.</li>
+</ul>
 </article>
 </div>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -933,8 +957,8 @@
 <div class="md-dialog" data-md-component="dialog">
 <div class="md-dialog__inner md-typeset"></div>
 </div>
-<script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-<script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+<script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
 <script src="https://unpkg.com/mermaid@10.4.0/dist/mermaid.min.js"></script><script>mermaid.initialize({
     theme: "dark",
     themeVariables: {

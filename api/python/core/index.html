@@ -234,17 +234,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../../architecture/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../../architecture/" class="md-tabs__link">
+          
+  
   
   Architecture
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -452,9 +453,27 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../../architecture/" class="md-nav__link">
+    
+    
+    
+    
+      
+      
         
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -468,7 +487,163 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/data_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/control_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/state_topology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State & Topology Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/agentic_layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agentic Layer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2576,6 +2751,34 @@
     
   
     Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ai/safety_guardrails/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety & Guardrails
   
 
     
@@ -11271,10 +11474,12 @@ from the Xovis HUB Cloud OpenAPI specification, incorporating strict AI privacy 
 </div><h2 id="dynamic-type-safety-xovis_types">Dynamic Type Safety (<code>xovis_types</code>)</h2>
 <p>While the core models provide structure, the SDK supports <strong>Dynamic Type Generation</strong> to provide literal-level safety for your specific environment.</p>
 <h3 id="why-use-dynamic-types">Why use dynamic types?</h3>
-<p>Because every Xovis installation is unique (with different Agent names, Zone IDs, and Line configurations), static SDK code cannot know your specific topology. By generating a local <code>xovis_types.py</code> module, you gain:
-- <strong>IDE Autocomplete</strong>: See your actual sensor names in your editor.
-- <strong>Static Validation</strong>: Tools like <code>mypy</code> or <code>pyright</code> can catch invalid references before you run the code.
-- <strong>Strict Literals</strong>: Enforce that only existing zones or agents are used in your logic.</p>
+<p>Because every Xovis installation is unique (with different Agent names, Zone IDs, and Line configurations), static SDK code cannot know your specific topology. By generating a local <code>xovis_types.py</code> module, you gain:</p>
+<ul>
+<li><strong>IDE Autocomplete</strong>: See your actual sensor names in your editor.</li>
+<li><strong>Static Validation</strong>: Tools like <code>mypy</code> or <code>pyright</code> can catch invalid references before you run the code.</li>
+<li><strong>Strict Literals</strong>: Enforce that only existing zones or agents are used in your logic.</li>
+</ul>
 <h3 id="how-to-generate">How to generate</h3>
 <p>Use the Xovis CLI to probe a live sensor and build your local type definitions:</p>
 <div class="highlight"><pre><span></span><code>xovis-cli<span class="w"> </span>generate-types<span class="w"> </span>--host<span class="w"> </span>&lt;SENSOR_IP&gt;

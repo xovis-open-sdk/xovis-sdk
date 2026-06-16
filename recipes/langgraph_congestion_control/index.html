@@ -234,17 +234,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../architecture/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
   
   Architecture
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -452,9 +453,27 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../architecture/" class="md-nav__link">
+    
+    
+    
+    
+      
+      
         
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -468,7 +487,163 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/control_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/state_topology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State & Topology Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/agentic_layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agentic Layer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1053,6 +1228,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../ai/safety_guardrails/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety & Guardrails
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../ai/mcp/" class="md-nav__link">
         
   
@@ -1398,18 +1601,20 @@ The agent reads the local state via <code>XovisAgentMemory</code>, executes a ta
 <span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">StateGraph</span><span class="p">,</span> <span class="n">END</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">xovis.api.device.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xovis</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartDeviceClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">xovis.skills.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">XovisAIToolkit</span><span class="p">,</span> <span class="n">XovisAgentMemory</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">xovis.skills.langchain_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_langchain_tools</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">AgentState</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
     <span class="n">messages</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="s2">&quot;The message history.&quot;</span><span class="p">]</span>
     <span class="n">hardware_state</span><span class="p">:</span> <span class="nb">str</span>
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process_hardware_loop</span><span class="p">():</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">DeviceClient</span><span class="p">(</span><span class="s2">&quot;10.0.0.50&quot;</span><span class="p">,</span> <span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">device</span><span class="p">:</span>
+    <span class="c1"># Utilizing SmartDeviceClient for robust hybrid local/remote routing</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">SmartDeviceClient</span><span class="p">(</span><span class="n">mac_address</span><span class="o">=</span><span class="s2">&quot;00:26:8c:12:34:56&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;10.0.0.50&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">device</span><span class="p">:</span>
         <span class="n">toolkit</span> <span class="o">=</span> <span class="n">XovisAIToolkit</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">tools</span> <span class="o">=</span> <span class="n">get_langchain_tools</span><span class="p">(</span><span class="n">toolkit</span><span class="p">)</span>
+
+        <span class="c1"># Retrieving LangChain tools dynamically via the unified adapter registry</span>
+        <span class="n">tools</span> <span class="o">=</span> <span class="n">toolkit</span><span class="o">.</span><span class="n">get_tools</span><span class="p">(</span><span class="s2">&quot;langchain&quot;</span><span class="p">)</span>
         <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bind_tools</span><span class="p">(</span><span class="n">tools</span><span class="p">)</span>
 
         <span class="n">memory</span> <span class="o">=</span> <span class="n">XovisAgentMemory</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">_state</span><span class="p">)</span>

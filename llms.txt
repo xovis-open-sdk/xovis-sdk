@@ -9,21 +9,23 @@ For deep architectural context and agent-specific operational rules, refer to:
 
 ## Core Philosophy
 The SDK is strictly quadrifurcated into four planes:
-1. **Data Plane (`src/xovis/datapush/`)**: High-frequency (12.5Hz) zero-copy telemetry. Uses optimized serialization and native asyncio.
+1. **Data Plane (`src/xovis/datapush/`)**: High-frequency (up to 12.5Hz) zero-copy telemetry. Uses optimized serialization and native asyncio.
 2. **The Control Plane (`src/xovis/api/`)**: Low-frequency REST configuration. Uses httpx, Pydantic V2, and proactive capability probing.
 3. **The Topology & State Plane (`src/xovis/api/device/`)**: Stateful fleet manager. Graph-aware, offline-first persistence, and topology resolution.
 4. **The Agentic Layer (`src/xovis/skills/`)**: Universal Tool Adapter exposing SDK methods to LLMs (OpenAI, Anthropic, LangGraph, MCP).
 
 ## Key API Boundaries
-- `DeviceClient`: Local sensor orchestration via IP.
+- `SmartDeviceClient`: Recommended hybrid router client. Automatically performs a fast direct local LAN check before falling back to the secure Cloud HUB proxy tunnel.
+- `DeviceClient`: Local sensor orchestration via direct IP.
 - `HubClient`: Fleet-scale cloud orchestration via Xovis HUB.
-- `XovisAIToolkit`: Universal Tool Adapter for LLMs.
+- `XovisAIToolkit`: Universal Tool Adapter for LLMs. Supports pre-registered adapters (LangChain, CrewAI) dynamically via `toolkit.get_tools(name)` or custom adapters via `toolkit.register_adapter(name, func)`.
 - `TopologyManager`: Edge Topology Synthesis (synthesizes `MSGraph` directed graphs).
 
 ## Code Patterns & Common Mistakes
 - **Mistake:** Using `orjson` in the Data Plane. **Correction:** Use `json.JSONDecoder().raw_decode()` to handle Xovis's concatenated JSON streams without newlines.
 - **Mistake:** Blindly executing physical operations. **Correction:** Check capabilities first (e.g., `if await device.has_wifi:`). Spider NUCs lack physical lenses and will crash if `singlesensor.scene` is accessed.
 - **Mistake:** Hub Rate Limits. **Correction:** The Cloud Hub uses Auth0. Share `HubClient` sessions across executions using the async context manager to prevent HTTP 429 token exhaustion.
+- **Mistake:** Static file lookup. **Correction:** Always prioritize lookup order starting with `_local_ressources/hub_fleet_state.json` (HUB) and `_local_ressources/device_state.json` (Device) to prevent polling CWD or package defaults.
 
 ## Safety & Congestion Control
 High-impact operations (reboots, factory resets, network changes) are protected by `XovisSafetyGuardrail`. To execute a CRITICAL tool, the agent MUST explicitly pass `"confirmation": True` in the tool arguments. Max critical quotas apply per session.

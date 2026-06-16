@@ -7,26 +7,26 @@
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <meta content="Enterprise-grade integration SDK for Xovis 3D Sensors, Spiders and HUB." name="description"/>
 <meta content="Xovis Open SDK Team" name="author"/>
-<link href=".." rel="prev"/>
-<link href="data_plane/" rel="next"/>
-<link href="../assets/images/logo.jpg" rel="icon"/>
+<link href="../data_plane/" rel="prev"/>
+<link href="../state_topology/" rel="next"/>
+<link href="../../assets/images/logo.jpg" rel="icon"/>
 <meta content="mkdocs-1.6.1, mkdocs-material-9.7.6" name="generator"/>
-<title>Overview - xovis-sdk</title>
-<link href="../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
-<link href="../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<title>Control Plane - xovis-sdk</title>
+<link href="../../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
 <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-<link href="../assets/_mkdocstrings.css" rel="stylesheet"/>
-<link href="../stylesheets/extra.css" rel="stylesheet"/>
-<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<link href="../../assets/_mkdocstrings.css" rel="stylesheet"/>
+<link href="../../stylesheets/extra.css" rel="stylesheet"/>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
 </head>
 <body data-md-color-accent="cyan" data-md-color-primary="teal" data-md-color-scheme="default" dir="ltr">
 <input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
-<a class="md-skip" href="#quadrifurcated-architecture">
+<a class="md-skip" href="#the-control-plane-configuration-management">
           Skip to content
         </a>
 </div>
@@ -34,8 +34,8 @@
 </div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
-<a aria-label="xovis-sdk" class="md-header__button md-logo" data-md-component="logo" href=".." title="xovis-sdk">
-<img alt="logo" src="../assets/images/logo.jpg"/>
+<a aria-label="xovis-sdk" class="md-header__button md-logo" data-md-component="logo" href="../.." title="xovis-sdk">
+<img alt="logo" src="../../assets/images/logo.jpg"/>
 </a>
 <label class="md-header__button md-icon" for="__drawer">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
@@ -50,7 +50,7 @@
 <div class="md-header__topic" data-md-component="header-topic">
 <span class="md-ellipsis">
             
-              Overview
+              Control Plane
             
           </span>
 </div>
@@ -105,7 +105,7 @@
 <div class="md-grid">
 <ul class="md-tabs__list">
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="..">
+<a class="md-tabs__link" href="../..">
         
   
   
@@ -116,7 +116,7 @@
       </a>
 </li>
 <li class="md-tabs__item md-tabs__item--active">
-<a class="md-tabs__link" href="./">
+<a class="md-tabs__link" href="../">
           
   
   
@@ -125,7 +125,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../api/">
+<a class="md-tabs__link" href="../../api/">
           
   
   
@@ -134,7 +134,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../cli/">
+<a class="md-tabs__link" href="../../cli/">
         
   
   
@@ -145,7 +145,7 @@
       </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../project_structure/">
+<a class="md-tabs__link" href="../../project_structure/">
         
   
   
@@ -156,7 +156,7 @@
       </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../ai/agentic_layer/">
+<a class="md-tabs__link" href="../../ai/agentic_layer/">
           
   
   
@@ -165,7 +165,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../recipes/langgraph_congestion_control/">
+<a class="md-tabs__link" href="../../recipes/langgraph_congestion_control/">
           
   
   
@@ -174,7 +174,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../contributing/engineering_guidelines/">
+<a class="md-tabs__link" href="../../contributing/engineering_guidelines/">
           
   
   
@@ -183,7 +183,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../llms.txt">
+<a class="md-tabs__link" href="../../llms.txt">
         
   
   
@@ -203,14 +203,14 @@
 <div class="md-sidebar__inner">
 <nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
 <label class="md-nav__title" for="__drawer">
-<a aria-label="xovis-sdk" class="md-nav__button md-logo" data-md-component="logo" href=".." title="xovis-sdk">
-<img alt="logo" src="../assets/images/logo.jpg"/>
+<a aria-label="xovis-sdk" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="xovis-sdk">
+<img alt="logo" src="../../assets/images/logo.jpg"/>
 </a>
     xovis-sdk
   </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="..">
+<a class="md-nav__link" href="../..">
 <span class="md-ellipsis">
     
   
@@ -244,13 +244,37 @@
 
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../">
+<span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../data_plane/">
+<span class="md-ellipsis">
+    
+  
+    Data Plane
+  
+
+    
+  </span>
+</a>
+</li>
 <li class="md-nav__item md-nav__item--active">
 <input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
 <label class="md-nav__link md-nav__link--active" for="__toc">
 <span class="md-ellipsis">
     
   
-    Overview
+    Control Plane
   
 
     
@@ -261,7 +285,7 @@
 <span class="md-ellipsis">
     
   
-    Overview
+    Control Plane
   
 
     
@@ -274,46 +298,37 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#system-data-flow">
+<a class="md-nav__link" href="#smart-device-routing-layer-smartdeviceclient">
 <span class="md-ellipsis">
       
-        System Data Flow
+        Smart Device Routing Layer (SmartDeviceClient)
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#1-the-data-plane-telemetry-ingestion">
+<a class="md-nav__link" href="#control-flow-and-router-diagram">
 <span class="md-ellipsis">
       
-        1. The Data Plane (Telemetry Ingestion)
+        Control Flow and Router Diagram
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#2-the-control-plane-configuration-management">
+<a class="md-nav__link" href="#graph-td-subgraph-application-layer-devcodedeveloper--sdk-scripts-end-subgraph-control-plane-core-subgraph-clients-hchubclient-dcdeviceclient-smartsmartdeviceclient-end-subgraph-core-utilities--safeguards-guardrailxovissafetyguardrail-pydanticpydantic-v2-model-validation-probeproactive-capability-cache-timenormxovistime-utility-end-end-subgraph-target-hardware--cloud-hubxovis-hub-cloud-edgeedge-sensor--rest-api-end-devcode---1-normalize-time-timenorm-devcode---2-serialize-payload-pydantic-pydantic---3-check-safety-guardrail-guardrail---4-probe-features-probe-probe---route-request-smart-smart---direct-lan-check-dc-smart---secure-fallback-tunnel-hc-dc---http-rest-api-v5--httpx-edge-hc---secure-tunnel-proxy--httpx-edge-hc---hub-apis--httpx-hub">
 <span class="md-ellipsis">
       
-        2. The Control Plane (Configuration Management)
+        graph TD subgraph "Application Layer" DevCode[Developer / SDK Scripts] end subgraph "Control Plane Core" subgraph "Clients" HC[HubClient] DC[DeviceClient] Smart[SmartDeviceClient] end subgraph "Core Utilities &amp; Safeguards" Guardrail[XovisSafetyGuardrail] Pydantic[Pydantic V2 Model Validation] Probe[Proactive Capability Cache] TimeNorm[XovisTime Utility] end end subgraph "Target Hardware / Cloud" Hub[Xovis HUB Cloud] Edge[Edge Sensor / REST API] end DevCode --&gt;|1. Normalize Time| TimeNorm DevCode --&gt;|2. Serialize Payload| Pydantic Pydantic --&gt;|3. Check Safety| Guardrail Guardrail --&gt;|4. Probe Features| Probe Probe --&gt;|Route Request| Smart Smart --&gt;|Direct LAN Check| DC Smart --&gt;|Secure Fallback Tunnel| HC DC --&gt;|HTTP REST API v5 / httpx| Edge HC --&gt;|Secure Tunnel Proxy / httpx| Edge HC --&gt;|Hub APIs / httpx| Hub
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#3-the-state--topology-plane-fleet-orchestration">
+<a class="md-nav__link" href="#core-philosophy">
 <span class="md-ellipsis">
       
-        3. The State &amp; Topology Plane (Fleet Orchestration)
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#4-the-agentic-layer-ai-orchestration">
-<span class="md-ellipsis">
-      
-        4. The Agentic Layer (AI Orchestration)
+        Core Philosophy
       
     </span>
 </a>
@@ -322,31 +337,7 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="data_plane/">
-<span class="md-ellipsis">
-    
-  
-    Data Plane
-  
-
-    
-  </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="control_plane/">
-<span class="md-ellipsis">
-    
-  
-    Control Plane
-  
-
-    
-  </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="state_topology/">
+<a class="md-nav__link" href="../state_topology/">
 <span class="md-ellipsis">
     
   
@@ -358,7 +349,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="agentic_layer/">
+<a class="md-nav__link" href="../agentic_layer/">
 <span class="md-ellipsis">
     
   
@@ -396,7 +387,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/">
+<a class="md-nav__link" href="../../api/">
 <span class="md-ellipsis">
     
   
@@ -431,7 +422,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/reference/">
+<a class="md-nav__link" href="../../api/reference/">
 <span class="md-ellipsis">
     
   
@@ -443,7 +434,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/hub_device_ref/">
+<a class="md-nav__link" href="../../api/hub_device_ref/">
 <span class="md-ellipsis">
     
   
@@ -455,7 +446,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/hub_license_ref/">
+<a class="md-nav__link" href="../../api/hub_license_ref/">
 <span class="md-ellipsis">
     
   
@@ -493,7 +484,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/core/">
+<a class="md-nav__link" href="../../api/python/core/">
 <span class="md-ellipsis">
     
   
@@ -505,7 +496,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/device/">
+<a class="md-nav__link" href="../../api/python/device/">
 <span class="md-ellipsis">
     
   
@@ -517,7 +508,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/hub/">
+<a class="md-nav__link" href="../../api/python/hub/">
 <span class="md-ellipsis">
     
   
@@ -529,7 +520,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/datapush/">
+<a class="md-nav__link" href="../../api/python/datapush/">
 <span class="md-ellipsis">
     
   
@@ -541,7 +532,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../api/python/skills/">
+<a class="md-nav__link" href="../../api/python/skills/">
 <span class="md-ellipsis">
     
   
@@ -559,7 +550,7 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../cli/">
+<a class="md-nav__link" href="../../cli/">
 <span class="md-ellipsis">
     
   
@@ -571,7 +562,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../project_structure/">
+<a class="md-nav__link" href="../../project_structure/">
 <span class="md-ellipsis">
     
   
@@ -606,7 +597,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../ai/agentic_layer/">
+<a class="md-nav__link" href="../../ai/agentic_layer/">
 <span class="md-ellipsis">
     
   
@@ -618,7 +609,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../ai/safety_guardrails/">
+<a class="md-nav__link" href="../../ai/safety_guardrails/">
 <span class="md-ellipsis">
     
   
@@ -630,7 +621,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../ai/mcp/">
+<a class="md-nav__link" href="../../ai/mcp/">
 <span class="md-ellipsis">
     
   
@@ -642,7 +633,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../troubleshooting_ai/">
+<a class="md-nav__link" href="../../troubleshooting_ai/">
 <span class="md-ellipsis">
     
   
@@ -680,7 +671,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../recipes/langgraph_congestion_control/">
+<a class="md-nav__link" href="../../recipes/langgraph_congestion_control/">
 <span class="md-ellipsis">
     
   
@@ -718,7 +709,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../contributing/engineering_guidelines/">
+<a class="md-nav__link" href="../../contributing/engineering_guidelines/">
 <span class="md-ellipsis">
     
   
@@ -730,7 +721,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../contributing/agent_instructions/">
+<a class="md-nav__link" href="../../contributing/agent_instructions/">
 <span class="md-ellipsis">
     
   
@@ -745,7 +736,7 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../llms.txt">
+<a class="md-nav__link" href="../../llms.txt">
 <span class="md-ellipsis">
     
   
@@ -771,46 +762,37 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#system-data-flow">
+<a class="md-nav__link" href="#smart-device-routing-layer-smartdeviceclient">
 <span class="md-ellipsis">
       
-        System Data Flow
+        Smart Device Routing Layer (SmartDeviceClient)
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#1-the-data-plane-telemetry-ingestion">
+<a class="md-nav__link" href="#control-flow-and-router-diagram">
 <span class="md-ellipsis">
       
-        1. The Data Plane (Telemetry Ingestion)
+        Control Flow and Router Diagram
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#2-the-control-plane-configuration-management">
+<a class="md-nav__link" href="#graph-td-subgraph-application-layer-devcodedeveloper--sdk-scripts-end-subgraph-control-plane-core-subgraph-clients-hchubclient-dcdeviceclient-smartsmartdeviceclient-end-subgraph-core-utilities--safeguards-guardrailxovissafetyguardrail-pydanticpydantic-v2-model-validation-probeproactive-capability-cache-timenormxovistime-utility-end-end-subgraph-target-hardware--cloud-hubxovis-hub-cloud-edgeedge-sensor--rest-api-end-devcode---1-normalize-time-timenorm-devcode---2-serialize-payload-pydantic-pydantic---3-check-safety-guardrail-guardrail---4-probe-features-probe-probe---route-request-smart-smart---direct-lan-check-dc-smart---secure-fallback-tunnel-hc-dc---http-rest-api-v5--httpx-edge-hc---secure-tunnel-proxy--httpx-edge-hc---hub-apis--httpx-hub">
 <span class="md-ellipsis">
       
-        2. The Control Plane (Configuration Management)
+        graph TD subgraph "Application Layer" DevCode[Developer / SDK Scripts] end subgraph "Control Plane Core" subgraph "Clients" HC[HubClient] DC[DeviceClient] Smart[SmartDeviceClient] end subgraph "Core Utilities &amp; Safeguards" Guardrail[XovisSafetyGuardrail] Pydantic[Pydantic V2 Model Validation] Probe[Proactive Capability Cache] TimeNorm[XovisTime Utility] end end subgraph "Target Hardware / Cloud" Hub[Xovis HUB Cloud] Edge[Edge Sensor / REST API] end DevCode --&gt;|1. Normalize Time| TimeNorm DevCode --&gt;|2. Serialize Payload| Pydantic Pydantic --&gt;|3. Check Safety| Guardrail Guardrail --&gt;|4. Probe Features| Probe Probe --&gt;|Route Request| Smart Smart --&gt;|Direct LAN Check| DC Smart --&gt;|Secure Fallback Tunnel| HC DC --&gt;|HTTP REST API v5 / httpx| Edge HC --&gt;|Secure Tunnel Proxy / httpx| Edge HC --&gt;|Hub APIs / httpx| Hub
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#3-the-state--topology-plane-fleet-orchestration">
+<a class="md-nav__link" href="#core-philosophy">
 <span class="md-ellipsis">
       
-        3. The State &amp; Topology Plane (Fleet Orchestration)
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#4-the-agentic-layer-ai-orchestration">
-<span class="md-ellipsis">
-      
-        4. The Agentic Layer (AI Orchestration)
+        Core Philosophy
       
     </span>
 </a>
@@ -822,85 +804,65 @@
 </div>
 <div class="md-content" data-md-component="content">
 <article class="md-content__inner md-typeset">
-<h1 id="quadrifurcated-architecture">Quadrifurcated Architecture</h1>
-<p>The <code>xovis-sdk</code> is strictly <strong>quadrifurcated</strong> into four distinct planes. This decoupling ensures high-frequency telemetry remains unblocked by slow control operations, while fleet-wide state is managed independently of the hardware's physical lens topology.</p>
-<h3 id="system-data-flow">System Data Flow</h3>
-<div class="mermaid">graph TB
-    subgraph "Xovis Hardware Layer"
-        direction TB
-        A[Physical Sensors / Spiders]
-        H[Xovis HUB Cloud]
-        H -- Secure Proxy Tunnel (M2M) --&gt; A
+<h1 id="the-control-plane-configuration-management">The Control Plane (Configuration Management)</h1>
+<p>The Control Plane manages low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors.</p>
+<h2 id="smart-device-routing-layer-smartdeviceclient">Smart Device Routing Layer (<code>SmartDeviceClient</code>)</h2>
+<p>To solve issues where the Xovis HUB does not contain real local LAN IPs (e.g., behind gateways or NAT), the SDK introduces a <strong>Multi-Plane Hybrid Routing Strategy</strong> via the <code>SmartDeviceClient</code>. </p>
+<p>When connecting to a device:</p>
+<ol>
+<li><strong>Local Handshake Check:</strong> The client performs a fast TCP/HTTP probe of local IP addresses (either cached or discovered).</li>
+<li><strong>Direct LAN Execution:</strong> If reachable, a direct, low-latency <code>DeviceClient</code> connection is used.</li>
+<li><strong>HUB Proxy Fallback:</strong> If the local path is blocked or the device is remote, the SDK automatically falls back to spawning a secure connection routed through the Cloud HUB proxy tunnel (<code>HubClient.connect_device</code>).</li>
+</ol>
+<hr/>
+<h2 id="control-flow-and-router-diagram">Control Flow and Router Diagram</h2>
+<h2 id="graph-td-subgraph-application-layer-devcodedeveloper--sdk-scripts-end-subgraph-control-plane-core-subgraph-clients-hchubclient-dcdeviceclient-smartsmartdeviceclient-end-subgraph-core-utilities--safeguards-guardrailxovissafetyguardrail-pydanticpydantic-v2-model-validation-probeproactive-capability-cache-timenormxovistime-utility-end-end-subgraph-target-hardware--cloud-hubxovis-hub-cloud-edgeedge-sensor--rest-api-end-devcode---1-normalize-time-timenorm-devcode---2-serialize-payload-pydantic-pydantic---3-check-safety-guardrail-guardrail---4-probe-features-probe-probe---route-request-smart-smart---direct-lan-check-dc-smart---secure-fallback-tunnel-hc-dc---http-rest-api-v5--httpx-edge-hc---secure-tunnel-proxy--httpx-edge-hc---hub-apis--httpx-hub"><div class="mermaid">graph TD
+    subgraph "Application Layer"
+        DevCode[Developer / SDK Scripts]
     end
 
-    subgraph "Data Plane (High Frequency)"
-        B[Servers &amp; Clients / TCP, UDP, HTTP, MQTT]
-        S[XovisSink]
+    subgraph "Control Plane Core"
+        subgraph "Clients"
+            HC[HubClient]
+            DC[DeviceClient]
+            Smart[SmartDeviceClient]
+        end
+
+        subgraph "Core Utilities &amp; Safeguards"
+            Guardrail[XovisSafetyGuardrail]
+            Pydantic[Pydantic V2 Model Validation]
+            Probe[Proactive Capability Cache]
+            TimeNorm[XovisTime Utility]
+        end
     end
 
-    subgraph "Control &amp; State Plane (SDK Core)"
-        C[DeviceClient]
-        F[HubClient]
-        D[HostStateBucket / ConfigCache]
-
-        F -- "connect_device()" --&gt; C
-        C &lt;--&gt; D
+    subgraph "Target Hardware / Cloud"
+        Hub[Xovis HUB Cloud]
+        Edge[Edge Sensor / REST API]
     end
 
-    subgraph "Agentic &amp; Tooling Layer"
-        G[XovisAIToolkit]
-        M[MCP Server / Model Context Protocol]
-        R[REPLAccessor / CLI]
-    end
+    DevCode --&gt;|1. Normalize Time| TimeNorm
+    DevCode --&gt;|2. Serialize Payload| Pydantic
+    Pydantic --&gt;|3. Check Safety| Guardrail
+    Guardrail --&gt;|4. Probe Features| Probe
 
-    %% Data Connections
-    A --&gt;|Data-Push up to 12.5Hz| B
-    B --&gt;|Sliding Buffer Extraction| S
+    Probe --&gt;|Route Request| Smart
+    Smart --&gt;|Direct LAN Check| DC
+    Smart --&gt;|Secure Fallback Tunnel| HC
 
-    %% Control Connections
-    A &lt;--&gt;|Local REST API v5| C
-    H &lt;--&gt;|Hub REST API| F
-
-    %% Fleet Integration
-    D -. "Reflect State" .-&gt; R
-    F -. "Fleet Sync" .-&gt; D
-
-    %% AI Integration
-    D --- G
-    F --- G
-    G --- M
-    M --- LLM[LLM / Autonomous Agents]
-
-    %% Styling
-    style A fill:#1e293b,stroke:#38bdf8,stroke-width:2px
-    style H fill:#1e293b,stroke:#38bdf8,stroke-width:2px
-    style B fill:#0f172a,stroke:#2dd4bf,stroke-width:2px
-    style C fill:#0f172a,stroke:#2dd4bf,stroke-width:2px
-    style F fill:#0f172a,stroke:#2dd4bf,stroke-width:2px
-    style G fill:#1e293b,stroke:#818cf8,stroke-width:2px
-    style M fill:#1e293b,stroke:#818cf8,stroke-width:2px
-</div>
-<hr/>
-<div class="admonition info">
-<p class="admonition-title">For Contributors</p>
-<p>If you are interested in collaborating on the SDK or want to understand the technical rules governing each plane, please refer to the <a href="../contributing/agent_instructions/">Contributor Architecture &amp; Guidelines</a>.</p>
-</div>
-<h3 id="1-the-data-plane-telemetry-ingestion">1. The Data Plane (Telemetry Ingestion)</h3>
-<p>The <strong>Data Plane</strong> handles ultra-high-frequency (12.5Hz) ingestion of live tracking coordinates, telemetry, and binary recordings using pure native, non-blocking <code>asyncio</code>. It supports passive ingestion servers (for incoming TCP streams, UDP datagrams, and HTTP Webhooks) and active ingestion clients (for outgoing TCP connection polling and MQTT broker topic subscriptions), utilizing a high-performance sliding string buffer to parse concatenated JSON streams. All parsed frames are instantly delivered to downstream sinks to ensure the ingestion stream remains unblocked.</p>
-<p><strong>Deep Dive:</strong> Ready to master the high-speed telemetry engine? Read the <a href="data_plane/">Data Plane Blueprints</a>.</p>
-<hr/>
-<h3 id="2-the-control-plane-configuration-management">2. The Control Plane (Configuration Management)</h3>
-<p>The <strong>Control Plane</strong> provides low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors. It utilizes <code>httpx</code> async pooling, token authentication caching with stateful locks, and proactive hardware capability probing to guarantee operational safety. This plane also exposes the <code>SmartDeviceClient</code>—a hybrid router that automatically probes local network paths before securely falling back to cloud-proxied HUB tunnel routes.</p>
-<p><strong>Deep Dive:</strong> Want to build robust configuration and control flows? Read the <a href="control_plane/">Control Plane Blueprints</a>.</p>
-<hr/>
-<h3 id="3-the-state--topology-plane-fleet-orchestration">3. The State &amp; Topology Plane (Fleet Orchestration)</h3>
-<p>The <strong>State &amp; Topology Plane</strong> acts as the stateful, topology-aware fleet engine of the SDK. It abstracts physical lenses (<code>singlesensor</code>) and virtual stitched environments (<code>multisensors</code>) into isolated, structured contexts. It manages persistent configuration cache buckets, offloads local disk I/O to background threads to protect the async event loop, and synthesizes directed network topology graphs.</p>
-<p><strong>Deep Dive:</strong> Learn how the SDK manages complex device networks and state. Read the <a href="state_topology/">State &amp; Topology Blueprints</a>.</p>
-<hr/>
-<h3 id="4-the-agentic-layer-ai-orchestration">4. The Agentic Layer (AI Orchestration)</h3>
-<p>The <strong>Agentic Layer</strong> serves as the safety-first integration boundary for autonomous agents, LLMs, and the Model Context Protocol (MCP). It features an explicit, safety-tiered tool mapping (OPEN, RESTRICTED, CRITICAL, BLOCKED) to prevent destructive execution, and enforces strict GDPR-compliant format-preserving pseudonymization of sensitive hardware identifiers, customer names, etc.</p>
-<p><strong>Deep Dive:</strong> Discover how the SDK safely exposes hardware capabilities to AI models. Read the <a href="agentic_layer/">Agentic Layer Blueprints</a>.</p>
-<hr/>
+    DC --&gt;|HTTP REST API v5 / httpx| Edge
+    HC --&gt;|Secure Tunnel Proxy / httpx| Edge
+    HC --&gt;|Hub APIs / httpx| Hub
+</div></h2>
+<h2 id="core-philosophy">Core Philosophy</h2>
+<p>While the Data Plane prioritizes high throughput and zero blocking, the Control Plane prioritizes structural robustness, strict schema validation, security, and networking resilience.</p>
+<ul>
+<li><strong>Rule - Robustness:</strong> We use <code>httpx</code> for async networking, and <code>tenacity</code> for rate-limit (HTTP 429) and server-error (HTTP 50x) backoffs.</li>
+<li><strong>Rule - Strict Pydantic CRUD:</strong> All resource managers (Analytics, Scene, DataPush, etc.) MUST enforce strict schema validation using the auto-generated Pydantic V2 models. Never use raw <code>Dict[str, Any]</code> in method signatures for payloads.</li>
+<li><strong>Rule - Pydantic Serialization:</strong> When posting Pydantic models to <code>httpx</code>, you MUST use <code>payload = obj.model_dump(mode="json", by_alias=True, exclude_unset=True)</code> to ensure <code>Enums</code> and <code>AnyUrl</code> serialize correctly.</li>
+<li><strong>Rule - Proactive Hardware Probing:</strong> Do not rely on brittle <code>try...except 403/404</code> blocks for missing hardware features. Use the lazy, asynchronous <code>_probe_capability</code> cache (e.g., <code>client.has_wifi</code>, <code>client.has_analytics</code>) or license-aware checks (e.g. <code>client.has_object_detection</code>, <code>client.has_pram_detection</code>) to gracefully handle hardware constraints.</li>
+<li><strong>Rule - Hub Auth0:</strong> The Xovis Hub uses Auth0. Token requests MUST be sent as a form-encoded POST (<code>data={...}</code>, NOT <code>json={...}</code>) to <code>https://login.xovis.cloud/oauth/token</code> including the <code>"audience": "https://api.xovis.cloud/"</code> parameter. Tokens MUST be cached to disk to prevent 429 rate-limiting.</li>
+</ul>
 </article>
 </div>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -933,8 +895,8 @@
 <div class="md-dialog" data-md-component="dialog">
 <div class="md-dialog__inner md-typeset"></div>
 </div>
-<script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-<script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+<script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
 <script src="https://unpkg.com/mermaid@10.4.0/dist/mermaid.min.js"></script><script>mermaid.initialize({
     theme: "dark",
     themeVariables: {

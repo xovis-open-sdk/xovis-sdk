@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#contributor-architecture-guidelines" class="md-skip">
+        <a href="#contributor-architecture--guidelines" class="md-skip">
           Skip to content
         </a>
       
@@ -234,17 +234,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../architecture/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
   
   Architecture
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -452,9 +453,27 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../architecture/" class="md-nav__link">
+    
+    
+    
+    
+      
+      
         
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -468,7 +487,163 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/control_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/state_topology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State & Topology Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/agentic_layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agentic Layer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1053,6 +1228,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../ai/safety_guardrails/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety & Guardrails
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../ai/mcp/" class="md-nav__link">
         
   
@@ -1384,7 +1587,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-the-state-topology-plane-fleet-orchestration" class="md-nav__link">
+  <a href="#3-the-state--topology-plane-fleet-orchestration" class="md-nav__link">
     <span class="md-ellipsis">
       
         3. The State &amp; Topology Plane (Fleet Orchestration)
@@ -1553,7 +1756,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-the-state-topology-plane-fleet-orchestration" class="md-nav__link">
+  <a href="#3-the-state--topology-plane-fleet-orchestration" class="md-nav__link">
     <span class="md-ellipsis">
       
         3. The State &amp; Topology Plane (Fleet Orchestration)
@@ -1635,7 +1838,7 @@
 
 
 
-<h1 id="contributor-architecture-guidelines">Contributor Architecture &amp; Guidelines</h1>
+<h1 id="contributor-architecture--guidelines">Contributor Architecture &amp; Guidelines</h1>
 <p>This document provides a technical roadmap for developers and autonomous agents contributing to the <code>xovis-sdk</code>. It defines the architectural boundaries, technical principles, and safety guardrails required to maintain the SDK's enterprise-grade integrity.</p>
 <h2 id="contribution-principles">Contribution Principles</h2>
 <p>To maintain the high-performance and reliable nature of the SDK, every contribution must adhere to these four architectural planes. <strong>Never mix the design patterns of these planes.</strong></p>
@@ -1662,7 +1865,7 @@
 <li><strong>Principle - Proactive Capability Checks</strong>: Do not use <code>try...except</code> for missing hardware features. Use the lazy <code>_probe_capability</code> cache.</li>
 <li><strong>Principle - Normalized Time</strong>: All time inputs MUST be processed via the <code>XovisTime</code> utility.</li>
 </ul>
-<h3 id="3-the-state-topology-plane-fleet-orchestration">3. The State &amp; Topology Plane (Fleet Orchestration)</h3>
+<h3 id="3-the-state--topology-plane-fleet-orchestration">3. The State &amp; Topology Plane (Fleet Orchestration)</h3>
 <p><strong>Path:</strong> <code>src/xovis/api/device/</code> and <code>src/xovis/api/hub/</code></p>
 <p>A stateful engine that abstracts complex sensor graphs. Contributions here maintain the fleet-wide "Source of Truth."</p>
 <ul>
@@ -1687,10 +1890,12 @@
 <li><strong>Pacing &amp; Limits</strong>: Always respect <code>_pacing_delay()</code> in E2E tests and production loops to prevent hardware saturation.</li>
 </ul>
 <h3 id="testing-requirements">Testing Requirements</h3>
-<p>The SDK uses a four-tier testing strategy. All PRs must include relevant tests:
-1. <strong>Tier 1</strong>: Smoke tests for baseline connectivity.
-2. <strong>Tier 2</strong>: CRUD validation (DSC/Idempotency).
-3. <strong>Tier 4</strong>: Long-term stability and data alignment.</p>
+<p>The SDK uses a four-tier testing strategy. All PRs must include relevant tests:</p>
+<ol>
+<li><strong>Tier 1</strong>: Smoke tests for baseline connectivity.</li>
+<li><strong>Tier 2</strong>: CRUD validation (DSC/Idempotency).</li>
+<li><strong>Tier 4</strong>: Long-term stability and data alignment.</li>
+</ol>
 <p>For implementation details, refer to the <a href="../engineering_guidelines/">Engineering Guidelines</a>.</p>
 
 

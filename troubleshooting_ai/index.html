@@ -234,17 +234,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../architecture/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
   
   Architecture
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -452,9 +453,27 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+    
+    
+    
+    
+      
+      
         
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -468,7 +487,163 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/data_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/control_plane/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/state_topology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State & Topology Plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/agentic_layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agentic Layer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1056,6 +1231,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../ai/safety_guardrails/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety & Guardrails
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../ai/mcp/" class="md-nav__link">
         
   
@@ -1144,7 +1347,7 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-http-403-forbidden-privacy-waf" class="md-nav__link">
+  <a href="#1-http-403-forbidden-privacy--waf" class="md-nav__link">
     <span class="md-ellipsis">
       
         1. HTTP 403 Forbidden (Privacy &amp; WAF)
@@ -1474,7 +1677,7 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-http-403-forbidden-privacy-waf" class="md-nav__link">
+  <a href="#1-http-403-forbidden-privacy--waf" class="md-nav__link">
     <span class="md-ellipsis">
       
         1. HTTP 403 Forbidden (Privacy &amp; WAF)
@@ -1546,8 +1749,8 @@
 
 
 <h1 id="troubleshooting-ai-implementations">Troubleshooting AI Implementations</h1>
-<p>When providing the <code>xovis-sdk</code> to autonomous agents (like Claude or GPT-4o), you may encounter specific architectural failure modes. Ensure your agent prompts or instructions account for these strict parameters.</p>
-<h3 id="1-http-403-forbidden-privacy-waf">1. HTTP 403 Forbidden (Privacy &amp; WAF)</h3>
+<p>When providing the <code>xovis-sdk</code> to autonomous agents (like Claude or GPT-5.5), you may encounter specific architectural failure modes. Ensure your agent prompts or instructions account for these strict parameters.</p>
+<h3 id="1-http-403-forbidden-privacy--waf">1. HTTP 403 Forbidden (Privacy &amp; WAF)</h3>
 <p><strong>Symptom:</strong> The agent attempts to fetch analytics or historical data, but the API rejects it with an HTML-formatted error.
 <strong>Cause:</strong> This indicates the <strong>Xovis HUB Web Application Firewall (WAF)</strong> or the <strong>Edge Privacy Mode</strong> is actively blocking the request. High-security tenants or sensors set to Privacy Mode 3/4 will aggressively reject observation.
 <strong>Solution:</strong> Instruct the agent to check <code>get_privacy_state</code>. If the privacy mode is 3 or 4, or if <code>remote_access</code> is disabled, the agent must report: <em>"Access Restricted: Cloud Proxy Firewall or Strict Privacy Mode is blocking data extraction."</em></p>
