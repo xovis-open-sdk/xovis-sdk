@@ -173,8 +173,7 @@ async def handle_list_tools() -> list[Tool]:
     for tool in callable_tools:
         # Only expose bridge (aggregate_*) and system/fleet-specific high-level tools
         if not (
-            tool["name"].startswith("aggregate_")
-            or tool["name"] in ("get_system_info", "get_agent_memory", "get_fleet_summary", "reboot_fleet")
+            tool["name"].startswith("aggregate_") or tool["name"] in ("get_system_info", "get_agent_memory", "get_fleet_summary", "reboot_fleet")
         ):
             continue
 
@@ -233,10 +232,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Seque
     original_name = _from_mcp_name(name)
 
     # Restrict execution to only allowed bridge/wrapped/fleet tools via MCP
-    if not (
-        original_name.startswith("aggregate_")
-        or original_name in ("get_system_info", "get_agent_memory", "get_fleet_summary", "reboot_fleet")
-    ):
+    if not (original_name.startswith("aggregate_") or original_name in ("get_system_info", "get_agent_memory", "get_fleet_summary", "reboot_fleet")):
         return [TextContent(type="text", text=json.dumps({"error": f"Tool '{name}' is not exposed via MCP."}))]
 
     try:
