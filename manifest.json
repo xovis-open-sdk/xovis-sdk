@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.3",
   "name": "Xovis SDK MCP Server",
-  "version": "1.0.0-a24",
+  "version": "1.0.0-a25",
   "description": "Unofficial Xovis Hardware integration via MCP that seamlessly bridges the Xovis Python SDK to autonomous AI agents. Features zero-trust pseudonymization, human-in-the-loop safety guardrails, and unlocks the full suite of 261 tools (including analytics, datapush, and system commands) when configured with correct device/hub credentials.",
   "author": {
     "name": "Xovis Open SDK Team"
@@ -14,7 +14,7 @@
       "args": [
         "-q",
         "--from",
-        "xovis-sdk[mcp]==1.0.0a24",
+        "xovis-sdk[mcp]==1.0.0a25",
         "xovis-mcp"
       ],
       "env": {
