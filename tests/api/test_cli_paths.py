@@ -151,22 +151,10 @@ def test_cli_path_resolution_order(tmp_path, monkeypatch) -> None:
     assert get_resolved_source() == str(hub_state)
 
 
-def test_cli_check_docs_routing() -> None:
-    """Verifies that check-docs routing maps to check_doc_coverage."""
+def test_cli_docs_check_docstrings_routing() -> None:
+    """Verifies that docs check-docstrings subcommand maps to check_doc_coverage."""
 
-    with patch.object(sys, "argv", ["xovis-cli", "check-docs"]):
-        with patch("xovis.cli.check_doc_coverage") as mock_check:
-            try:
-                main()
-            except SystemExit:
-                pass
-            assert mock_check.called
-
-
-def test_cli_docs_docstrings_routing() -> None:
-    """Verifies that docs docstrings subcommand maps to check_doc_coverage."""
-
-    with patch.object(sys, "argv", ["xovis-cli", "docs", "docstrings"]):
+    with patch.object(sys, "argv", ["xovis-cli", "docs", "check-docstrings"]):
         with patch("xovis.cli.check_doc_coverage") as mock_check:
             try:
                 main()

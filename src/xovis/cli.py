@@ -75,7 +75,6 @@ class GroupedHelpFormatter(argparse.HelpFormatter):
                 "Developer Experience (DX) & AI": [
                     "generate-types",
                     "generate-rules",
-                    "check-docs",
                     "docs",
                     "discovery",
                 ],
@@ -811,13 +810,14 @@ def generate_rules(output_path: str = ".cursorrules") -> None:
         "# xovis-sdk - Agent Rulebook",
         "",
         "## Architectural Constraints",
-        "1. **Trifurcation**: Never mix Data, Control, and State plane patterns.",
+        "1. **Quadrifurcation**: Respect the four planes (Data, Control, State/Topology, and Agentic Layer). Never mix patterns across them.",
         "2. **Zero-Copy Data Plane**: No Pydantic in `src/xovis/datapush/`. Use `struct.pack`.",
         "3. **Max-Docstring**: Every public method MUST have a Google-style docstring.",
         "4. **Pydantic V2**: Use `.model_dump(mode='json', exclude_unset=True)` for API payloads.",
-        "5. **Async Contexts**: Always use `DeviceClient` and `HubClient` as async context managers.",
+        "5. **Async Contexts**: Always use `UnifiedDeviceClient`, `DeviceClient`, and `HubClient` as async context managers.",
         "",
         "## Domain Context",
+        "- `UnifiedDeviceClient`: Recommended primary hybrid router client for all device interactions (IP, MAC, or Name resolution).",
         "- `singlesensor`: Physical device context (sensor w. lenses).",
         "- `multisensors`: Virtual stitched environment context.",
         "- `HardwareNotSupportedError`: Raise when accessing `singlesensor` on a Spider NUC.",
@@ -926,12 +926,6 @@ def main() -> None:
         help="[AI] Generate .cursorrules/rulebook with SDK architectural constraints.",
     )
 
-    # Check Docs Command
-    subparsers.add_parser(
-        "check-docs",
-        help="[DX] Verify docstring coverage and standard compliance ('The Receipt').",
-    )
-
     # Docs Command Group
     docs_parser = subparsers.add_parser(
         "docs",
@@ -939,9 +933,9 @@ def main() -> None:
     )
     docs_subparsers = docs_parser.add_subparsers(dest="docs_command", help="Docs subcommands")
 
-    # 1. docstrings subcommand
+    # 1. check-docstrings subcommand
     docs_subparsers.add_parser(
-        "docstrings",
+        "check-docstrings",
         help="Verify public docstring coverage and standard compliance ('The Receipt').",
     )
 
@@ -1058,10 +1052,8 @@ def main() -> None:
         parser.print_help()
     elif args.command in ["generate-rules", "gen-rules"]:
         generate_rules()
-    elif args.command == "check-docs":
-        check_doc_coverage()
     elif args.command == "docs":
-        if getattr(args, "docs_command", None) == "docstrings":
+        if getattr(args, "docs_command", None) == "check-docstrings":
             check_doc_coverage()
         elif getattr(args, "docs_command", None) == "serve":
             serve_docs(args.host, args.port)

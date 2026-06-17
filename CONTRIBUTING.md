@@ -38,7 +38,7 @@ Since physical Xovis hardware is not available in the CI environment, the SDK us
 
 1.  **Branching**: Create a feature branch from `main`.
 2.  **Linting**: Run `ruff check .` and `ruff format .` before submitting.
-3.  **Documentation**: Verify docstring coverage using `xovis-cli check-docs`.
+3.  **Documentation**: Verify docstring coverage using `xovis-cli docs check-docstrings`.
 4.  **Security**: Ensure no sensitive data (MAC addresses, API keys) is included in tests or code.
 5.  **Review**: All PRs require at least one approval from a code owner.
 

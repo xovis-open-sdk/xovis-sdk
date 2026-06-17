@@ -89,7 +89,7 @@ Figure: Xovis-SDK Datapush Studio Screen.
 ### `generate-rules`
 Generates a `.cursorrules` file to guide AI agents in respecting the SDK's quadrifurcated architecture.
 
-### `check-docs`
+### `docs check-docstrings`
 Scans the codebase for "Max-Docstring" compliance, ensuring all public methods have Google-style docstrings (The Receipt).
 
 ---
