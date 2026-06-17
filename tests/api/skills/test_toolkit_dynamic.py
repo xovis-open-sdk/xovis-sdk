@@ -292,3 +292,161 @@ async def test_toolkit_adapter_registration():
     with pytest.raises(ValueError) as excinfo:
         toolkit.get_tools("unknown_adapter")
     assert "is not registered" in str(excinfo.value)
+
+
+@pytest.mark.asyncio
+async def test_toolkit_nested_model_preservation():
+    """Verify that nested Pydantic models are preserved during execute_tool."""
+    from pydantic import BaseModel
+
+    class NestedModel(BaseModel):
+        value: str
+
+    class RootModel(BaseModel):
+        nested: NestedModel
+        direct: int
+
+    mock_client = MagicMock(spec=DeviceClient)
+    for attr in ["system", "network", "time", "update", "users", "itxpt", "singlesensor"]:
+        setattr(mock_client, attr, None)
+
+    toolkit = XovisAIToolkit(client=mock_client)
+
+    captured_kwargs = {}
+
+    async def mock_func(**kwargs):
+        nonlocal captured_kwargs
+        captured_kwargs = kwargs
+        return {"status": "ok"}
+
+    toolkit._tools_map["test_nested_tool"] = {
+        "description": "Test tool with nested models",
+        "args_model": RootModel,
+        "func": mock_func,
+        "safety_level": SafetyLevel.OPEN,
+    }
+
+    payload = {"nested": {"value": "hello"}, "direct": 42}
+    result_json = await toolkit.execute_tool("test_nested_tool", payload)
+    result = json.loads(result_json)
+
+    assert result["status"] == "ok"
+    assert captured_kwargs["direct"] == 42
+    assert isinstance(captured_kwargs["nested"], NestedModel)
+    assert captured_kwargs["nested"].value == "hello"
+
+
+def test_agent_memory_compression():
+    """Verify state compression and empty fields/contexts filtering in XovisAgentMemory."""
+    from xovis.api.device.cache import CacheResource, ContextStateBucket, HostStateBucket
+    from xovis.skills.toolkit import XovisAgentMemory
+
+    bucket = HostStateBucket()
+    bucket.checksum = "some-checksum"
+    bucket.contexts = {
+        "singlesensor": ContextStateBucket(agents=[CacheResource(id=1, name="Zone1", type="ZONE")], triggers=[]),
+        "empty_context": ContextStateBucket(agents=[], triggers=[]),
+    }
+
+    memory = XovisAgentMemory(bucket)
+    compressed = memory.get_compressed_state()
+    data = json.loads(compressed)
+
+    assert data["checksum"] == "some-checksum"
+    assert "singlesensor" in data["contexts"]
+    assert "empty_context" not in data["contexts"]
+
+
+def test_agent_authorization_scope():
+    """Verify device-level authorization boundaries in AgentAuthorizationScope."""
+    from xovis.skills.toolkit import AgentAuthorizationScope
+
+    class MockDevice:
+        def __init__(self, device_id=None, mac_address=None, customer_name=None, customer=None):
+            if device_id:
+                self.device_id = device_id
+            if mac_address:
+                self.mac_address = mac_address
+            if customer_name:
+                self.customer_name = customer_name
+            if customer:
+                self.customer = customer
+
+    scope_all = AgentAuthorizationScope()
+    assert scope_all.is_authorized(MockDevice(device_id="AA:BB:CC")) is True
+
+    scope_mac = AgentAuthorizationScope(allowed_macs={"00:11:22:33:44:55"})
+    assert scope_mac.is_authorized(MockDevice(device_id="00:11:22:33:44:55")) is True
+    assert scope_mac.is_authorized(MockDevice(mac_address="00:11:22:33:44:55")) is True
+    assert scope_mac.is_authorized(MockDevice(device_id="AA:BB:CC:DD:EE:FF")) is False
+
+    scope_customer = AgentAuthorizationScope(allowed_customers={"AcmeCorp"})
+    assert scope_customer.is_authorized(MockDevice(customer_name="AcmeCorp")) is True
+    assert scope_customer.is_authorized(MockDevice(customer="AcmeCorp")) is True
+    assert scope_customer.is_authorized(MockDevice(customer_name="OtherCorp")) is False
+
+
+@pytest.mark.asyncio
+async def test_fleet_toolkit_summary_and_reboot():
+    """Verify fleet summary retrieval and bulk reboot invocation in XovisFleetToolkit."""
+    from xovis.api.hub.client import HubClient
+    from xovis.skills.toolkit import AgentAuthorizationScope, XovisFleetToolkit, XovisSafetyGuardrail
+
+    class MockDeviceId:
+        def __init__(self, root):
+            self.root = root
+
+    class MockDevice:
+        def __init__(self, mac, name):
+            self.id = MockDeviceId(mac)
+            self.name = name
+            self.device_id = mac
+
+    mock_device_1 = MockDevice("00:11:22:33:44:55", "Sensor1")
+    mock_device_2 = MockDevice("AA:BB:CC:DD:EE:FF", "Sensor2")
+
+    mock_hub = MagicMock(spec=HubClient)
+    mock_hub.cache = MagicMock()
+    mock_hub.cache._state = MagicMock()
+    mock_hub.cache._state.devices = [mock_device_1, mock_device_2]
+
+    class MockBulkResult:
+        def __init__(self, success):
+            self.success = success
+
+    mock_hub.bulk_execute = AsyncMock(
+        return_value={
+            "00:11:22:33:44:55": MockBulkResult(True),
+        }
+    )
+
+    guardrail = XovisSafetyGuardrail(authorization_scope=AgentAuthorizationScope(allowed_macs={"00:11:22:33:44:55"}))
+
+    fleet_toolkit = XovisFleetToolkit(hub_client=mock_hub, guardrail=guardrail)
+
+    summary = await fleet_toolkit._get_fleet_summary()
+    assert len(summary) == 1
+    assert summary[0]["mac"] == "00:11:22:33:44:55"
+    assert summary[0]["name"] == "Sensor1"
+
+    reboot_results = await fleet_toolkit._reboot_fleet()
+    assert reboot_results == {"00:11:22:33:44:55": True}
+    mock_hub.bulk_execute.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_hub_client_toolkit_integration():
+    """Verify dynamic loading and configuration adjustments of XovisAIToolkit with a HubClient."""
+    from xovis.skills.toolkit import HubClient, XovisAIToolkit
+
+    mock_hub = MagicMock(spec=HubClient)
+    mock_hub.cache = MagicMock()
+    mock_hub.cache._state = MagicMock()
+    mock_hub.cache._state.devices = []
+
+    toolkit = XovisAIToolkit(client=mock_hub)
+
+    assert toolkit._fleet_toolkit is not None
+    assert "get_fleet_summary" in toolkit._tools_map
+    assert "reboot_fleet" in toolkit._tools_map
+    assert toolkit._device_request_delay == 1.0

@@ -10,7 +10,7 @@ Universal Translator for Xovis hardware (Sensors, Spiders, HUB).
 4. Agentic Layer: MCP/Tool support.
 
 ## Key Classes
-- `SmartDeviceClient`: Hybrid local/remote client router.
+- `UnifiedDeviceClient`: Hybrid local/remote client router.
 - `DeviceClient`: IP-based local control.
 - `HubClient`: Cloud-based fleet control.
 - `XovisAIToolkit`: AI/LLM tool mapping with dynamic adapter support.

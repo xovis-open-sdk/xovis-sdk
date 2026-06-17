@@ -116,16 +116,16 @@ The SDK is strictly quadrifurcated into four distinct planes to prevent blocking
 pip install "xovis-sdk[test]"
 ```
 
-### Smart Direct & Tunnel Routing
+### Unified Hybrid Routing
 
-Interact natively with hardware topologies using the **SmartDeviceClient**. It automatically performs a fast TCP/HTTP probe of local IP addresses (direct LAN execution) and falls back to a secure connection routed through the Cloud HUB proxy tunnel (`HubClient.connect_device`) if remote.
+Interact natively with hardware topologies using the **UnifiedDeviceClient**. It automatically performs a fast TCP/HTTP probe of local IP addresses (direct LAN execution), falls back to a secure connection routed through the Cloud HUB proxy tunnel (`HubClient.connect_device`) if remote, and resolves names dynamically.
 
 ```python
-from xovis import SmartDeviceClient
+from xovis import UnifiedDeviceClient
 
 async def run():
-    # Automatically routes to direct LAN or falls back to HUB proxy tunnel
-    async with SmartDeviceClient(mac_address="00:26:8c:12:34:56", host="10.0.0.50") as device:
+    # Automatically routes to direct LAN, HUB proxy tunnel, or resolves name
+    async with UnifiedDeviceClient("00:26:8c:12:34:56", host="10.0.0.50") as device:
         if await device.has_analytics:
             # Simple, dot-notation collection accessors
             zone = device.cache.zones.by_name.Main_Entrance

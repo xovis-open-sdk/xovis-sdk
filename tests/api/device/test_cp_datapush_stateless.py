@@ -195,9 +195,8 @@ class TestTimeParsing:
         trigger = DataPushTriggerConfig(type=DataPushTriggerType.TIME_RANGE, time_from="-1h", time_to="now")
         payload = trigger.model_dump(by_alias=True, exclude_unset=True, mode="json")
 
-        assert payload["time_from"] == str(1717968000000 - 3600000)
-        assert payload["time_to"] == "1717968000000"
-        assert int(payload["time_to"]) > int(payload["time_from"])
+        assert payload["time_from"] == "2024-06-09T20:20:00Z"
+        assert payload["time_to"] == "2024-06-09T21:20:00Z"
 
     def test_model_xovistime_normalization(self) -> None:
         """Validates that models using XovisTime correctly normalize relative strings."""

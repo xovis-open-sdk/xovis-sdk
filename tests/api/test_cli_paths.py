@@ -149,3 +149,91 @@ def test_cli_path_resolution_order(tmp_path, monkeypatch) -> None:
     hub_state = local_res / "hub_fleet_state.json"
     hub_state.write_text("{}", encoding="utf-8")
     assert get_resolved_source() == str(hub_state)
+
+
+def test_cli_check_docs_routing() -> None:
+    """Verifies that check-docs routing maps to check_doc_coverage."""
+
+    with patch.object(sys, "argv", ["xovis-cli", "check-docs"]):
+        with patch("xovis.cli.check_doc_coverage") as mock_check:
+            try:
+                main()
+            except SystemExit:
+                pass
+            assert mock_check.called
+
+
+def test_cli_docs_docstrings_routing() -> None:
+    """Verifies that docs docstrings subcommand maps to check_doc_coverage."""
+
+    with patch.object(sys, "argv", ["xovis-cli", "docs", "docstrings"]):
+        with patch("xovis.cli.check_doc_coverage") as mock_check:
+            try:
+                main()
+            except SystemExit:
+                pass
+            assert mock_check.called
+
+
+def test_cli_docs_serve_routing() -> None:
+    """Verifies that docs serve subcommand routes with specified parameters."""
+
+    with patch.object(sys, "argv", ["xovis-cli", "docs", "serve", "--host", "127.0.0.1", "--port", "12345"]):
+        with patch("xovis.cli.serve_docs") as mock_serve:
+            try:
+                main()
+            except SystemExit:
+                pass
+            mock_serve.assert_called_once_with("127.0.0.1", 12345)
+
+
+def test_scan_markdown_files(tmp_path) -> None:
+    """Validates recursive Markdown file scanning and folder filtering."""
+    from xovis.cli import scan_markdown_files
+
+    (tmp_path / "README.md").write_text("Root doc", encoding="utf-8")
+
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "guide.md").write_text("Guide doc", encoding="utf-8")
+
+    venv_dir = tmp_path / ".venv"
+    venv_dir.mkdir()
+    (venv_dir / "ignored.md").write_text("Ignored", encoding="utf-8")
+
+    scanned = scan_markdown_files(str(tmp_path))
+    assert "README.md" in scanned
+    assert "docs/guide.md" in scanned
+    assert ".venv/ignored.md" not in scanned
+
+
+def test_serve_docs_server_behavior() -> None:
+    """Validates that serve_docs starts server and correctly translates paths."""
+    from xovis.cli import serve_docs
+
+    class FakeServer:
+        def __init__(self, addr, handler):
+            self.server_address = addr
+            self.handler = handler
+
+        def serve_forever(self) -> None:
+            pass
+
+        def server_close(self) -> None:
+            pass
+
+    with patch("http.server.ThreadingHTTPServer", side_effect=FakeServer) as mock_server_cls:
+        with patch("webbrowser.open") as mock_open:
+            serve_docs("127.0.0.1", 8080)
+            assert mock_server_cls.called
+            assert mock_open.called
+
+            handler_class = mock_server_cls.call_args[0][1]
+            mock_handler = MagicMock()
+            mock_handler.path = "/"
+
+            translated_root = handler_class.translate_path(mock_handler, "/")
+            assert translated_root.endswith("index.html")
+
+            translated_other = handler_class.translate_path(mock_handler, "/README.md")
+            assert translated_other.replace("\\", "/").endswith("README.md")

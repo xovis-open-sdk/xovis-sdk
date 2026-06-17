@@ -109,6 +109,15 @@ class MultipleResourcesFoundError(XovisClientError):
     pass
 
 
+class AmbiguousDeviceNameError(XovisClientError):
+    """
+    Raised when multiple devices share the exact same name,
+    preventing unambiguous resolution.
+    """
+
+    pass
+
+
 class HardwareNotSupportedError(XovisAPIError):
     """
     Raised when a context or operation is attempted on incompatible hardware.

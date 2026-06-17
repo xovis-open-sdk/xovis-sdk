@@ -9,7 +9,7 @@ from typing import Annotated, TypedDict
 from langgraph.graph import StateGraph, END
 from langchain_openai import ChatOpenAI
 
-from xovis import SmartDeviceClient
+from xovis import UnifiedDeviceClient
 from xovis.skills.toolkit import XovisAIToolkit, XovisAgentMemory
 
 class AgentState(TypedDict):
@@ -17,8 +17,8 @@ class AgentState(TypedDict):
     hardware_state: str
 
 async def process_hardware_loop():
-    # Utilizing SmartDeviceClient for robust hybrid local/remote routing
-    async with SmartDeviceClient(mac_address="00:26:8c:12:34:56", host="10.0.0.50") as device:
+    # Utilizing UnifiedDeviceClient for robust hybrid local/remote routing
+    async with UnifiedDeviceClient(mac_address="00:26:8c:12:34:56", host="10.0.0.50") as device:
         toolkit = XovisAIToolkit(device)
         
         # Retrieving LangChain tools dynamically via the unified adapter registry

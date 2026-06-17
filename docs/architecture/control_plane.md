@@ -2,9 +2,9 @@
 
 The Control Plane manages low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors.
 
-## Smart Device Routing Layer (`SmartDeviceClient`)
+## Unified Device Routing Layer (`UnifiedDeviceClient`)
 
-To solve issues where the Xovis HUB does not contain real local LAN IPs (e.g., behind gateways or NAT), the SDK introduces a **Multi-Plane Hybrid Routing Strategy** via the `SmartDeviceClient`. 
+To solve issues where the Xovis HUB does not contain real local LAN IPs (e.g., behind gateways or NAT), the SDK introduces a **Multi-Plane Hybrid Routing Strategy** via the `UnifiedDeviceClient`. 
 
 When connecting to a device:
 
@@ -26,7 +26,7 @@ graph TD
         subgraph "Clients"
             HC[HubClient]
             DC[DeviceClient]
-            Smart[SmartDeviceClient]
+            Smart[UnifiedDeviceClient]
         end
 
         subgraph "Core Utilities & Safeguards"

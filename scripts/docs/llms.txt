@@ -15,7 +15,7 @@ The SDK is strictly quadrifurcated into four planes:
 4. **The Agentic Layer (`src/xovis/skills/`)**: Universal Tool Adapter exposing SDK methods to LLMs (OpenAI, Anthropic, LangGraph, MCP).
 
 ## Key API Boundaries
-- `SmartDeviceClient`: Recommended hybrid router client. Automatically performs a fast direct local LAN check before falling back to the secure Cloud HUB proxy tunnel.
+- `UnifiedDeviceClient`: Recommended hybrid router client. Automatically performs a fast direct local LAN check before falling back to the secure Cloud HUB proxy tunnel.
 - `DeviceClient`: Local sensor orchestration via direct IP.
 - `HubClient`: Fleet-scale cloud orchestration via Xovis HUB.
 - `XovisAIToolkit`: Universal Tool Adapter for LLMs. Supports pre-registered adapters (LangChain, CrewAI) dynamically via `toolkit.get_tools(name)` or custom adapters via `toolkit.register_adapter(name, func)`.

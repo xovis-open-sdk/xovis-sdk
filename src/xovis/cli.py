@@ -76,6 +76,7 @@ class GroupedHelpFormatter(argparse.HelpFormatter):
                     "generate-types",
                     "generate-rules",
                     "check-docs",
+                    "docs",
                     "discovery",
                 ],
                 "Hardware Interaction & Provisioning": ["probe", "sync-models", "datapush"],
@@ -308,6 +309,243 @@ def generate_types(source_path: str, output_path: str, dry_run: bool = False, ho
         logger.warning("Ruff is not in PATH. Skipping formatting.")
     except subprocess.CalledProcessError as e:
         logger.error(f"Ruff formatting failed: {e.stderr.decode()}")
+
+
+def scan_markdown_files(root_dir: str) -> list[str]:
+    """Scans the root directory recursively for Markdown files.
+
+    Args:
+        root_dir: The repository root path to scan.
+
+    Returns:
+        A list of relative paths to Markdown files.
+    """
+    markdown_files = []
+    ignored_dirs = {".venv", "venv", "env", ".git", "node_modules", "build", "dist", "site", "__pycache__", ".junie_cache"}
+    for root, dirs, files_in_dir in os.walk(root_dir):
+        dirs[:] = [d for d in dirs if d not in ignored_dirs]
+        for file in files_in_dir:
+            if file.endswith(".md"):
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, root_dir)
+                normalized_path = rel_path.replace(os.path.sep, "/")
+                markdown_files.append(normalized_path)
+    return sorted(markdown_files)
+
+
+def serve_docs(host: str, port: int) -> None:
+    """Builds and serves local SDK Markdown documentation via an HTTP server.
+
+    Args:
+        host: Host address to bind the server to.
+        port: Port to run the HTTP server on.
+    """
+    import http.server
+    import tempfile
+    import urllib.parse
+    import webbrowser
+
+    root_dir = os.getcwd()
+    files_list = scan_markdown_files(root_dir)
+
+    index_html_template = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xovis SDK - Local Documentation Server</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-900 font-sans">
+    <aside class="w-80 bg-white border-r border-gray-200 flex flex-col h-full shadow-sm">
+        <div class="p-6 border-b border-gray-100 flex flex-col gap-1">
+            <h1 class="text-xl font-bold tracking-tight text-cyan-600 flex items-center gap-2">
+                ◆ Xovis SDK
+            </h1>
+            <p class="text-xs text-gray-500 font-medium">Local Documentation Server</p>
+        </div>
+        <nav class="flex-1 overflow-y-auto p-4 sidebar-scroll space-y-6" id="sidebar-nav">
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-white">
+        <header class="h-16 border-b border-gray-100 flex items-center px-8 bg-gray-50/50">
+            <span id="current-doc-path" class="text-sm font-semibold text-gray-600">README.md</span>
+        </header>
+        <div class="flex-1 overflow-y-auto" id="content-container">
+            <article id="markdown-content" class="markdown-body"></article>
+        </div>
+    </main>
+
+    <script>
+        const files = __FILES_PLACEHOLDER__;
+
+        const groups = {
+            "General / Root Docs": [],
+            "Architectural & Guidelines": [],
+            "Developer Manuals": [],
+            "Other Docs": []
+        };
+
+        files.forEach(file => {
+            if (!file.includes('/')) {
+                groups["General / Root Docs"].push(file);
+            } else if (file.startsWith('.junie/')) {
+                groups["Architectural & Guidelines"].push(file);
+            } else if (file.startsWith('docs/')) {
+                groups["Developer Manuals"].push(file);
+            } else {
+                groups["Other Docs"].push(file);
+            }
+        });
+
+        const sidebarNav = document.getElementById('sidebar-nav');
+        for (const [groupName, paths] of Object.entries(groups)) {
+            if (paths.length === 0) continue;
+
+            const section = document.createElement('div');
+            section.className = 'space-y-2';
+
+            const heading = document.createElement('h3');
+            heading.className = 'text-xs font-bold text-gray-400 uppercase tracking-wider px-3';
+            heading.textContent = groupName;
+            section.appendChild(heading);
+
+            const list = document.createElement('ul');
+            list.className = 'space-y-1';
+
+            paths.forEach(path => {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150 truncate hover:bg-gray-100 hover:text-cyan-600';
+                
+                let displayName = path;
+                if (path.startsWith('.junie/')) displayName = path.substring(7);
+                if (path.startsWith('docs/')) displayName = path.substring(5);
+                
+                btn.textContent = displayName;
+                btn.onclick = () => loadDocument(path);
+                btn.setAttribute('data-path', path);
+                
+                li.appendChild(btn);
+                list.appendChild(li);
+            });
+
+            section.appendChild(list);
+            sidebarNav.appendChild(section);
+        }
+
+        async function loadDocument(path) {
+            document.querySelectorAll('#sidebar-nav button').forEach(btn => {
+                if (btn.getAttribute('data-path') === path) {
+                    btn.classList.add('bg-cyan-50', 'text-cyan-600', 'font-semibold');
+                    btn.classList.remove('text-gray-600', 'hover:bg-gray-100');
+                } else {
+                    btn.classList.remove('bg-cyan-50', 'text-cyan-600', 'font-semibold');
+                    btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+                }
+            });
+
+            document.getElementById('current-doc-path').textContent = path;
+
+            const contentContainer = document.getElementById('content-container');
+            const markdownContent = document.getElementById('markdown-content');
+            try {
+                const response = await fetch('/' + path);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const text = await response.text();
+                markdownContent.innerHTML = marked.parse(text);
+                contentContainer.scrollTop = 0;
+            } catch (err) {
+                markdownContent.innerHTML = `<div class="text-red-500 font-semibold">Failed to load document: ${err.message}</div>`;
+            }
+        }
+
+        const firstFile = files[0] || 'README.md';
+        loadDocument(firstFile);
+    </script>
+</body>
+</html>
+"""
+
+    index_html = index_html_template.replace("__FILES_PLACEHOLDER__", json.dumps(files_list))
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_index_path = os.path.join(temp_dir, "index.html")
+        with open(temp_index_path, "w", encoding="utf-8") as f:
+            f.write(index_html)
+
+        class DocsHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+            """HTTP handler mapping docs requests back to workspace or index path."""
+
+            def translate_path(self, path: str) -> str:
+                """Translates request paths to index or project root.
+
+                Args:
+                    path: Requested URL path.
+
+                Returns:
+                    The physical resolved file path.
+                """
+                parsed = urllib.parse.urlparse(path)
+                clean_path = parsed.path
+                if clean_path in ("/", "/index.html"):
+                    return temp_index_path
+
+                rel_path = urllib.parse.unquote(clean_path.lstrip("/"))
+                full_path = os.path.join(root_dir, rel_path)
+                if os.path.commonpath([root_dir, os.path.abspath(full_path)]) == root_dir:
+                    return full_path
+
+                return super().translate_path(path)
+
+            def log_message(self, format_str: str, *args: Any) -> None:
+                """Suppress default stdout/stderr logging of HTTP requests."""
+                pass
+
+        server_address = (host, port)
+        try:
+            httpd = http.server.ThreadingHTTPServer(server_address, DocsHTTPRequestHandler)
+        except Exception as e:
+            logger.error(f"Failed to start server on {host}:{port}: {e}")
+            return
+
+        logger.info(f"Serving local SDK documentation at {F.BOLD}http://{host}:{port}{F.RESET}")
+        url = f"http://localhost:{port}" if host in ("127.0.0.1", "0.0.0.0") else f"http://{host}:{port}"
+        webbrowser.open(url)
+
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            logger.info("Local documentation server stopped.")
+        finally:
+            httpd.server_close()
 
 
 def check_doc_coverage(src_path: str = "src") -> float:
@@ -691,8 +929,38 @@ def main() -> None:
     # Check Docs Command
     subparsers.add_parser(
         "check-docs",
-        aliases=["docs"],
         help="[DX] Verify docstring coverage and standard compliance ('The Receipt').",
+    )
+
+    # Docs Command Group
+    docs_parser = subparsers.add_parser(
+        "docs",
+        help="[DX] SDK documentation management (docstring checks, local server).",
+    )
+    docs_subparsers = docs_parser.add_subparsers(dest="docs_command", help="Docs subcommands")
+
+    # 1. docstrings subcommand
+    docs_subparsers.add_parser(
+        "docstrings",
+        help="Verify public docstring coverage and standard compliance ('The Receipt').",
+    )
+
+    # 2. serve subcommand
+    serve_parser = docs_subparsers.add_parser(
+        "serve",
+        help="Scan, build, and serve local SDK Markdown documentation.",
+    )
+    serve_parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to run the HTTP server on (default: 8000).",
+    )
+    serve_parser.add_argument(
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help="Host address to bind the server to (default: 127.0.0.1).",
     )
 
     # Discovery Command
@@ -790,8 +1058,15 @@ def main() -> None:
         parser.print_help()
     elif args.command in ["generate-rules", "gen-rules"]:
         generate_rules()
-    elif args.command in ["check-docs", "docs"]:
+    elif args.command == "check-docs":
         check_doc_coverage()
+    elif args.command == "docs":
+        if getattr(args, "docs_command", None) == "docstrings":
+            check_doc_coverage()
+        elif getattr(args, "docs_command", None) == "serve":
+            serve_docs(args.host, args.port)
+        else:
+            docs_parser.print_help()
     elif args.command == "probe":
         probe_device(args.host, args.password)
     elif args.command == "sync-models":

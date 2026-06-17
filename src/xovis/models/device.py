@@ -6,6 +6,7 @@ Provides strict Pydantic V2 data validation and alias mapping for local edge sen
 that fall outside the scope of the auto-generated OpenAPI schema.
 """
 
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Annotated, Any, Literal, Optional, Union
 
@@ -1107,9 +1108,12 @@ class DataPushTriggerConfig(BaseModel):
     file_name_prefix: Optional[str] = None
 
     @field_serializer("time_from", "time_to")
-    def _serialize_as_ms_string(self, value: Optional[int]) -> Optional[str]:
-        """Ensures timestamps are serialized as millisecond strings for the Trigger API."""
-        return str(value) if value is not None else None
+    def _serialize_as_iso8601(self, value: Optional[int]) -> Optional[str]:
+        """Ensures timestamps are serialized as ISO-8601 UTC strings for the Trigger API."""
+        if value is not None:
+            dt = datetime.fromtimestamp(value / 1000.0, tz=timezone.utc)
+            return dt.isoformat().replace("+00:00", "Z")
+        return None
 
 
 class DataPushTriggerStatus(str, Enum):

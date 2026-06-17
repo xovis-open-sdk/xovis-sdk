@@ -13,6 +13,7 @@ from collections.abc import Sequence
 from typing import Any, Union
 
 import mcp.server.stdio
+from dotenv import load_dotenv
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 from mcp.types import TextContent, Tool, ToolAnnotations
@@ -21,14 +22,17 @@ from xovis.api.device.client import DeviceClient
 from xovis.api.hub.client import HubClient
 from xovis.skills.toolkit import XovisAIToolkit, XovisSafetyGuardrail
 
-# from xovis.utils.privacy import AIPrivacyFilter - removed
+working_dir_env = os.path.join(os.getcwd(), ".env")
+if os.path.exists(working_dir_env):
+    load_dotenv(dotenv_path=working_dir_env)
+else:
+    load_dotenv()
 
 server = Server("xovis-mcp")
 
 
 def _get_active_client_context() -> Union[DeviceClient, HubClient]:
-    """
-    Evaluates environment infrastructure variables to determine client context.
+    """Evaluates environment infrastructure variables to determine client context.
 
     Instantiates the matching Control Plane client shell without triggering
     network I/O or opening active socket connection pools.
@@ -36,16 +40,23 @@ def _get_active_client_context() -> Union[DeviceClient, HubClient]:
     Returns:
         Union[DeviceClient, HubClient]: An un-entered client instance.
     """
-    hub_id = os.getenv("XOVIS_HUB_CLIENT_ID")
-    hub_secret = os.getenv("XOVIS_HUB_CLIENT_SECRET")
+
+    def clean_env(key: str, default: str = "") -> str:
+        val = os.getenv(key, default)
+        if val:
+            return val.strip("'\" ")
+        return val
+
+    hub_id = clean_env("XOVIS_HUB_CLIENT_ID")
+    hub_secret = clean_env("XOVIS_HUB_CLIENT_SECRET")
 
     if hub_id and hub_secret:
         return HubClient(client_id=hub_id, client_secret=hub_secret)
 
     return DeviceClient(
-        host=os.getenv("XOVIS_MCP_HOST", "127.0.0.1"),
-        username=os.getenv("XOVIS_MCP_USER", "admin"),
-        password=os.getenv("XOVIS_MCP_PASS", "password"),
+        host=clean_env("XOVIS_MCP_HOST", "127.0.0.1"),
+        username=clean_env("XOVIS_MCP_USER", "admin"),
+        password=clean_env("XOVIS_MCP_PASS", "password"),
     )
 
 
@@ -65,7 +76,10 @@ def _normalize_schema(schema: Any) -> Any:
                         types.append(sub["type"])
             if types:
                 types = list(set(types))
-                schema["type"] = types[0] if len(types) == 1 else types
+                if "string" in types and "integer" in types:
+                    schema["type"] = "string"
+                else:
+                    schema["type"] = types[0] if len(types) == 1 else types
 
         # Ensure all object properties have a type if they are properties
         if "properties" in schema and isinstance(schema["properties"], dict):
@@ -171,12 +185,6 @@ async def handle_list_tools() -> list[Tool]:
 
     mcp_tools = []
     for tool in callable_tools:
-        # Only expose bridge (aggregate_*) and system/fleet-specific high-level tools
-        if not (
-            tool["name"].startswith("aggregate_") or tool["name"] in ("get_system_info", "get_agent_memory", "get_fleet_summary", "reboot_fleet")
-        ):
-            continue
-
         config = toolkit._tools_map.get(tool["name"], {})
         safety_level = config.get("safety_level")
 
@@ -230,10 +238,6 @@ async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Seque
     client = _get_active_client_context()
 
     original_name = _from_mcp_name(name)
-
-    # Restrict execution to only allowed bridge/wrapped/fleet tools via MCP
-    if not (original_name.startswith("aggregate_") or original_name in ("get_system_info", "get_agent_memory", "get_fleet_summary", "reboot_fleet")):
-        return [TextContent(type="text", text=json.dumps({"error": f"Tool '{name}' is not exposed via MCP."}))]
 
     try:
         async with client as active_client:

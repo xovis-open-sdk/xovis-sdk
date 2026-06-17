@@ -802,7 +802,8 @@ class XovisAIToolkit:
             self.guardrail.record_execution(safety_level, tool_name=tool_name)
             return json.dumps({"status": "simulated"}, indent=2)
 
-        exec_kwargs = validated_args.model_dump(exclude={"confirmation", "delay_seconds", "mac"}, exclude_unset=True)
+        exclude_fields = {"confirmation", "delay_seconds", "mac"}
+        exec_kwargs = {field: getattr(validated_args, field) for field in validated_args.model_fields_set if field not in exclude_fields}
 
         async def _resolve_and_execute(target_client: DeviceClient, func_p: Any, mac: Optional[str] = None) -> Any:
             try:

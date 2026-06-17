@@ -14,12 +14,14 @@ import sys
 
 sys.path.insert(0, os.path.abspath("src"))
 
-from xovis.mcp.server import handle_list_tools
+from xovis.mcp.server import _from_mcp_name, handle_list_tools
 
 
-async def generate_manifest_tools() -> None:
-    """
-    Retrieves MCP tools from the server, serializes them, and updates manifest files.
+async def generate_manifest_tools(public_only: bool = False) -> None:
+    """Retrieves MCP tools from the server, serializes them, and updates manifest files.
+
+    Args:
+        public_only (bool): If True, filters out proprietary schemas to protect IP.
     """
     print("Extracting tools from MCP server...")
     mcp_tools = await handle_list_tools()
@@ -28,7 +30,24 @@ async def generate_manifest_tools() -> None:
     serialized_tools_basic = []
     serialized_tools_full = []
     for tool in mcp_tools:
-        # 1. Basic tool for top-level tools array (must have inputSchema to satisfy schema validation)
+        if public_only:
+            original_name = _from_mcp_name(tool.name)
+            api_prefixes = (
+                "system_",
+                "network_",
+                "time_",
+                "update_",
+                "users_",
+                "itxpt_",
+                "privacy_",
+                "datapush_",
+                "scene_",
+                "analytics_",
+                "history_",
+            )
+            if original_name.startswith(api_prefixes):
+                continue
+
         basic_tool = {
             "name": tool.name,
             "description": tool.description,
@@ -47,7 +66,6 @@ async def generate_manifest_tools() -> None:
 
         serialized_tools_basic.append(basic_tool)
 
-        # 2. Full tool for static_responses in _meta
         full_tool = {
             "name": tool.name,
             "description": tool.description,
@@ -111,4 +129,14 @@ async def generate_manifest_tools() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(generate_manifest_tools())
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Manifest Tools Generator")
+    parser.add_argument(
+        "--public-only",
+        action="store_true",
+        help="Filter out proprietary schemas to protect IP.",
+    )
+    args = parser.parse_args()
+
+    asyncio.run(generate_manifest_tools(public_only=args.public_only))

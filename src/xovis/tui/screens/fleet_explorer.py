@@ -538,7 +538,7 @@ class XovisFleetTable(Screen):
         await asyncio.sleep(1.5)
 
         try:
-            from xovis.api.device.client import SmartDeviceClient
+            from xovis.api.device.client import UnifiedDeviceClient
 
             discovery_master = None
             for dev in self._fleet_data:
@@ -551,7 +551,7 @@ class XovisFleetTable(Screen):
                 table.loading = False
                 return
 
-            async with SmartDeviceClient(
+            async with UnifiedDeviceClient(
                 mac_address=discovery_master.mac_address,
                 host=discovery_master.ip_address,
                 hub_client=self._hub_client,
@@ -713,9 +713,9 @@ class XovisFleetTable(Screen):
                             break
 
                     try:
-                        from xovis.api.device.client import SmartDeviceClient
+                        from xovis.api.device.client import UnifiedDeviceClient
 
-                        async with SmartDeviceClient(
+                        async with UnifiedDeviceClient(
                             mac_address=mac,
                             host=host_ip,
                             hub_client=client,

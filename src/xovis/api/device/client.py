@@ -8,12 +8,14 @@ orchestrates authentication, configuration caching, and fleet discovery.
 """
 
 import asyncio
+import ipaddress
+import re
 import signal
 import sys
 from typing import Any, Optional
 
 from xovis.api.core.auth import DeviceAuth
-from xovis.api.core.exceptions import HardwareNotSupportedError, XovisAuthError
+from xovis.api.core.exceptions import AmbiguousDeviceNameError, HardwareNotSupportedError, XovisAuthError
 from xovis.api.core.http import XovisHTTPClient
 from xovis.api.device.resources.analytics import AnalyticsManager
 from xovis.api.device.resources.datapush import DataPushManager
@@ -654,71 +656,121 @@ class DeviceClient:
                 loop.add_signal_handler(sig, lambda: asyncio.create_task(self.aclose()))
 
 
-class SmartDeviceClient:
+class UnifiedDeviceClient:
     """
-    Asynchronous connection router for Xovis devices.
+    Enterprise-grade hybrid connection router for Xovis devices.
 
     This class provides a hybrid routing strategy across the control and state planes.
-    It encapsulates a decision loop: first probing local LAN/SSDP cache for a direct IP connection,
-    and falling back to the Hub Cloud proxy tunnel if unreachable locally.
+    It supports three connection pathways: MAC-First (resolving MAC addresses with local IP
+    handshake and Cloud HUB fallback), IP-First (local connection with HUB proxy fallback),
+    and Named Resolution (dynamic name lookups with AmbiguousDeviceNameError handling).
 
     Attributes:
-        mac_address (str): The physical MAC address (GUID) of the target device.
-        host (Optional[str]): Known IP address or hostname of the sensor on the local LAN.
-        hub_client (Optional[Any]): HubClient instance to use for the secure tunnel fallback.
-        username (str): The local authentication username. Defaults to "admin".
-        password (str): The local authentication password. Defaults to "pass".
-        kwargs (Any): Additional connection and configuration arguments passed to the clients.
+        mac_address (Optional[str]): Target MAC address.
+        host (Optional[str]): Target IP address or hostname.
+        name (Optional[str]): Target device name.
+        hub_client (Optional[Any]): HubClient instance for Cloud proxy fallback.
+        username (str): Local authentication username.
+        password (str): Local authentication password.
+        kwargs (Any): Additional options passed to DeviceClient.
     """
 
     def __init__(
         self,
-        mac_address: str,
+        identifier: Optional[str] = None,
+        mac_address: Optional[str] = None,
         host: Optional[str] = None,
+        name: Optional[str] = None,
         hub_client: Optional[Any] = None,
         username: str = "admin",
         password: str = "pass",
         **kwargs: Any,
     ) -> None:
         """
-        Initializes the SmartDeviceClient router.
+        Initializes the UnifiedDeviceClient.
 
         Args:
-            mac_address (str): The MAC address of the target device.
-            host (Optional[str], optional): The local IP address of the target device. Defaults to None.
-            hub_client (Optional[Any], optional): An optional HubClient instance. Defaults to None.
-            username (str): Local username for LAN connection. Defaults to "admin".
-            password (str): Local password for LAN connection. Defaults to "pass".
-            **kwargs (Any): Extra client options.
+            identifier (Optional[str]): Optional single positional identifier (MAC, IP, or Name).
+            mac_address (Optional[str]): Target MAC address.
+            host (Optional[str]): Target IP address.
+            name (Optional[str]): Target device name.
+            hub_client (Optional[Any]): Optional HubClient instance.
+            username (str): Username for LAN authentication.
+            password (str): Password for LAN authentication.
+            **kwargs (Any): Extra connection options.
         """
         self.mac_address = mac_address
         self.host = host
+        self.name = name
         self.hub_client = hub_client
         self.username = username
         self.password = password
         self.kwargs = kwargs
         self._client: Optional[DeviceClient] = None
 
+        if identifier:
+            is_mac = bool(re.match(r"^([0-9A-Fa-f]{2}[:.-]){5}([0-9A-Fa-f]{2})$", identifier))
+            is_ip = False
+            try:
+                ipaddress.ip_address(identifier)
+                is_ip = True
+            except ValueError:
+                pass
+
+            if is_mac:
+                self.mac_address = identifier
+            elif is_ip:
+                self.host = identifier
+            else:
+                self.name = identifier
+
     async def __aenter__(self) -> DeviceClient:
         """
         Establishes connection to the device using the optimal route.
-
-        Checks if the local IP is reachable by performing a brief handshake.
-        If the local connection fails or no local host is provided, falls back
-        to routing via the Hub Cloud proxy tunnel.
 
         Returns:
             DeviceClient: An active, authenticated device client instance.
 
         Raises:
-            ConnectionError: If both local connection and remote tunnel fallback fail,
-                or if no valid connection route can be established.
+            AmbiguousDeviceNameError: If multiple devices share the same name.
+            ConnectionError: If all connection attempts and fallbacks fail.
         """
-        if self.host:
+        resolved_mac = self.mac_address
+        resolved_host = self.host
+
+        if self.name:
+            if not self.hub_client:
+                raise ConnectionError("Cannot resolve device name without a HubClient.")
+            devices = getattr(self.hub_client.cache._state, "devices", [])
+            matches = [d for d in devices if getattr(d, "device_name", None) == self.name]
+            if not matches:
+                raise ConnectionError(f"Device with name '{self.name}' not found in Hub cache.")
+            if len(matches) > 1:
+                macs = []
+                for d in matches:
+                    d_id = getattr(d, "id", None)
+                    d_mac = (d_id.root if hasattr(d_id, "root") else d_id) if d_id else "unknown"
+                    macs.append(str(d_mac))
+                raise AmbiguousDeviceNameError(f"Multiple devices found with name '{self.name}': {', '.join(macs)}")
+            matched_dev = matches[0]
+            d_id = getattr(matched_dev, "id", None)
+            resolved_mac = (d_id.root if hasattr(d_id, "root") else d_id) if d_id else None
+            resolved_host = getattr(matched_dev, "ip", None)
+
+        if resolved_mac and not resolved_host and self.hub_client:
+            normalized_mac = resolved_mac.upper().replace("-", ":")
+            for d in getattr(self.hub_client.cache._state, "devices", []):
+                d_id = getattr(d, "id", None)
+                d_mac = (d_id.root if hasattr(d_id, "root") else d_id) if d_id else None
+                if d_mac and d_mac.upper().replace("-", ":") == normalized_mac:
+                    resolved_host = getattr(d, "ip", None)
+                    break
+
+        if resolved_host:
             probe_kwargs = self.kwargs.copy()
             probe_kwargs["timeout"] = 2.0
             probe_client = DeviceClient(
-                host=self.host,
+                host=resolved_host,
                 username=self.username,
                 password=self.password,
                 **probe_kwargs,
@@ -727,7 +779,7 @@ class SmartDeviceClient:
                 async with probe_client:
                     pass
                 self._client = DeviceClient(
-                    host=self.host,
+                    host=resolved_host,
                     username=self.username,
                     password=self.password,
                     **self.kwargs,
@@ -737,17 +789,25 @@ class SmartDeviceClient:
             except Exception:
                 pass
 
-        if self.hub_client:
+        if not resolved_mac and resolved_host and self.hub_client:
+            for d in getattr(self.hub_client.cache._state, "devices", []):
+                if getattr(d, "ip", None) == resolved_host:
+                    d_id = getattr(d, "id", None)
+                    resolved_mac = (d_id.root if hasattr(d_id, "root") else d_id) if d_id else None
+                    break
+
+        if self.hub_client and resolved_mac:
             try:
-                self._client = await self.hub_client.connect_device(self.mac_address)
+                self._client = await self.hub_client.connect_device(resolved_mac)
                 await self._client.__aenter__()
                 return self._client
             except Exception as e:
                 raise ConnectionError(
-                    f"Could not connect to device {self.mac_address} via LAN (host={self.host}) or via Cloud Hub Tunnel: {e}"
+                    f"Could not connect to device {resolved_mac} via LAN (host={resolved_host}) or via Cloud Hub Tunnel: {e}"
                 ) from e
 
-        raise ConnectionError(f"Device {self.mac_address} offline/unreachable on LAN (host={self.host}) and no HubClient is available for fallback.")
+        desc = resolved_mac or resolved_host or self.name or "unknown"
+        raise ConnectionError(f"Device {desc} offline/unreachable on LAN (host={resolved_host}) and no HubClient/MAC is available for fallback.")
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """

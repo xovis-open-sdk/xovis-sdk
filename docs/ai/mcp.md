@@ -38,6 +38,17 @@ For a detailed explanation of the type generation system and the CLI commands, s
 
 ## Deployment & Configuration {: #deployment-configuration }
 
+To ensure seamless cross-platform execution on Windows, macOS, and Linux, the MCP server is optimized to run using portable execution entry points instead of machine-specific absolute file paths.
+
+### Portable Entry Points
+
+- **Option A (Interactive IDEs / Virtual Environments)**: Use the python module-based invocation `python -m xovis.mcp.server`. This ensures that the active Python environment's path resolution is automatically respected across all shells (PowerShell, Bash, Zsh).
+- **Option B (System-wide Command)**: Use the registered global executable `xovis-mcp` defined in the package scripts.
+
+### Dynamic Environment Loading (.env)
+
+The server automatically scans for and loads `.env` configuration files in the current working directory relative to execution, allowing credentials like `XOVIS_MCP_HOST` to be managed modularly.
+
 ### IDE Integration (Cursor / Windsurf)
 To enable native hardware control within your AI-native IDE, add the following to your configuration:
 
