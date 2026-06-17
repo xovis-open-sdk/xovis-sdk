@@ -340,211 +340,85 @@ def serve_docs(host: str, port: int) -> None:
         port: Port to run the HTTP server on.
     """
     import http.server
-    import tempfile
+    import subprocess
+    import sys
     import urllib.parse
     import webbrowser
 
+    try:
+        import mkdocs
+    except ImportError:
+        logger.error(f'Documentation dependencies are missing. Please install with: {F.BOLD}pip install "xovis-sdk[docs]"{F.RESET}')
+        return
+
     root_dir = os.getcwd()
-    files_list = scan_markdown_files(root_dir)
 
-    index_html_template = """<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xovis SDK - Local Documentation Server</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        .markdown-body {
-            box-sizing: border-box;
-            min-width: 200px;
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 45px;
-        }
-        @media (max-width: 767px) {
-            .markdown-body {
-                padding: 15px;
-            }
-        }
-        .sidebar-scroll::-webkit-scrollbar {
-            width: 4px;
-        }
-        .sidebar-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .sidebar-scroll::-webkit-scrollbar-thumb {
-            background: rgba(156, 163, 175, 0.5);
-            border-radius: 2px;
-        }
-    </style>
-</head>
-<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-900 font-sans">
-    <aside class="w-80 bg-white border-r border-gray-200 flex flex-col h-full shadow-sm">
-        <div class="p-6 border-b border-gray-100 flex flex-col gap-1">
-            <h1 class="text-xl font-bold tracking-tight text-cyan-600 flex items-center gap-2">
-                ◆ Xovis SDK
-            </h1>
-            <p class="text-xs text-gray-500 font-medium">Local Documentation Server</p>
-        </div>
-        <nav class="flex-1 overflow-y-auto p-4 sidebar-scroll space-y-6" id="sidebar-nav">
-        </nav>
-    </aside>
+    try:
+        from scripts.prepare_docs import prepare_openapi_assets
 
-    <main class="flex-1 flex flex-col h-full overflow-hidden bg-white">
-        <header class="h-16 border-b border-gray-100 flex items-center px-8 bg-gray-50/50">
-            <span id="current-doc-path" class="text-sm font-semibold text-gray-600">README.md</span>
-        </header>
-        <div class="flex-1 overflow-y-auto" id="content-container">
-            <article id="markdown-content" class="markdown-body"></article>
-        </div>
-    </main>
+        prepare_openapi_assets()
+    except Exception as e:
+        logger.warning(f"Failed to prepare OpenAPI assets: {e}")
 
-    <script>
-        const files = __FILES_PLACEHOLDER__;
+    logger.info("Building documentation using MkDocs...")
+    try:
+        subprocess.run([sys.executable, "-m", "mkdocs", "build"], capture_output=True, text=True, check=True)
+        logger.info("Documentation built successfully.")
+    except Exception as e:
+        logger.error(f"Failed to build documentation with MkDocs: {e}")
+        if hasattr(e, "stderr") and e.stderr:
+            logger.error(f"MkDocs build error: {e.stderr}")
 
-        const groups = {
-            "General / Root Docs": [],
-            "Architectural & Guidelines": [],
-            "Developer Manuals": [],
-            "Other Docs": []
-        };
+    site_dir = os.path.join(root_dir, "site")
 
-        files.forEach(file => {
-            if (!file.includes('/')) {
-                groups["General / Root Docs"].push(file);
-            } else if (file.startsWith('.junie/')) {
-                groups["Architectural & Guidelines"].push(file);
-            } else if (file.startsWith('docs/')) {
-                groups["Developer Manuals"].push(file);
-            } else {
-                groups["Other Docs"].push(file);
-            }
-        });
+    class DocsHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+        """HTTP handler serving MkDocs built site."""
 
-        const sidebarNav = document.getElementById('sidebar-nav');
-        for (const [groupName, paths] of Object.entries(groups)) {
-            if (paths.length === 0) continue;
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory=site_dir, **kwargs)
 
-            const section = document.createElement('div');
-            section.className = 'space-y-2';
+        def translate_path(self, path: str) -> str:
+            """Translates request paths to site directory.
 
-            const heading = document.createElement('h3');
-            heading.className = 'text-xs font-bold text-gray-400 uppercase tracking-wider px-3';
-            heading.textContent = groupName;
-            section.appendChild(heading);
+            Args:
+                path: Requested URL path.
 
-            const list = document.createElement('ul');
-            list.className = 'space-y-1';
+            Returns:
+                The physical resolved file path.
+            """
+            parsed = urllib.parse.urlparse(path)
+            clean_path = parsed.path
+            if clean_path in ("/", "/index.html"):
+                return os.path.join(site_dir, "index.html")
 
-            paths.forEach(path => {
-                const li = document.createElement('li');
-                const btn = document.createElement('button');
-                btn.className = 'w-full text-left px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150 truncate hover:bg-gray-100 hover:text-cyan-600';
-                
-                let displayName = path;
-                if (path.startsWith('.junie/')) displayName = path.substring(7);
-                if (path.startsWith('docs/')) displayName = path.substring(5);
-                
-                btn.textContent = displayName;
-                btn.onclick = () => loadDocument(path);
-                btn.setAttribute('data-path', path);
-                
-                li.appendChild(btn);
-                list.appendChild(li);
-            });
+            rel_path = urllib.parse.unquote(clean_path.lstrip("/"))
+            full_path = os.path.join(site_dir, rel_path)
+            if os.path.commonpath([site_dir, os.path.abspath(full_path)]) == site_dir:
+                return full_path
 
-            section.appendChild(list);
-            sidebarNav.appendChild(section);
-        }
+            return super().translate_path(path)
 
-        async function loadDocument(path) {
-            document.querySelectorAll('#sidebar-nav button').forEach(btn => {
-                if (btn.getAttribute('data-path') === path) {
-                    btn.classList.add('bg-cyan-50', 'text-cyan-600', 'font-semibold');
-                    btn.classList.remove('text-gray-600', 'hover:bg-gray-100');
-                } else {
-                    btn.classList.remove('bg-cyan-50', 'text-cyan-600', 'font-semibold');
-                    btn.classList.add('text-gray-600', 'hover:bg-gray-100');
-                }
-            });
+        def log_message(self, format_str: str, *args: Any) -> None:
+            """Suppress default stdout/stderr logging of HTTP requests."""
+            pass
 
-            document.getElementById('current-doc-path').textContent = path;
+    server_address = (host, port)
+    try:
+        httpd = http.server.ThreadingHTTPServer(server_address, DocsHTTPRequestHandler)
+    except Exception as e:
+        logger.error(f"Failed to start server on {host}:{port}: {e}")
+        return
 
-            const contentContainer = document.getElementById('content-container');
-            const markdownContent = document.getElementById('markdown-content');
-            try {
-                const response = await fetch('/' + path);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const text = await response.text();
-                markdownContent.innerHTML = marked.parse(text);
-                contentContainer.scrollTop = 0;
-            } catch (err) {
-                markdownContent.innerHTML = `<div class="text-red-500 font-semibold">Failed to load document: ${err.message}</div>`;
-            }
-        }
+    logger.info(f"Serving local SDK documentation at {F.BOLD}http://{host}:{port}{F.RESET}")
+    url = f"http://localhost:{port}" if host in ("127.0.0.1", "0.0.0.0") else f"http://{host}:{port}"
+    webbrowser.open(url)
 
-        const firstFile = files[0] || 'README.md';
-        loadDocument(firstFile);
-    </script>
-</body>
-</html>
-"""
-
-    index_html = index_html_template.replace("__FILES_PLACEHOLDER__", json.dumps(files_list))
-
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_index_path = os.path.join(temp_dir, "index.html")
-        with open(temp_index_path, "w", encoding="utf-8") as f:
-            f.write(index_html)
-
-        class DocsHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
-            """HTTP handler mapping docs requests back to workspace or index path."""
-
-            def translate_path(self, path: str) -> str:
-                """Translates request paths to index or project root.
-
-                Args:
-                    path: Requested URL path.
-
-                Returns:
-                    The physical resolved file path.
-                """
-                parsed = urllib.parse.urlparse(path)
-                clean_path = parsed.path
-                if clean_path in ("/", "/index.html"):
-                    return temp_index_path
-
-                rel_path = urllib.parse.unquote(clean_path.lstrip("/"))
-                full_path = os.path.join(root_dir, rel_path)
-                if os.path.commonpath([root_dir, os.path.abspath(full_path)]) == root_dir:
-                    return full_path
-
-                return super().translate_path(path)
-
-            def log_message(self, format_str: str, *args: Any) -> None:
-                """Suppress default stdout/stderr logging of HTTP requests."""
-                pass
-
-        server_address = (host, port)
-        try:
-            httpd = http.server.ThreadingHTTPServer(server_address, DocsHTTPRequestHandler)
-        except Exception as e:
-            logger.error(f"Failed to start server on {host}:{port}: {e}")
-            return
-
-        logger.info(f"Serving local SDK documentation at {F.BOLD}http://{host}:{port}{F.RESET}")
-        url = f"http://localhost:{port}" if host in ("127.0.0.1", "0.0.0.0") else f"http://{host}:{port}"
-        webbrowser.open(url)
-
-        try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            logger.info("Local documentation server stopped.")
-        finally:
-            httpd.server_close()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        logger.info("Local documentation server stopped.")
+    finally:
+        httpd.server_close()
 
 
 def check_doc_coverage(src_path: str = "src") -> float:
@@ -637,9 +511,14 @@ def sync_models(device_ip: str, version_tag: str) -> None:
 
 def start_mcp() -> None:
     """Launches the Xovis MCP Server."""
+    try:
+        import mcp
+    except ImportError:
+        logger.error(f'MCP dependencies are missing. Please install with: {F.BOLD}pip install "xovis-sdk[mcp]"{F.RESET}')
+        return
+
     logger.info("Initializing Xovis MCP Server...")
     try:
-        # We use subprocess to run it as a module to ensure clean environment
         subprocess.run([sys.executable, "-m", "xovis.mcp.server"])
     except KeyboardInterrupt:
         logger.info("MCP Server stopped.")
@@ -649,7 +528,11 @@ def start_mcp() -> None:
 
 def start_setup() -> None:
     """Launches the guided setup wizard."""
-    from xovis.api.core.tui import SetupWizard
+    try:
+        from xovis.api.core.tui import SetupWizard
+    except ImportError:
+        logger.error(f'TUI dependencies are missing. Please install with: {F.BOLD}pip install "xovis-sdk[tui]"{F.RESET}')
+        return
 
     wizard = SetupWizard()
     wizard.run()
@@ -681,7 +564,11 @@ async def start_hub_warmup(client_id: str = None, client_secret: str = None, for
 
 def start_tui() -> None:
     """Launches the Xovis Open SDK Mission Control TUI."""
-    from xovis.tui.app import XovisMissionControl
+    try:
+        from xovis.tui.app import XovisMissionControl
+    except ImportError:
+        logger.error(f'TUI dependencies are missing. Please install with: {F.BOLD}pip install "xovis-sdk[tui]"{F.RESET}')
+        return
 
     app = XovisMissionControl()
     app.run()
@@ -695,7 +582,11 @@ def start_datapush_studio(
     password: str = "pass",
 ) -> None:
     """Launches the Datapush Studio TUI."""
-    from xovis.datapush.transmission_check import DatapushStudioApp
+    try:
+        from xovis.datapush.transmission_check import DatapushStudioApp
+    except ImportError:
+        logger.error(f'TUI dependencies are missing. Please install with: {F.BOLD}pip install "xovis-sdk[tui]"{F.RESET}')
+        return
 
     app = DatapushStudioApp(device_id=host or "", port=port, protocol=protocol, agent_type=agent_type, password=password)
     app.run()
@@ -929,7 +820,7 @@ def main() -> None:
     # Docs Command Group
     docs_parser = subparsers.add_parser(
         "docs",
-        help="[DX] SDK documentation management (docstring checks, local server).",
+        help="[DX] SDK documentation management (Requires: [docs]).",
     )
     docs_subparsers = docs_parser.add_subparsers(dest="docs_command", help="Docs subcommands")
 
@@ -942,7 +833,7 @@ def main() -> None:
     # 2. serve subcommand
     serve_parser = docs_subparsers.add_parser(
         "serve",
-        help="Scan, build, and serve local SDK Markdown documentation.",
+        help="Scan, build, and serve local SDK Markdown documentation (Requires: [docs]).",
     )
     serve_parser.add_argument(
         "--port",
@@ -997,7 +888,7 @@ def main() -> None:
     datapush_parser = subparsers.add_parser(
         "datapush",
         aliases=["studio"],
-        help="[DP] Launch TUI for real-time Data Plane telemetry visualization.",
+        help="[DP] Launch TUI for real-time Data Plane telemetry visualization (Requires: [tui]).",
     )
     datapush_parser.add_argument("--port", type=int, default=9000, help="Listen port (default: 9000).")
     datapush_parser.add_argument(
@@ -1031,13 +922,13 @@ def main() -> None:
     hub_list_parser.add_argument("--status", choices=["ONLINE", "OFFLINE"], help="Filter by connection status.")
 
     # MCP Command
-    subparsers.add_parser("mcp", help="[AI] Launch the Xovis MCP Server for Claude/Cursor integration.")
+    subparsers.add_parser("mcp", help="[AI] Launch the Xovis MCP Server for Claude/Cursor integration (Requires: [mcp]).")
 
     # Setup Command
-    subparsers.add_parser("setup", help="[DX] Launch the guided SDK setup wizard.")
+    subparsers.add_parser("setup", help="[DX] Launch the guided SDK setup wizard (Requires: [tui]).")
 
     # UI Command
-    subparsers.add_parser("ui", help="[DX] Launch Xovis Mission Control (Stateful Fleet TUI).")
+    subparsers.add_parser("ui", help="[DX] Launch Xovis Mission Control (Stateful Fleet TUI) (Requires: [tui]).")
 
     args = parser.parse_args()
 

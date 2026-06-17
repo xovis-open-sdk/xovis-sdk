@@ -225,3 +225,46 @@ def test_serve_docs_server_behavior() -> None:
 
             translated_other = handler_class.translate_path(mock_handler, "/README.md")
             assert translated_other.replace("\\", "/").endswith("README.md")
+
+
+def test_cli_import_guards_mcp() -> None:
+    """Verifies start_mcp handles missing mcp dependency gracefully."""
+    from xovis.cli import start_mcp
+
+    with patch.dict("sys.modules", {"mcp": None}):
+        with patch("xovis.cli.logger.error") as mock_log:
+            start_mcp()
+            mock_log.assert_called_once()
+            assert "MCP dependencies are missing" in mock_log.call_args[0][0]
+
+
+def test_cli_import_guards_tui() -> None:
+    """Verifies TUI commands handle missing dependencies gracefully."""
+    from xovis.cli import start_datapush_studio, start_setup, start_tui
+
+    with patch.dict("sys.modules", {"xovis.tui.app": None, "xovis.api.core.tui": None, "xovis.datapush.transmission_check": None}):
+        with patch("xovis.cli.logger.error") as mock_log:
+            start_tui()
+            assert mock_log.called
+            assert "TUI dependencies are missing" in mock_log.call_args[0][0]
+
+            mock_log.reset_mock()
+            start_setup()
+            assert mock_log.called
+            assert "TUI dependencies are missing" in mock_log.call_args[0][0]
+
+            mock_log.reset_mock()
+            start_datapush_studio(9000, "TCP")
+            assert mock_log.called
+            assert "TUI dependencies are missing" in mock_log.call_args[0][0]
+
+
+def test_cli_import_guards_docs() -> None:
+    """Verifies serve_docs handles missing mkdocs dependency gracefully."""
+    from xovis.cli import serve_docs
+
+    with patch.dict("sys.modules", {"mkdocs": None}):
+        with patch("xovis.cli.logger.error") as mock_log:
+            serve_docs("127.0.0.1", 8080)
+            mock_log.assert_called_once()
+            assert "Documentation dependencies are missing" in mock_log.call_args[0][0]
