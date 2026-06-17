@@ -410,7 +410,7 @@ def serve_docs(host: str, port: int) -> None:
         return
 
     logger.info(f"Serving local SDK documentation at {F.BOLD}http://{host}:{port}{F.RESET}")
-    url = f"http://localhost:{port}" if host in ("127.0.0.1", "0.0.0.0") else f"http://{host}:{port}"
+    url = f"http://localhost:{port}" if host in ("127.0.0.1", "0.0.0.0") else f"http://{host}:{port}"  # nosec B104
     webbrowser.open(url)
 
     try:
