@@ -24,6 +24,9 @@ src/xovis/models/xovis_types.py
 /scripts/check_quality.py
 /scripts/diagnostic_report_*.md
 /scripts/mock_sensor.py
+/scripts/update_smithery.py
+scripts/update_version_badges.py
+/scripts/generate_manifest_tools.py
 /scripts/verify_probing.py
 /scripts/deploy_sdk.py
 /scripts/sanitize_public_history.py
