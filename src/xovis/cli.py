@@ -755,16 +755,21 @@ def main() -> None:
     package_dir = Path(__file__).parent.resolve()
     default_output = str(package_dir / "models" / "xovis_types.py")
 
-    # Priority-based lookup for default source path
-    local_resources_dir = Path("_local_ressources")
+    local_resources_dir = Path("_local_resources")
+    states_dir = local_resources_dir / "states"
     resolved_default_source = None
-    if (local_resources_dir / "hub_fleet_state.json").exists():
+    if (states_dir / "hub_fleet_state.json").exists():
+        resolved_default_source = str(states_dir / "hub_fleet_state.json")
+    elif (local_resources_dir / "hub_fleet_state.json").exists():
         resolved_default_source = str(local_resources_dir / "hub_fleet_state.json")
+    elif (states_dir / "device_state.json").exists():
+        resolved_default_source = str(states_dir / "device_state.json")
     elif (local_resources_dir / "device_state.json").exists():
         resolved_default_source = str(local_resources_dir / "device_state.json")
     else:
-        # Check for state_*.json in local resources
-        state_files = sorted(list(local_resources_dir.glob("state_*.json"))) if local_resources_dir.exists() else []
+        state_files = sorted(list(states_dir.glob("state_*.json"))) if states_dir.exists() else []
+        if not state_files and local_resources_dir.exists():
+            state_files = sorted(list(local_resources_dir.glob("state_*.json")))
         if state_files:
             resolved_default_source = str(state_files[0])
         elif Path("device_state.json").exists():

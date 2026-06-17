@@ -108,9 +108,10 @@ def sync_api(device_ip: str, version_tag: str):
         print(f"Error fetching api.yaml: {e}")
         sys.exit(1)
 
-    resource_dir = Path("_local_ressources")
-    resource_dir.mkdir(exist_ok=True)
-    yaml_path = resource_dir / f"api_{version_tag}.yaml"
+    resource_dir = Path("_local_resources")
+    target_dir = resource_dir / "schemas" / version_tag
+    target_dir.mkdir(parents=True, exist_ok=True)
+    yaml_path = target_dir / "api.yaml"
     yaml_path.write_text(yaml_content, encoding="utf-8")
 
     patch_yaml(yaml_path)

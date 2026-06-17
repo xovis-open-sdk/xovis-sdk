@@ -608,7 +608,11 @@ class XovisFleetTable(Screen):
         action, name = result
         from pathlib import Path
 
-        res_dir = Path("_local_ressources")
+        res_dir = Path("_local_resources") / "states"
+        try:
+            res_dir.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
         if res_dir.exists() and os.access(res_dir, os.W_OK):
             file_path = str((res_dir / f"{name}.state.json").resolve())
         else:

@@ -43,7 +43,7 @@ def generate_llms_txt():
         "- **Mistake:** Using `orjson` in the Data Plane. **Correction:** Use `json.JSONDecoder().raw_decode()` to handle Xovis's concatenated JSON streams without newlines.",
         "- **Mistake:** Blindly executing physical operations. **Correction:** Check capabilities first (e.g., `if await device.has_wifi:`). Spider NUCs lack physical lenses and will crash if `singlesensor.scene` is accessed.",
         "- **Mistake:** Hub Rate Limits. **Correction:** The Cloud Hub uses Auth0. Share `HubClient` sessions across executions using the async context manager to prevent HTTP 429 token exhaustion.",
-        "- **Mistake:** Static file lookup. **Correction:** Always prioritize lookup order starting with `_local_ressources/hub_fleet_state.json` (HUB) and `_local_ressources/device_state.json` (Device) to prevent polling CWD or package defaults.",
+        "- **Mistake:** Static file lookup. **Correction:** Always prioritize lookup order starting with `_local_resources/hub_fleet_state.json` (HUB) and `_local_resources/device_state.json` (Device) to prevent polling CWD or package defaults.",
         "",
         "## Safety & Congestion Control",
         'High-impact operations (reboots, factory resets, network changes) are protected by `XovisSafetyGuardrail`. To execute a CRITICAL tool, the agent MUST explicitly pass `"confirmation": True` in the tool arguments. Max critical quotas apply per session.',

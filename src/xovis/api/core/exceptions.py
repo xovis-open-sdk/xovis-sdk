@@ -88,12 +88,12 @@ class XovisConnectionError(XovisAPIError):
     pass
 
 
-# --- DX / SMART RESOLVER EXCEPTIONS ---
+# --- DX RESOLVER EXCEPTIONS ---
 
 
 class ResourceNotFoundError(XovisClientError):
     """
-    Raised when the Smart Resolver attempts to look up a resource by its string name,
+    Raised when the Resolver attempts to look up a resource by its string name,
     but no matching resource exists on the device.
     """
 
@@ -102,7 +102,7 @@ class ResourceNotFoundError(XovisClientError):
 
 class MultipleResourcesFoundError(XovisClientError):
     """
-    Raised when the Smart Resolver attempts to look up a resource by its string name,
+    Raised when the Resolver attempts to look up a resource by its string name,
     but multiple resources share the exact same name. Forces the developer to use the exact ID.
     """
 

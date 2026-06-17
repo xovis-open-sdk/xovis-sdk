@@ -16,7 +16,7 @@ T = TypeVar("T")
 
 class CacheStrategy(str, Enum):
     """
-    Execution strategies for the Smart Configuration Synchronizer.
+    Execution strategies for the Configuration Synchronizer.
 
     Defines how the `ConfigCacheManager` interacts with the edge hardware
     to maintain state consistency.

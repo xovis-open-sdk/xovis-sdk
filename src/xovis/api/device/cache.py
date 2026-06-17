@@ -9,7 +9,10 @@ convenient, dot-notation accessors for Jupyter/REPL environments.
 
 import asyncio
 import logging
+import os
 import re
+import sys
+from pathlib import Path
 from typing import Any, Generic, Optional, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -22,6 +25,75 @@ from xovis.config import config
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
+
+
+class CachePaths:
+    """Helper namespace providing autocomplete and auto-suggestions for all local resources."""
+
+    BASE_DIR = Path("_local_resources")
+    STATES_DIR = BASE_DIR / "states"
+    SCHEMAS_DIR = BASE_DIR / "schemas"
+    SAMPLES_DIR = BASE_DIR / "samples"
+
+    DEVICE_STATE = STATES_DIR / "device_state.json"
+    FLEET_STATE = STATES_DIR / "hub_fleet_state.json"
+
+    @classmethod
+    def get_system_cache_dir(cls) -> Path:
+        """Resolves the system-level global cache directory in a platform-independent manner.
+
+        Returns:
+            Path: The resolved path to the system cache directory.
+        """
+        if sys.platform == "win32":
+            local_appdata = os.environ.get("LOCALAPPDATA")
+            if local_appdata:
+                return Path(local_appdata) / "xovis" / "Cache"
+            return Path.home() / "AppData" / "Local" / "xovis" / "Cache"
+        xdg_cache = os.environ.get("XDG_CACHE_HOME")
+        if xdg_cache:
+            return Path(xdg_cache) / "xovis"
+        return Path.home() / ".cache" / "xovis"
+
+    @classmethod
+    def list_available_states(cls) -> list[str]:
+        """Discovers all available local state files. Highly useful in REPL/Notebooks.
+
+        Returns:
+            list[str]: Filenames of all available local states.
+        """
+        states = []
+        if cls.STATES_DIR.exists():
+            states.extend([f.name for f in cls.STATES_DIR.glob("*.json")])
+
+        sys_states_dir = cls.get_system_cache_dir() / "states"
+        if sys_states_dir.exists():
+            states.extend([f.name for f in sys_states_dir.glob("*.json")])
+
+        return sorted(list(set(states)))
+
+    @classmethod
+    def get_latest_state(cls) -> Path:
+        """Helper to get the most recently modified state cache for quick debugging.
+
+        Returns:
+            Path: The Path to the most recently modified state cache, falling back to DEVICE_STATE.
+        """
+        candidates = []
+
+        if cls.STATES_DIR.exists():
+            candidates.extend(cls.STATES_DIR.glob("*.json"))
+
+        sys_states_dir = cls.get_system_cache_dir() / "states"
+        if sys_states_dir.exists():
+            candidates.extend(sys_states_dir.glob("*.json"))
+
+        candidates.extend([cls.DEVICE_STATE, cls.FLEET_STATE])
+
+        existing = [p for p in candidates if p.exists()]
+        if not existing:
+            return cls.DEVICE_STATE
+        return max(existing, key=lambda p: p.stat().st_mtime)
 
 
 class REPLAccessor(Generic[T]):
@@ -109,7 +181,7 @@ class REPLAccessor(Generic[T]):
 
 class CacheCollection(list, Generic[T]):
     """
-    Enhanced list subclass exposing smart REPL accessors.
+    Enhanced list subclass exposing REPL accessors.
 
     Wraps standard lists with `.by_name` and `.by_id` properties to facilitate
     rapid resource discovery in the State & Topology Plane.
@@ -731,7 +803,7 @@ class ConfigCacheManager:
 
                 self._state.contexts[ctx] = bucket
 
-            if self.auto_persist_path or self.persistence_dir:
+            if True:
                 await self.save_to_disk()
 
         except Exception as e:
@@ -757,34 +829,92 @@ class ConfigCacheManager:
         with open(file_path) as f:
             self._state = HostStateBucket.model_validate_json(f.read())
 
-    async def _resolve_persist_path(self) -> Optional[str]:
+    def _ensure_directory_or_fallback(self, path: Path) -> Optional[Path]:
+        """Ensures the directory for the given path is writeable or falls back.
+
+        Implements the 3-Tier cache folder creation and fallback strategy.
+
+        Args:
+            path (Path): The desired target file path.
+
+        Returns:
+            Optional[Path]: The writeable target path, or None if falling back
+                to memory-only.
         """
-        Resolves the final persistence path, dynamically if persistence_dir is used.
+        if getattr(self, "_memory_only", False):
+            return None
+
+        parent = path.parent
+        try:
+            parent.mkdir(parents=True, exist_ok=True)
+            return path
+        except (PermissionError, OSError) as exc:
+            logger.warning(f"Local directory creation failed at {parent} ({exc}). Attempting global system cache fallback.")
+
+        try:
+            try:
+                rel_parts = path.relative_to(CachePaths.BASE_DIR)
+                sys_target = CachePaths.get_system_cache_dir() / rel_parts
+            except ValueError:
+                sys_target = CachePaths.get_system_cache_dir() / path.name
+
+            sys_parent = sys_target.parent
+            sys_parent.mkdir(parents=True, exist_ok=True)
+            return sys_target
+        except (PermissionError, OSError) as exc:
+            logger.warning(
+                f"Unable to write to system-level cache workspace ({exc}). "
+                f"Falling back to temporary memory-only caching. "
+                f"To persist cache, ensure write permissions exist."
+            )
+
+        self._memory_only = True
+        return None
+
+    async def _resolve_persist_path(self) -> Optional[str]:
+        """Resolves the final persistence path, dynamically if persistence_dir is used.
 
         Returns:
             Optional[str]: The absolute path to the state file, or None.
         """
+        if getattr(self, "_memory_only", False):
+            return None
+
+        from urllib.parse import urlparse
+
+        parsed = urlparse(str(self._http_client.base_url))
+        host = parsed.netloc or parsed.path
+        host_clean = host.split(":")[0].replace(".", "_").replace(":", "_")
+
+        resolved_path: Optional[Path] = None
+
         if self.auto_persist_path:
-            return self.auto_persist_path
+            resolved_path = Path(self.auto_persist_path)
+        elif self.persistence_dir:
+            try:
+                resp = await self._http_client.get("/api/v5/device/info")
+                info = resp.json()
+                mac = info.get("macAddress", "unknown").replace(":", "-")
+                resolved_path = Path(self.persistence_dir) / f"{mac}.json"
+            except Exception as e:
+                logger.warning(f"Could not resolve dynamic persistence path: {e}")
+                return None
+        else:
+            host_state_path = CachePaths.STATES_DIR / f"state_{host_clean}.json"
+            device_state_path = CachePaths.DEVICE_STATE
 
-        if not self.persistence_dir:
-            return None
+            if host_state_path.exists():
+                resolved_path = host_state_path
+            elif device_state_path.exists():
+                resolved_path = device_state_path
+            else:
+                resolved_path = host_state_path
 
-        try:
-            # We need the MAC address for the filename. We probe the system info.
-            # Using the direct URL to avoid circular dependencies with Managers.
-            resp = await self._http_client.get("/api/v5/device/info")
-            info = resp.json()
-            mac = info.get("macAddress", "unknown").replace(":", "-")
+        if resolved_path:
+            final_path = self._ensure_directory_or_fallback(resolved_path)
+            return str(final_path) if final_path else None
 
-            from pathlib import Path
-
-            p_dir = Path(self.persistence_dir)
-            p_dir.mkdir(parents=True, exist_ok=True)
-            return str(p_dir / f"{mac}.json")
-        except Exception as e:
-            logger.warning(f"Could not resolve dynamic persistence path: {e}")
-            return None
+        return None
 
     async def save_to_disk(self) -> None:
         """

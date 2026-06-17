@@ -45,7 +45,7 @@ async def main():
             # 5. Smart Cache Utilization
             # device.cache.zones.by_name allows instant dot-notation access without network penalties
             zones = device.cache.zones.by_name
-            logger.info(f"Discovered {len(device.cache.zones)} zones via Smart Cache")
+            logger.info(f"Discovered {len(device.cache.zones)} zones via Cache")
             for zone_name in dir(zones):
                 if not zone_name.startswith("_"):
                     logger.info(f" - Zone: {zone_name}")

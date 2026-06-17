@@ -161,7 +161,7 @@ graph TD
         subgraph "Clients"
             HC[HubClient]
             DC[DeviceClient]
-            Smart[SmartDeviceClient]
+            Smart[UnifiedDeviceClient]
         end
 
         subgraph "Core Utilities & Safeguards"

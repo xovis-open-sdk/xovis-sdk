@@ -2,7 +2,7 @@
 Xovis SDK - TUI Path Resolution and State Bucket Tests
 
 Validates that the TUI state buckets and state files are saved in the logical
-directories (_local_ressources or home) with proper fallbacks.
+directories (_local_resources or home) with proper fallbacks.
 """
 
 import os
@@ -18,47 +18,56 @@ from xovis.tui.screens.fleet_explorer import XovisFleetTable
 
 def test_bucket_modal_target_dir_with_local_resources(tmp_path, monkeypatch) -> None:
     """
-    Validates that BucketModal targets '_local_ressources' when it exists and is writeable.
+    Validates that BucketModal targets '_local_resources' when it exists and is writeable.
     """
-    local_res = tmp_path / "_local_ressources"
+    local_res = tmp_path / "_local_resources"
     local_res.mkdir()
 
     # Change current working directory to tmp_path
     monkeypatch.chdir(tmp_path)
 
-    # Patch Path inside bucket_modal to return our tmp_path / _local_ressources
-    # when checking for "_local_ressources"
+    # Patch Path inside bucket_modal to return our tmp_path / _local_resources
+    # when checking for "_local_resources"
     orig_path_init = Path.__new__
 
     def mock_path_new(cls, *args, **kwargs):
-        if args and args[0] == "_local_ressources":
+        if args and args[0] == "_local_resources":
             return local_res
         return orig_path_init(cls, *args, **kwargs)
 
     with patch.object(Path, "__new__", side_effect=mock_path_new):
         modal = BucketModal(suggested_name="test_bucket", device_count=10)
-        assert Path(modal.target_dir) == local_res.resolve()
+        assert Path(modal.target_dir) == (local_res / "states").resolve()
 
 
 def test_bucket_modal_target_dir_fallback(tmp_path, monkeypatch) -> None:
     """
     Validates that BucketModal falls back to current working directory
-    when '_local_ressources' does not exist.
+    when '_local_resources' does not exist.
     """
     # Change current working directory to tmp_path
     monkeypatch.chdir(tmp_path)
 
-    modal = BucketModal(suggested_name="test_bucket", device_count=10)
-    assert Path(modal.target_dir).resolve() == tmp_path.resolve()
+    # Patch Path.exists to return False when checking for "_local_resources"
+    orig_exists = Path.exists
+
+    def mock_exists(self):
+        if "_local_resources" in str(self):
+            return False
+        return orig_exists(self)
+
+    with patch.object(Path, "exists", mock_exists):
+        modal = BucketModal(suggested_name="test_bucket", device_count=10)
+        assert Path(modal.target_dir).resolve() == tmp_path.resolve()
 
 
 @pytest.mark.asyncio
 async def test_fleet_explorer_bucket_action_path_resolution(tmp_path, monkeypatch) -> None:
     """
     Validates that XovisFleetTable's _on_bucket_action resolves the bucket path
-    to '_local_ressources' when it exists, or falls back to CWD.
+    to '_local_resources' when it exists, or falls back to CWD.
     """
-    local_res = tmp_path / "_local_ressources"
+    local_res = tmp_path / "_local_resources"
     local_res.mkdir()
 
     # Change current working directory to tmp_path
@@ -76,7 +85,7 @@ async def test_fleet_explorer_bucket_action_path_resolution(tmp_path, monkeypatc
     orig_path_init = Path.__new__
 
     def mock_path_new(cls, *args, **kwargs):
-        if args and args[0] == "_local_ressources":
+        if args and args[0] == "_local_resources":
             return local_res
         return orig_path_init(cls, *args, **kwargs)
 
@@ -97,8 +106,8 @@ async def test_fleet_explorer_bucket_action_path_resolution(tmp_path, monkeypatc
         screen.query_one = query_one_mock
         screen._on_bucket_action(("save", "my_test_view"))
 
-        # Check that export_to_file was called with path in local_res
-        expected_path = local_res / "my_test_view.state.json"
+        # Check that export_to_file was called with path in local_res / "states"
+        expected_path = local_res / "states" / "my_test_view.state.json"
         mock_cache.export_to_file.assert_called_once()
         called_path = Path(mock_cache.export_to_file.call_args[0][0])
         assert called_path.resolve() == expected_path.resolve()

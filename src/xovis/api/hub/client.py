@@ -81,9 +81,12 @@ class HubClient:
         self._auth = HubAuth(client_id=cid, client_secret=csec, token_url=token_url)
         self._tunnel_base_url = tunnel_base_url
 
+        # Extract auto_persist_path if provided
+        auto_persist_path = kwargs.pop("auto_persist_path", None)
+
         self._http_client = XovisHTTPClient(base_url=base_url, auth=self._auth, timeout=timeout, max_retries=max_retries, **kwargs)
 
-        self.cache = HubCacheManager(self._http_client, fleet_filter=fleet_filter)
+        self.cache = HubCacheManager(self._http_client, fleet_filter=fleet_filter, auto_persist_path=auto_persist_path)
 
         self.devices = HubDevicesManager(self._http_client, cache=self.cache)
         self.licenses = HubLicensesManager(self._http_client, cache=self.cache)
@@ -199,6 +202,7 @@ class HubClient:
             HubClient: The initialized and synchronized client.
         """
         await self._http_client.__aenter__()
+        await self.cache.load_from_disk()
         await self.cache.sync()
         return self
 

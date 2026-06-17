@@ -8,6 +8,7 @@ accessors for interactive environments.
 """
 
 import logging
+from pathlib import Path
 from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -88,7 +89,7 @@ class HubCacheManager:
     discovery in REPL environments.
     """
 
-    def __init__(self, http_client: XovisHTTPClient, fleet_filter: Optional[dict[str, Any]] = None) -> None:
+    def __init__(self, http_client: XovisHTTPClient, fleet_filter: Optional[dict[str, Any]] = None, auto_persist_path: Optional[str] = None) -> None:
         """
         Initializes the HubCacheManager.
 
@@ -97,9 +98,12 @@ class HubCacheManager:
             fleet_filter (Optional[Dict[str, Any]], optional): A dictionary of
                 attributes and values to filter the fleet by (e.g., {"group": "EMEA"}).
                 Supports list-based "any-of" matching.
+            auto_persist_path (Optional[str], optional): Custom path for cache persistence.
         """
         self._http = http_client
         self.fleet_filter = fleet_filter or {}
+        self.auto_persist_path = auto_persist_path
+        self._memory_only = False
         self._state = HubStateBucket()
 
     @property
@@ -276,6 +280,8 @@ class HubCacheManager:
             self._state.topology_roles.update(saved_roles)
             self._state.topology_parents.update(saved_parents)
 
+        await self.save_to_disk()
+
     def export_to_file(self, file_path: str, custom_bucket: Optional[HubStateBucket] = None) -> None:
         """
         Writes the current hub state or a custom bucket to an offline JSON file.
@@ -330,6 +336,112 @@ class HubCacheManager:
                     if mac not in existing_lic_macs:
                         self._state.licenses.append(l)
                         existing_lic_macs.add(mac)
+
+    def _ensure_directory_or_fallback(self, path: Path) -> Optional[Path]:
+        """Ensures the directory for the given path is writeable or falls back.
+
+        Implements the 3-Tier cache folder creation and fallback strategy.
+
+        Args:
+            path (Path): The desired target file path.
+
+        Returns:
+            Optional[Path]: The writeable target path, or None if falling back
+                to memory-only.
+        """
+        if getattr(self, "_memory_only", False):
+            return None
+
+        parent = path.parent
+        try:
+            parent.mkdir(parents=True, exist_ok=True)
+            return path
+        except (PermissionError, OSError) as exc:
+            logging.warning(f"Local directory creation failed at {parent} ({exc}). Attempting global system cache fallback.")
+
+        try:
+            from xovis.api.device.cache import CachePaths
+
+            try:
+                rel_parts = path.relative_to(CachePaths.BASE_DIR)
+                sys_target = CachePaths.get_system_cache_dir() / rel_parts
+            except ValueError:
+                sys_target = CachePaths.get_system_cache_dir() / path.name
+
+            sys_parent = sys_target.parent
+            sys_parent.mkdir(parents=True, exist_ok=True)
+            return sys_target
+        except (PermissionError, OSError) as exc:
+            logging.warning(
+                f"Unable to write to system-level cache workspace ({exc}). "
+                f"Falling back to temporary memory-only caching. "
+                f"To persist cache, ensure write permissions exist."
+            )
+
+        self._memory_only = True
+        return None
+
+    def _resolve_persist_path(self) -> Optional[str]:
+        """Resolves the final persistence path for the Hub fleet.
+
+        Returns:
+            Optional[str]: The absolute path to the state file, or None.
+        """
+        if getattr(self, "_memory_only", False):
+            return None
+
+        from pathlib import Path
+
+        from xovis.api.device.cache import CachePaths
+
+        resolved_path: Optional[Path] = None
+
+        if self.auto_persist_path:
+            resolved_path = Path(self.auto_persist_path)
+        else:
+            resolved_path = CachePaths.FLEET_STATE
+
+        if resolved_path:
+            final_path = self._ensure_directory_or_fallback(resolved_path)
+            return str(final_path) if final_path else None
+
+        return None
+
+    async def save_to_disk(self) -> None:
+        """Safely serializes the HubStateBucket to disk."""
+        path = self._resolve_persist_path()
+        if not path:
+            return
+
+        import asyncio
+
+        def _save():
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(self._state.model_dump_json(by_alias=True, exclude_none=True, indent=2))
+
+        await asyncio.to_thread(_save)
+
+    async def load_from_disk(self) -> None:
+        """Deserializes the HubStateBucket from disk."""
+        path = self._resolve_persist_path()
+        if not path:
+            return
+
+        import asyncio
+        import os
+
+        if not await asyncio.to_thread(os.path.exists, path):
+            return
+
+        def _load():
+            with open(path, encoding="utf-8") as f:
+                return f.read()
+
+        data = await asyncio.to_thread(_load)
+        try:
+            self._state = HubStateBucket.model_validate_json(data)
+        except Exception as e:
+            logging.warning(f"Could not load Hub cache from disk: {e}")
 
     def _matches_filter(self, device: Device) -> bool:
         """

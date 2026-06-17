@@ -72,7 +72,11 @@ class BucketModal(ModalScreen[tuple[str, str]]):
         self.device_count = device_count
         from pathlib import Path
 
-        res_dir = Path("_local_ressources")
+        res_dir = Path("_local_resources") / "states"
+        try:
+            res_dir.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
         if res_dir.exists() and os.access(res_dir, os.W_OK):
             self.target_dir = str(res_dir.resolve())
         else:

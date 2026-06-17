@@ -15,9 +15,9 @@ Synchronizes proprietary resources from a physical Xovis sensor to the local env
 
 **What it does:**
 
-- Downloads the **OpenAPI schema** (e.g., `api_5-9-2.json`) from the sensor.
-- Exports the current **Host State** (MACs, names, capabilities) to a local JSON bucket.
-- Populates the `_local_ressources/` directory for offline use by the SDK and AI agents.
+- Downloads the **OpenAPI schema** into `_local_resources/schemas/{fw_version}/api.yaml` (e.g., `_local_resources/schemas/5-9-2/api.yaml`).
+- Exports the current **Host State** (MACs, names, capabilities) to `_local_resources/states/` (`device_state.json` and `state_{ip}.json`).
+- Populates structured directories under `_local_resources/` for offline use by the SDK and AI agents (`schemas/{fw_version}/`, `schemas/hub/`, `states/`, `samples/`).
 
 **Options:**
 
@@ -46,7 +46,7 @@ Parses an offline `HostStateBucket` cache and generates strict Python `Literal` 
 
 **Options:**
 
-- `--source`: Path to the cache JSON (default: `device_state.json`).
+- `--source`: Path to the cache JSON (auto-detected; prioritizes `_local_resources/states/` and falls back to `device_state.json`).
 - `--output`: Target Python file path.
 - `--host`: Optional: Pull state from this device IP before generating.
 - `--dry-run`: Analyze without writing to disk.

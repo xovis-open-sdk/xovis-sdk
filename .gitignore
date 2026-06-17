@@ -14,7 +14,7 @@ src/xovis/device_state.json
 src/xovis/models/xovis_types.py
 /xovis_studio_debug.log
 /.xovis_ai_privacy.json
-/_local_ressources/
+/_local_resources/
 /docs/assets/openapi/
 # === Internal Tooling & AI Agent Context ===
 !/scripts/
@@ -27,9 +27,11 @@ src/xovis/models/xovis_types.py
 /scripts/update_smithery.py
 scripts/update_version_badges.py
 /scripts/generate_manifest_tools.py
+/docs_check.txt
 /scripts/verify_probing.py
 /scripts/deploy_sdk.py
 /scripts/sanitize_public_history.py
+/test_toolkit.py
 /mailmap
 /mailmap_public
 /replacements.txt

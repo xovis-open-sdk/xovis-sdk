@@ -156,7 +156,7 @@ The SDK includes a native CLI tool to extract topology data from an offline sens
 
 ```bash
 # Generate static types
-xovis-cli generate-types --source ./device_state.json
+xovis-cli generate-types --source ./_local_resources/states/device_state.json
 
 # Launch Xovis Open SDK Mission Control TUI
 xovis-cli ui

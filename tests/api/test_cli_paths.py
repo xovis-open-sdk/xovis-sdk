@@ -41,11 +41,17 @@ def mock_device_client():
 
     # Mocking http client
     http_mock = MagicMock()
-    http_mock.get = AsyncMock()
-    mock_resp = MagicMock()
-    mock_resp.status_code = 200
-    mock_resp.text = "openapi: 3.0.0"
-    http_mock.get.return_value = mock_resp
+
+    async def mock_get(url, *args, **kwargs):
+        resp = MagicMock()
+        resp.status_code = 200
+        if "schemas/datapush" in url:
+            resp.text = '{"schema": "mocked_' + url.split("/")[-1] + '"}'
+        else:
+            resp.text = "openapi: 3.0.0"
+        return resp
+
+    http_mock.get = AsyncMock(side_effect=mock_get)
     client._http_client = http_mock
 
     # Mocking async context manager
@@ -68,7 +74,6 @@ async def test_hardware_syncer_unified_state_path(mock_device_client, tmp_path) 
     """
     syncer = HardwareSyncer(host="192.168.1.100", username="admin", password="pass")
 
-    # Override resource_dir to use tmp_path to prevent dirtying local directory
     syncer.resource_dir = tmp_path
 
     with patch("xovis.api.device.sync.DeviceClient", return_value=mock_device_client):
@@ -76,16 +81,26 @@ async def test_hardware_syncer_unified_state_path(mock_device_client, tmp_path) 
 
     assert success is True
 
-    ip_specific_file = tmp_path / "state_192_168_1_100.json"
-    unified_file = tmp_path / "device_state.json"
+    ip_specific_file = tmp_path / "states" / "state_192_168_1_100.json"
+    unified_file = tmp_path / "states" / "device_state.json"
 
     assert ip_specific_file.exists()
     assert unified_file.exists()
 
-    # Verify both contain identical state bucket content
     ip_content = ip_specific_file.read_text()
     unified_content = unified_file.read_text()
     assert ip_content == unified_content
+
+    schemas = ["live", "logics", "status", "wifibt"]
+    for schema_type in schemas:
+        schema_file = tmp_path / "schemas" / "5-9-11" / f"datapush_{schema_type}.json"
+        assert schema_file.exists()
+        assert schema_type in schema_file.read_text()
+
+    openapi_file = tmp_path / "schemas" / "5-9-11" / "api.yaml"
+    fallback_openapi_file = tmp_path / "schemas" / "api.yaml"
+    assert openapi_file.exists()
+    assert fallback_openapi_file.exists()
 
 
 def test_cli_path_resolution_order(tmp_path, monkeypatch) -> None:
@@ -97,23 +112,16 @@ def test_cli_path_resolution_order(tmp_path, monkeypatch) -> None:
     3. state_*.json in local resources
     4. device_state.json in root / package fallback.
     """
-    # Create the directories we need to mock or navigate
-    local_res = tmp_path / "_local_ressources"
+    local_res = tmp_path / "_local_resources"
     local_res.mkdir()
 
-    # We will test each priority step by adding files one by one and asserting selection
-    # Mocking current directory to point to tmp_path
     monkeypatch.chdir(tmp_path)
 
-    # We also need to mock Path(__file__).parent.resolve() or Path("_local_ressources")
-    # Let's mock 'local_resources_dir' to point to our temp _local_ressources
     from xovis import cli
 
-    monkeypatch.setattr(cli, "Path", lambda *args, **kwargs: Path(*args, **kwargs) if args and args[0] != "_local_ressources" else local_res)
+    monkeypatch.setattr(cli, "Path", lambda *args, **kwargs: Path(*args, **kwargs) if args and args[0] != "_local_resources" else local_res)
 
-    # Let's create helper to run cli parsing and check resolved '--source' default
     def get_resolved_source():
-        # Clean arg list and parse
         with patch.object(sys, "argv", ["xovis-cli", "generate-types", "--dry-run"]):
             with patch("xovis.cli.generate_types") as mock_gen:
                 try:
@@ -124,29 +132,38 @@ def test_cli_path_resolution_order(tmp_path, monkeypatch) -> None:
                     return mock_gen.call_args[0][0]
         return None
 
-    # Step 5: None of them exist, should fall back to package-default/root default
-    # Let's verify package default is resolved when nothing else is there
     pkg_default = get_resolved_source()
     assert pkg_default is not None
 
-    # Step 4: device_state.json in CWD exists
     cwd_device_state = tmp_path / "device_state.json"
     cwd_device_state.write_text("{}", encoding="utf-8")
     assert get_resolved_source() == str(cwd_device_state.resolve())
-    cwd_device_state.unlink()  # clean up
+    cwd_device_state.unlink()
 
-    # Step 3: state_*.json exists in local resources
-    state_file = local_res / "state_10_0_0_1.json"
+    states_dir = local_res / "states"
+    states_dir.mkdir()
+
+    state_file_fallback = local_res / "state_10_0_0_2.json"
+    state_file_fallback.write_text("{}", encoding="utf-8")
+    assert get_resolved_source() == str(state_file_fallback)
+
+    state_file = states_dir / "state_10_0_0_1.json"
     state_file.write_text("{}", encoding="utf-8")
     assert get_resolved_source() == str(state_file)
 
-    # Step 2: device_state.json exists in local resources
-    dev_state = local_res / "device_state.json"
+    dev_state_fallback = local_res / "device_state.json"
+    dev_state_fallback.write_text("{}", encoding="utf-8")
+    assert get_resolved_source() == str(dev_state_fallback)
+
+    dev_state = states_dir / "device_state.json"
     dev_state.write_text("{}", encoding="utf-8")
     assert get_resolved_source() == str(dev_state)
 
-    # Step 1: hub_fleet_state.json exists in local resources (highest priority)
-    hub_state = local_res / "hub_fleet_state.json"
+    hub_state_fallback = local_res / "hub_fleet_state.json"
+    hub_state_fallback.write_text("{}", encoding="utf-8")
+    assert get_resolved_source() == str(hub_state_fallback)
+
+    hub_state = states_dir / "hub_fleet_state.json"
     hub_state.write_text("{}", encoding="utf-8")
     assert get_resolved_source() == str(hub_state)
 

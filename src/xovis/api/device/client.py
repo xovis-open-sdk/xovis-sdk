@@ -621,9 +621,8 @@ class DeviceClient:
         # Sync multisensors and start cache watcher
         await asyncio.gather(self.multisensors.sync(), self.cache.start(), return_exceptions=True)
 
-        # Ensure we try to load from disk if persistence is enabled
-        if self.cache.auto_persist_path or self.cache.persistence_dir:
-            await self.cache.load_from_disk()
+        # Ensure we try to load from disk
+        await self.cache.load_from_disk()
 
         return self
 
