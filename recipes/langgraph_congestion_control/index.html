@@ -1601,7 +1601,7 @@ The agent reads the local state via <code>XovisAgentMemory</code>, executes a ta
 <span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">StateGraph</span><span class="p">,</span> <span class="n">END</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">xovis</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartDeviceClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xovis</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnifiedDeviceClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">xovis.skills.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">XovisAIToolkit</span><span class="p">,</span> <span class="n">XovisAgentMemory</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">AgentState</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
@@ -1609,8 +1609,8 @@ The agent reads the local state via <code>XovisAgentMemory</code>, executes a ta
     <span class="n">hardware_state</span><span class="p">:</span> <span class="nb">str</span>
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process_hardware_loop</span><span class="p">():</span>
-    <span class="c1"># Utilizing SmartDeviceClient for robust hybrid local/remote routing</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">SmartDeviceClient</span><span class="p">(</span><span class="n">mac_address</span><span class="o">=</span><span class="s2">&quot;00:26:8c:12:34:56&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;10.0.0.50&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">device</span><span class="p">:</span>
+    <span class="c1"># Utilizing UnifiedDeviceClient for robust hybrid local/remote routing</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">UnifiedDeviceClient</span><span class="p">(</span><span class="n">mac_address</span><span class="o">=</span><span class="s2">&quot;00:26:8c:12:34:56&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;10.0.0.50&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">device</span><span class="p">:</span>
         <span class="n">toolkit</span> <span class="o">=</span> <span class="n">XovisAIToolkit</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
         <span class="c1"># Retrieving LangChain tools dynamically via the unified adapter registry</span>

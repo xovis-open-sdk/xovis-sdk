@@ -1420,6 +1420,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#portable-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Portable Entry Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-environment-loading-env" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Environment Loading (.env)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#ide-integration-cursor--windsurf" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1862,6 +1884,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#portable-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Portable Entry Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-environment-loading-env" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Environment Loading (.env)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#ide-integration-cursor--windsurf" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1957,6 +2001,14 @@
 </ol>
 <p>For a detailed explanation of the type generation system and the CLI commands, see the <a href="../../cli/#generate-types">CLI Documentation</a>.</p>
 <h2 id="deployment-configuration">Deployment &amp; Configuration</h2>
+<p>To ensure seamless cross-platform execution on Windows, macOS, and Linux, the MCP server is optimized to run using portable execution entry points instead of machine-specific absolute file paths.</p>
+<h3 id="portable-entry-points">Portable Entry Points</h3>
+<ul>
+<li><strong>Option A (Interactive IDEs / Virtual Environments)</strong>: Use the python module-based invocation <code>python -m xovis.mcp.server</code>. This ensures that the active Python environment's path resolution is automatically respected across all shells (PowerShell, Bash, Zsh).</li>
+<li><strong>Option B (System-wide Command)</strong>: Use the registered global executable <code>xovis-mcp</code> defined in the package scripts.</li>
+</ul>
+<h3 id="dynamic-environment-loading-env">Dynamic Environment Loading (.env)</h3>
+<p>The server automatically scans for and loads <code>.env</code> configuration files in the current working directory relative to execution, allowing credentials like <code>XOVIS_MCP_HOST</code> to be managed modularly.</p>
 <h3 id="ide-integration-cursor--windsurf">IDE Integration (Cursor / Windsurf)</h3>
 <p>To enable native hardware control within your AI-native IDE, add the following to your configuration:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
