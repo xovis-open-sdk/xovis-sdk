@@ -198,7 +198,7 @@ def test_get_system_cache_dir_platforms() -> None:
         patch.dict(os.environ, {"LOCALAPPDATA": "C:\\MockUser\\AppData\\Local"}),
     ):
         path = CachePaths.get_system_cache_dir()
-        assert path == Path("C:\\MockUser\\AppData\\Local\\xovis\\Cache")
+        assert path == Path("C:\\MockUser\\AppData\\Local") / "xovis" / "Cache"
 
     # 2. win32 without LOCALAPPDATA
     with (
@@ -207,7 +207,7 @@ def test_get_system_cache_dir_platforms() -> None:
         patch("pathlib.Path.home", return_value=Path("C:\\MockUser")),
     ):
         path = CachePaths.get_system_cache_dir()
-        assert path == Path("C:\\MockUser\\AppData\\Local\\xovis\\Cache")
+        assert path == Path("C:\\MockUser") / "AppData" / "Local" / "xovis" / "Cache"
 
     # 3. linux with XDG_CACHE_HOME
     with (
