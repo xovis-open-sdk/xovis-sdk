@@ -2495,9 +2495,9 @@
 <p>Synchronizes proprietary resources from a physical Xovis sensor to the local environment.</p>
 <p><strong>What it does:</strong></p>
 <ul>
-<li>Downloads the <strong>OpenAPI schema</strong> (e.g., <code>api_5-9-2.json</code>) from the sensor.</li>
-<li>Exports the current <strong>Host State</strong> (MACs, names, capabilities) to a local JSON bucket.</li>
-<li>Populates the <code>_local_ressources/</code> directory for offline use by the SDK and AI agents.</li>
+<li>Downloads the <strong>OpenAPI schema</strong> into <code>_local_resources/schemas/{fw_version}/api.yaml</code> (e.g., <code>_local_resources/schemas/5-9-2/api.yaml</code>).</li>
+<li>Exports the current <strong>Host State</strong> (MACs, names, capabilities) to <code>_local_resources/states/</code> (<code>device_state.json</code> and <code>state_{ip}.json</code>).</li>
+<li>Populates structured directories under <code>_local_resources/</code> for offline use by the SDK and AI agents (<code>schemas/{fw_version}/</code>, <code>schemas/hub/</code>, <code>states/</code>, <code>samples/</code>).</li>
 </ul>
 <p><strong>Options:</strong></p>
 <ul>
@@ -2524,7 +2524,7 @@
 <p>Parses an offline <code>HostStateBucket</code> cache and generates strict Python <code>Literal</code> types for IDE autocompletion.</p>
 <p><strong>Options:</strong></p>
 <ul>
-<li><code>--source</code>: Path to the cache JSON (default: <code>device_state.json</code>).</li>
+<li><code>--source</code>: Path to the cache JSON (auto-detected; prioritizes <code>_local_resources/states/</code> and falls back to <code>device_state.json</code>).</li>
 <li><code>--output</code>: Target Python file path.</li>
 <li><code>--host</code>: Optional: Pull state from this device IP before generating.</li>
 <li><code>--dry-run</code>: Analyze without writing to disk.</li>
@@ -4121,23 +4121,33 @@ Features zero-dependency ANSI color output, generation analytics, and dry-run sa
 <span class="normal">988</span>
 <span class="normal">989</span>
 <span class="normal">990</span>
-<span class="normal">991</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">991</span>
+<span class="normal">992</span>
+<span class="normal">993</span>
+<span class="normal">994</span>
+<span class="normal">995</span>
+<span class="normal">996</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Command-line interface entry point.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">package_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
     <span class="n">default_output</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">package_dir</span> <span class="o">/</span> <span class="s2">&quot;models&quot;</span> <span class="o">/</span> <span class="s2">&quot;xovis_types.py&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Priority-based lookup for default source path</span>
-    <span class="n">local_resources_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;_local_ressources&quot;</span><span class="p">)</span>
+    <span class="n">local_resources_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;_local_resources&quot;</span><span class="p">)</span>
+    <span class="n">states_dir</span> <span class="o">=</span> <span class="n">local_resources_dir</span> <span class="o">/</span> <span class="s2">&quot;states&quot;</span>
     <span class="n">resolved_default_source</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">local_resources_dir</span> <span class="o">/</span> <span class="s2">&quot;hub_fleet_state.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">states_dir</span> <span class="o">/</span> <span class="s2">&quot;hub_fleet_state.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">resolved_default_source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">states_dir</span> <span class="o">/</span> <span class="s2">&quot;hub_fleet_state.json&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">local_resources_dir</span> <span class="o">/</span> <span class="s2">&quot;hub_fleet_state.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">resolved_default_source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">local_resources_dir</span> <span class="o">/</span> <span class="s2">&quot;hub_fleet_state.json&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">states_dir</span> <span class="o">/</span> <span class="s2">&quot;device_state.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">resolved_default_source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">states_dir</span> <span class="o">/</span> <span class="s2">&quot;device_state.json&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="p">(</span><span class="n">local_resources_dir</span> <span class="o">/</span> <span class="s2">&quot;device_state.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">resolved_default_source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">local_resources_dir</span> <span class="o">/</span> <span class="s2">&quot;device_state.json&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Check for state_*.json in local resources</span>
-        <span class="n">state_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">local_resources_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;state_*.json&quot;</span><span class="p">)))</span> <span class="k">if</span> <span class="n">local_resources_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">state_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">states_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;state_*.json&quot;</span><span class="p">)))</span> <span class="k">if</span> <span class="n">states_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">state_files</span> <span class="ow">and</span> <span class="n">local_resources_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">state_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">local_resources_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;state_*.json&quot;</span><span class="p">)))</span>
         <span class="k">if</span> <span class="n">state_files</span><span class="p">:</span>
             <span class="n">resolved_default_source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">state_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;device_state.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>

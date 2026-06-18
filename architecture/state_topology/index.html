@@ -350,6 +350,15 @@
 </nav>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="#multisensor-topology--caching-lifecycle">
+<span class="md-ellipsis">
+      
+        Multisensor Topology &amp; Caching Lifecycle
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#core-philosophy">
 <span class="md-ellipsis">
       
@@ -815,6 +824,15 @@
 </nav>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="#multisensor-topology--caching-lifecycle">
+<span class="md-ellipsis">
+      
+        Multisensor Topology &amp; Caching Lifecycle
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#core-philosophy">
 <span class="md-ellipsis">
       
@@ -837,10 +855,10 @@
 <h3 id="demystifying-the-terms">Demystifying the Terms</h3>
 <p>To navigate the State &amp; Topology Plane with confidence, it helps to understand these four core concepts:</p>
 <ol>
-<li><strong>Topology (The Blueprint):</strong> This is the logical and physical map of your network and hardware. It defines which physical lenses (<code>singlesensor</code>) and virtual stitched clusters (<code>multisensors</code>) actually exist. It does not contain configuration data; it only defines the <em>structure</em> of what can be configured.</li>
-<li><strong>Bucket (The Cargo):</strong> A <strong>StateBucket</strong> (e.g., <code>HostStateBucket</code> or <code>ContextStateBucket</code>) is a raw, behaviorless data container. It holds JSON-serialized lists of resources (zones, lines, agents, connections) belonging to a specific context. It is the "payload" or content itself.</li>
-<li><strong>Cache (The Warehouse):</strong> This is the localized storage repository (the in-memory state mapping and the persisted <code>device_state.json</code> file) where all state buckets are stored. It acts as the offline-first single source of truth for the SDK.</li>
-<li><strong>Manager (The Operator):</strong> The active orchestrator (specifically <code>ConfigCacheManager</code> or <code>HubCacheManager</code>) that manages the lifecycle of the cache. It executes the synchronization loops (<code>sync</code>), schedules background updates, handles disk serialization via non-blocking threads, and exposes intuitive dot-notation <code>REPLAccessor</code> layers.</li>
+<li><strong>Topology (The Floorplan / Blueprint):</strong> This is the logical and physical map of your network and hardware. It defines which physical sensors (<code>singlesensor</code>) and virtual stitched environments (<code>multisensors</code>) actually exist. It does not contain configuration data; it only defines the <em>structure</em> of what can be configured (like physical rack layouts and loading zones).</li>
+<li><strong>Bucket (The Shipping Pallets / Crates):</strong> A <strong>StateBucket</strong> (e.g., <code>HostStateBucket</code> or <code>ContextStateBucket</code>) is a raw, behaviorless data container. It holds JSON-serialized lists of resources (zones, lines, agents, connections) belonging to a specific context. It is the structured "cargo" or contents stored in a specific compartment.</li>
+<li><strong>Cache (The Warehouse):</strong> This is the localized storage repository (the in-memory state mapping and the persisted <code>device_state.json</code> file) where all state buckets are stored. It acts as the offline-first single source of truth for the SDK, indexing and holding all assets.</li>
+<li><strong>Manager (The Warehouse Operator):</strong> The active orchestrator (specifically <code>ConfigCacheManager</code> or <code>HubCacheManager</code>) that manages the lifecycle of the cache. It executes the synchronization loops (<code>sync</code>), schedules background updates, handles disk serialization via non-blocking threads, and exposes intuitive dot-notation <code>REPLAccessor</code> layers.</li>
 </ol>
 <hr/>
 <h3 id="the-core-workflow">The Core Workflow</h3>
@@ -850,28 +868,49 @@
 <li><strong>StateBucket Storage:</strong> For every context identified in the topology, the SDK isolates and populates a localized <code>StateBucket</code> within the Cache containing the specific zones, lines, and agents belonging to that context.</li>
 </ol>
 <div class="mermaid">graph TD
+    %% Class Definitions for Premium Styling
+    classDef client fill:#0f172a,stroke:#2dd4bf,stroke-width:2px,color:#f8fafc;
+    classDef network fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef buckets fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef cache fill:#111827,stroke:#eab308,stroke-width:2px,color:#f8fafc;
+
     subgraph DeviceClient [Device Client Instance]
-        T["<b>Topology Manager</b><br/><i>The Map</i>"]
-        C["<b>Config Cache Manager</b><br/><i>The Orchestrator</i>"]
+        T["<b>Topology Manager</b><br/><i>The Map</i>"]:::client
+        C["<b>Config Cache Manager</b><br/><i>The Orchestrator</i>"]:::client
     end
 
     subgraph Network [LAN &amp; Remote Network]
-        L[Physical Lens]
-        MS[Multisensor Cluster]
+        L["<b>Physical Lens</b>"]:::network
+        MS["<b>Multisensor Cluster</b>"]:::network
     end
 
     T -- "Scans &amp; Discovers" --&gt; Network
     C &lt;-- "Uses Map from" --&gt; T
 
     subgraph Buckets [State Buckets / Contexts]
-        SB1["<b>Bucket: singlesensor</b><br/>Zones, Lines, Agents"]
-        SB2["<b>Bucket: multisensor_1</b><br/>Multisensor Zones, Logics"]
+        SB1["<b>Bucket: singlesensor</b><br/>Zones, Lines, Agents"]:::buckets
+        SB2["<b>Bucket: multisensor_1</b><br/>Multisensor Zones, Logics"]:::buckets
     end
 
     C -- "Populates &amp; Manages" --&gt; Buckets
 
     SB1 -- "Represents Data for" --&gt; L
     SB2 -- "Represents Data for" --&gt; MS
+
+    %% 3-Tier Cache System (Disk/System/Memory)
+    subgraph DiskStorage ["3-Tier Caching System"]
+        Tier1["<b>Tier 1: Local Workspace</b><br/>_local_resources/states/"]:::cache
+        Tier2["<b>Tier 2: System Cache</b><br/>~/.cache/xovis/"]:::cache
+        Tier3["<b>Tier 3: Memory Fallback</b><br/>RAM Only"]:::cache
+    end
+
+    C -- "Persists to" --&gt; DiskStorage
+
+    %% Styling Overrides
+    style DeviceClient fill:#0f172a,stroke:#2dd4bf,stroke-dasharray: 5 5
+    style Network fill:#0f172a,stroke:#38bdf8,stroke-dasharray: 5 5
+    style Buckets fill:#111827,stroke:#818cf8,stroke-dasharray: 5 5
+    style DiskStorage fill:#111827,stroke:#eab308,stroke-dasharray: 5 5
 </div>
 <p>When you execute <code>client.cache.export_to_file("device_state.json")</code>, the SDK aggregates all localized <code>StateBuckets</code> structured by the <code>TopologyManager</code> and dumps them into a single, cohesive offline state JSON file.</p>
 <h3 id="component-responsibilities">Component Responsibilities</h3>
@@ -889,31 +928,60 @@
 <td style="text-align: left;"><strong>Topology</strong></td>
 <td style="text-align: left;"><strong>Structural Logic</strong>: Discovers active network hosts, lens clusters, and synthesizes multisensor graphs.</td>
 <td style="text-align: left;"><code>TopologyManager</code></td>
-<td style="text-align: left;">The <strong>Blueprint</strong> of a building.</td>
+<td style="text-align: left;">The <strong>Floorplan / Aisles Layout</strong> of the warehouse.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Managers</strong></td>
 <td style="text-align: left;"><strong>Life-cycle Management</strong>: Active executor running sync loops, background watchers, and disk serialization.</td>
 <td style="text-align: left;"><code>ConfigCacheManager</code> / <code>HubCacheManager</code></td>
-<td style="text-align: left;">The <strong>Building Manager / Operator</strong> who keeps everything running.</td>
+<td style="text-align: left;">The <strong>Warehouse Operator / Dispatcher</strong> managing inventory flow.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Cache</strong></td>
 <td style="text-align: left;"><strong>State Repository</strong>: The in-memory collection and serialized files representing the offline-first state of the fleet.</td>
 <td style="text-align: left;">Local state cache dictionary / <code>device_state.json</code></td>
-<td style="text-align: left;">The <strong>Warehouse</strong> where all assets are stored and indexed.</td>
+<td style="text-align: left;">The <strong>Warehouse</strong> itself where all assets are stored and indexed.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Buckets</strong></td>
 <td style="text-align: left;"><strong>Data Container</strong>: Isolated Pydantic models containing serialized zones, lines, and agents for a context.</td>
 <td style="text-align: left;"><code>HostStateBucket</code> / <code>ContextStateBucket</code></td>
-<td style="text-align: left;">The <strong>Furniture and People</strong> inside a specific room.</td>
+<td style="text-align: left;">The <strong>Shipping Pallets / Crates</strong> holding specific grouped cargo.</td>
 </tr>
 </tbody>
 </table>
 <hr/>
+<h2 id="multisensor-topology--caching-lifecycle">Multisensor Topology &amp; Caching Lifecycle</h2>
+<p>The <code>xovis-sdk</code> features specialized, high-performance lifecycle handlers for multisensor network clusters and topology configurations:</p>
+<ul>
+<li><strong>Auto-Discovery via Synchronization:</strong> Upon calling <code>await client.cache.sync()</code> or invoking <code>HardwareSyncer.warmup()</code>, the <code>ConfigCacheManager</code> queries <code>/api/v5/multisensors/status</code>. This endpoint identifies whether the connected device is a master or a member of a virtual multisensor context.</li>
+<li><strong>Concurrent Config Ingestion:</strong> If a multisensor topology is discovered, the manager concurrently retrieves and builds the structured model representing parent/child zones, lines, analytics states, and scene definitions in a single non-blocking pass.</li>
+<li><strong>Dynamic Child-Client Spawning:</strong> Developers can invoke <code>await context.get_child_clients()</code> on a <code>MultisensorContext</code>. This queries <code>/api/v5/multisensors/{id}/sensors</code> and dynamically spawns authenticated, matching <code>DeviceClient</code> instances for all physical child sensors, inheriting authentication credentials, SSL certificates, and proxy tunnel settings.</li>
+<li><strong>Autonomous Watcher Synchronization:</strong> Under the <code>BACKGROUND_WATCHER</code> caching strategy, the SDK continuously monitors the device checksum endpoints. When configuration or topology changes are detected on the physical sensor, a background synchronization loop triggers automatically to keep the cache updated on disk.</li>
+<li><strong>Optional Recursive Child Caching:</strong> By default, child-device caching is deactivated to prevent unexpected network overhead. Developers can opt-in to recursively synchronize all physical child sensor configurations concurrently using the <code>cache_child_devices=True</code> flag:
+    <div class="highlight"><pre><span></span><code><span class="n">client</span> <span class="o">=</span> <span class="n">DeviceClient</span><span class="p">(</span><span class="s2">"192.168.1.50"</span><span class="p">,</span> <span class="n">cache_child_devices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>  <span class="c1"># Recursively synchronizes child configurations</span>
+</code></pre></div></li>
+<li><strong>Dynamic Child Client Access (<code>child_devices</code>):</strong> Access physical child devices directly through the parent context. Individual child clients are dynamically registered, enabling dot-notation or dictionary-like lookup under <code>.child_devices.by_name</code>:
+    <div class="highlight"><pre><span></span><code><span class="n">child_client</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">multisensors</span><span class="o">.</span><span class="n">by_name</span><span class="o">.</span><span class="n">Stitched_Context</span><span class="o">.</span><span class="n">child_devices</span><span class="o">.</span><span class="n">by_name</span><span class="o">.</span><span class="n">Camera_Left</span>
+</code></pre></div></li>
+<li><strong>Merged Child Configurations:</strong> Merged properties (<code>connections</code>, <code>zones</code>, <code>lines</code>, <code>agents</code>, <code>logics</code>, <code>modifiers</code>, <code>counters</code>, <code>masks</code>, <code>layers</code>) automatically aggregate and flatten the configurations from all child caches into a single autocomplete-safe <code>CacheCollection</code>:
+    <div class="highlight"><pre><span></span><code><span class="c1"># Access a connection belonging to any child device</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">multisensors</span><span class="o">.</span><span class="n">by_name</span><span class="o">.</span><span class="n">Stitched_Context</span><span class="o">.</span><span class="n">child_devices</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">by_name</span><span class="o">.</span><span class="n">my_child_connection</span>
+</code></pre></div></li>
+<li><strong>Concurrent Group Broadcasting:</strong> Intercept and broadcast standard live operations (e.g., <code>.images</code>, <code>.system</code>, <code>.analytics</code>) concurrently to all child sensors in a single call with isolated error handling in <code>BulkResult</code>:
+    <div class="highlight"><pre><span></span><code><span class="c1"># Captures live diagnostic frames across all child cameras concurrently</span>
+<span class="n">bulk_results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">multisensors</span><span class="o">.</span><span class="n">by_name</span><span class="o">.</span><span class="n">Stitched_Context</span><span class="o">.</span><span class="n">child_devices</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">get_live</span><span class="p">()</span>
+</code></pre></div></li>
+<li><strong>Offline-First Child Cache State Access (<code>child_caches</code>):</strong> Inspect child caches without network requests:
+    <div class="highlight"><pre><span></span><code><span class="c1"># Reads offline zone configuration from a physical child sensor</span>
+<span class="n">child_zone</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">multisensors</span><span class="o">.</span><span class="n">by_name</span><span class="o">.</span><span class="n">Stitched_Context</span><span class="o">.</span><span class="n">child_caches</span><span class="o">.</span><span class="n">Camera_Left</span><span class="o">.</span><span class="n">zones</span><span class="o">.</span><span class="n">by_name</span><span class="o">.</span><span class="n">Raw_Zone_1</span>
+</code></pre></div></li>
+<li><strong>Dynamic Space Sanitization:</strong> Xovis names often include spaces (e.g., <code>"Main Entrance"</code>). The SDK automatically sanitizes these into valid Python identifiers (<code>Main_Entrance</code>) for perfect IDE auto-suggestions, while retaining original names for bracket-style lookups (<code>["Main Entrance"]</code>).</li>
+</ul>
+<hr/>
 <h2 id="core-philosophy">Core Philosophy</h2>
-<p>A standard sensor is more than just a single IP address—it represents an entire network topology of physical lenses, stitched virtual environments, and configuration buckets. This plane manages these relationships seamlessly.</p>
+<p>A standard sensor is more than just a single IP address—it represents an entire network topology of physical sensors, stitched virtual environments, and configuration buckets. This plane manages these relationships seamlessly.</p>
 <ul>
 <li><strong>Rule - Context Isolation:</strong> A device IP is a "Host". A host runs isolated "Contexts". The <code>singlesensor</code> context applies strictly to the physical lens (and MUST gracefully raise <code>HardwareNotSupportedError</code> if the host is a lensless Spider NUC). The <code>multisensors</code> context applies to 0..N virtual stitched environments. Geometries and DataPushes are strictly partitioned by context.</li>
 <li><strong>Rule - Multisensor Cache Rooting:</strong> Virtual contexts discovered via <code>multisensors.sync()</code> MUST be rooted into the persistent <code>HostStateBucket</code> via the <code>@multisensors.setter</code>. This ensures that DataPush agents and connections persist across CRUD operations and are visible to the <code>REPLAccessor</code>.</li>
