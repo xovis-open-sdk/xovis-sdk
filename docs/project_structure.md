@@ -72,8 +72,7 @@ xovis-sdk/
 |   +- prepare_docs.py
 |   +- sync_models.py
 |   +- sync_project_structure.py
-|   +- test_docs.py
-|   *- update_version_badges.py
+|   *- test_docs.py
 +- src
 |   +- xovis
 |   |   +- api
@@ -182,10 +181,10 @@ xovis-sdk/
 |   |   |   +- test_network.py
 |   |   |   +- test_privacy.py
 |   |   |   +- test_scene.py
-|   |   |   +- test_unified_router.py
 |   |   |   +- test_spider_granularity.py
 |   |   |   +- test_system.py
 |   |   |   +- test_time.py
+|   |   |   +- test_unified_router.py
 |   |   |   +- test_update.py
 |   |   |   +- test_users.py
 |   |   |   *- test_xovistime_integration.py
@@ -201,6 +200,7 @@ xovis-sdk/
 |   |   |   *- test_time_parser.py
 |   |   +- __init__.py
 |   |   +- test_cache_complete.py
+|   |   +- test_cache_paths.py
 |   |   +- test_cli_paths.py
 |   |   *- test_routing.py
 |   +- datapush
@@ -226,13 +226,11 @@ xovis-sdk/
 +- CONTRIBUTING.md
 +- LICENSE
 +- README.md
-+- docs_check.txt
 +- manifest.json
 +- mkdocs.yml
 +- pyproject.toml
 +- requirements.txt
 +- server.mcpb
 +- smithery.yaml
-+- test_toolkit.py
 *- uv.lock
 ```

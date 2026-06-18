@@ -20,7 +20,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from xovis.api.core.exceptions import XovisClientError
 from xovis.api.core.http import XovisHTTPClient
 from xovis.api.device.discovery import discovery_manager
-from xovis.api.device.models import CacheStrategy
+from xovis.api.device.models import CacheStrategy, TopologyNodeInfo
 from xovis.config import config
 
 logger = logging.getLogger(__name__)
@@ -293,6 +293,7 @@ class ContextStateBucket(BaseModel):
     counters: list[CacheResource] = Field(default_factory=list)
     masks: list[CacheResource] = Field(default_factory=list)
     layers: list[CacheResource] = Field(default_factory=list)
+    child_sensors: list[TopologyNodeInfo] = Field(default_factory=list)
 
 
 class HostStateBucket(BaseModel):
@@ -308,6 +309,205 @@ class HostStateBucket(BaseModel):
     contexts: dict[str, ContextStateBucket] = Field(default_factory=dict)
 
 
+class BulkDeviceFacade:
+    """Dynamic broadcasting facade that executes operations concurrently across child managers."""
+
+    def __init__(self, child_clients: list[Any], manager_attr: str):
+        """Initializes the BulkDeviceFacade.
+
+        Args:
+            child_clients (list[Any]): List of child DeviceClient instances.
+            manager_attr (str): The name of the manager attribute.
+        """
+        self._child_clients = child_clients
+        self._manager_attr = manager_attr
+
+    def __getattr__(self, name: str) -> Any:
+        """Intercepts method calls and broadcasts them concurrently to all child managers.
+
+        Args:
+            name (str): The method name to execute.
+
+        Returns:
+            Callable[..., Coroutine]: The broadcasting async method wrapper.
+        """
+
+        async def broadcast_call(*args: Any, **kwargs: Any) -> Any:
+            from xovis.api.device.topology import BulkResult
+
+            async def single_call(client: Any) -> Any:
+                async with client as c:
+                    manager = getattr(c, self._manager_attr)
+                    method = getattr(manager, name)
+                    return await method(*args, **kwargs)
+
+            tasks = [asyncio.create_task(single_call(c)) for c in self._child_clients]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            bulk = BulkResult()
+            for res in results:
+                if isinstance(res, Exception):
+                    bulk.exceptions.append(res)
+                else:
+                    bulk.successes.append(res)
+            return bulk
+
+        return broadcast_call
+
+
+class ChildDevicesAccessor:
+    """Smart accessor bridging individual child lookups with grouped/bulk execution."""
+
+    def __init__(self, parent_context: Any, child_clients: list[Any]):
+        """Initializes the ChildDevicesAccessor.
+
+        Args:
+            parent_context (Any): The parent ContextAccessor.
+            child_clients (list[Any]): Mapped physical child clients.
+        """
+        self._parent_context = parent_context
+        self._child_clients = child_clients
+        self.by_name = REPLAccessor(child_clients, key_attr="name")
+
+    @property
+    def connections(self) -> CacheCollection[CacheResource]:
+        """Aggregates and flattens connections from all physical child caches.
+
+        Returns:
+            CacheCollection[CacheResource]: Combined connection configurations.
+        """
+        merged = []
+        for client in self._child_clients:
+            merged.extend(client.cache.singlesensor.connections)
+        return CacheCollection(merged)
+
+    @property
+    def zones(self) -> CacheCollection[CacheResource]:
+        """Aggregates and flattens scene zones from all physical child caches.
+
+        Returns:
+            CacheCollection[CacheResource]: Combined zone configurations.
+        """
+        merged = []
+        for client in self._child_clients:
+            merged.extend(client.cache.singlesensor.zones)
+        return CacheCollection(merged)
+
+    @property
+    def lines(self) -> CacheCollection[CacheResource]:
+        """Aggregates and flattens scene lines from all physical child caches.
+
+        Returns:
+            CacheCollection[CacheResource]: Combined line configurations.
+        """
+        merged = []
+        for client in self._child_clients:
+            merged.extend(client.cache.singlesensor.lines)
+        return CacheCollection(merged)
+
+    @property
+    def agents(self) -> CacheCollection[CacheResource]:
+        """Aggregates and flattens agents from all physical child caches.
+
+        Returns:
+            CacheCollection[CacheResource]: Combined agent configurations.
+        """
+        merged = []
+        for client in self._child_clients:
+            merged.extend(client.cache.singlesensor.agents)
+        return CacheCollection(merged)
+
+    @property
+    def logics(self) -> CacheCollection[CacheResource]:
+        """Aggregates and flattens logics from all physical child caches.
+
+        Returns:
+            CacheCollection[CacheResource]: Combined logic configurations.
+        """
+        merged = []
+        for client in self._child_clients:
+            merged.extend(client.cache.singlesensor.logics)
+        return CacheCollection(merged)
+
+    @property
+    def modifiers(self) -> CacheCollection[CacheResource]:
+        """Aggregates and flattens modifiers from all physical child caches.
+
+        Returns:
+            CacheCollection[CacheResource]: Combined modifier configurations.
+        """
+        merged = []
+        for client in self._child_clients:
+            merged.extend(client.cache.singlesensor.modifiers)
+        return CacheCollection(merged)
+
+    @property
+    def counters(self) -> CacheCollection[CacheResource]:
+        """Aggregates and flattens counters from all physical child caches.
+
+        Returns:
+            CacheCollection[CacheResource]: Combined counter configurations.
+        """
+        merged = []
+        for client in self._child_clients:
+            merged.extend(client.cache.singlesensor.counters)
+        return CacheCollection(merged)
+
+    @property
+    def masks(self) -> CacheCollection[CacheResource]:
+        """Aggregates and flattens masks from all physical child caches.
+
+        Returns:
+            CacheCollection[CacheResource]: Combined mask configurations.
+        """
+        merged = []
+        for client in self._child_clients:
+            merged.extend(client.cache.singlesensor.masks)
+        return CacheCollection(merged)
+
+    @property
+    def layers(self) -> CacheCollection[CacheResource]:
+        """Aggregates and flattens layers from all physical child caches.
+
+        Returns:
+            CacheCollection[CacheResource]: Combined layer configurations.
+        """
+        merged = []
+        for client in self._child_clients:
+            merged.extend(client.cache.singlesensor.layers)
+        return CacheCollection(merged)
+
+    def __getattr__(self, name: str) -> Any:
+        """Provides direct access to bulk managers.
+
+        Args:
+            name (str): Attribute name to delegate.
+
+        Returns:
+            Any: BulkDeviceFacade wrapping the target manager attribute.
+
+        Raises:
+            AttributeError: If the manager is not a standard supported device manager.
+        """
+        standard_managers = {
+            "images",
+            "privacy",
+            "scene",
+            "datapush",
+            "analytics",
+            "history",
+            "update",
+            "system",
+            "network",
+            "time",
+            "itxpt",
+            "users",
+        }
+        if name in standard_managers:
+            return BulkDeviceFacade(self._child_clients, name)
+        raise AttributeError(f"Attribute '{name}' not found on ChildDevicesAccessor.")
+
+
 class ContextAccessor:
     """
     Facade providing high-level access to a ContextStateBucket.
@@ -316,16 +516,66 @@ class ContextAccessor:
     dot-notation resource discovery (e.g., `ctx.agents.by_name.MyAgent`).
     """
 
-    def __init__(self, bucket: ContextStateBucket, name: Optional[str] = None):
+    def __init__(self, bucket: ContextStateBucket, name: Optional[str] = None, parent_client: Optional[Any] = None):
         """
         Initializes the ContextAccessor for a specific bucket.
 
         Args:
             bucket (ContextStateBucket): The raw state bucket to wrap.
-            name (Optional[str]): Descriptive name for the context (e.g. MS ID).
+            name (Optional[str]): Descriptive name for the context.
+            parent_client (Optional[Any]): The host device client instance.
         """
         self._bucket = bucket
         self.name = name
+        self._parent_client = parent_client
+
+    @property
+    def child_devices(self) -> ChildDevicesAccessor:
+        """Provides instant autosuggestion/REPL access to physical child clients.
+
+        Returns:
+            ChildDevicesAccessor: High-level child client and bulk operations accessor.
+        """
+        from xovis.api.device.client import DeviceClient
+
+        clients = []
+        sensors = getattr(self._bucket, "child_sensors", []) or []
+        for sensor in sensors:
+            if not sensor.ip_address:
+                continue
+            username = "admin"
+            password = ""
+            use_ntlm = False
+            if self._parent_client:
+                username = self._parent_client._auth.username
+                password = self._parent_client._auth.password
+                use_ntlm = self._parent_client._auth.use_ntlm
+
+            client = DeviceClient(
+                host=sensor.ip_address,
+                username=username,
+                password=password,
+                use_ntlm=use_ntlm,
+                cache_child_devices=False,
+            )
+            client.name = sensor.name or f"sensor_{sensor.mac_address.replace(':', '_')}"
+            clients.append(client)
+
+        return ChildDevicesAccessor(self, clients)
+
+    @property
+    def child_caches(self) -> REPLAccessor["ContextAccessor"]:
+        """Provides REPL access to the offline-first cache states of those child sensors.
+
+        Returns:
+            REPLAccessor[ContextAccessor]: Facade for child configurations.
+        """
+        caches = []
+        child_devs = self.child_devices
+        for client in child_devs._child_clients:
+            accessor = ContextAccessor(client.cache.singlesensor._bucket, name=client.name, parent_client=client)
+            caches.append(accessor)
+        return REPLAccessor(caches, key_attr="name")
 
     def __repr__(self) -> str:
         """
@@ -485,6 +735,7 @@ class ConfigCacheManager:
         poll_interval: float,
         auto_persist_path: Optional[str] = None,
         persistence_dir: Optional[str] = None,
+        cache_child_devices: bool = False,
     ):
         """
         Initializes the ConfigCacheManager.
@@ -498,6 +749,7 @@ class ConfigCacheManager:
                 offline-first state persistence. Defaults to None.
             persistence_dir (Optional[str], optional): Path to a directory for
                 automated state persistence. Defaults to None.
+            cache_child_devices (bool, optional): Whether to recursively cache child devices. Defaults to False.
         """
         self._http_client = http_client
         self.strategy = strategy
@@ -505,9 +757,11 @@ class ConfigCacheManager:
         self.poll_interval = poll_interval
         self.auto_persist_path = auto_persist_path
         self.persistence_dir = persistence_dir
+        self.cache_child_devices = cache_child_devices
 
         self._background_tasks: set[asyncio.Task] = set()
         self._is_running = False
+        self._parent_client: Optional[Any] = None
 
         self._state = HostStateBucket()
 
@@ -520,7 +774,7 @@ class ConfigCacheManager:
             ContextAccessor: Facade for the 'singlesensor' state bucket.
         """
         bucket = self._state.contexts.setdefault("singlesensor", ContextStateBucket())
-        return ContextAccessor(bucket, name="singlesensor")
+        return ContextAccessor(bucket, name="singlesensor", parent_client=self._parent_client)
 
     @property
     def multisensors(self) -> REPLAccessor[ContextAccessor]:
@@ -534,7 +788,7 @@ class ConfigCacheManager:
         for cid, cb in self._state.contexts.items():
             if cid == "singlesensor":
                 continue
-            accessors.append(ContextAccessor(cb, name=str(cid)))
+            accessors.append(ContextAccessor(cb, name=str(cid), parent_client=self._parent_client))
 
         return REPLAccessor(accessors, key_attr="name")
 
@@ -571,7 +825,7 @@ class ConfigCacheManager:
         """
         accessors = []
         for cid, cb in self._state.contexts.items():
-            accessors.append(ContextAccessor(cb, name=str(cid)))
+            accessors.append(ContextAccessor(cb, name=str(cid), parent_client=self._parent_client))
         return REPLAccessor(accessors, key_attr="name")
 
     @property
@@ -802,6 +1056,57 @@ class ConfigCacheManager:
                 bucket.layers = [CacheResource.model_validate(ly) for ly in extract_data(ctx_results[7], "layers", "Layer", f"{prefix}/scene/layers")]
 
                 self._state.contexts[ctx] = bucket
+
+            ms_contexts = [ctx for ctx in context_map if ctx != "singlesensor"]
+            if ms_contexts:
+                sensor_tasks = [self._http_client.get(f"/api/v5/multisensors/{ctx}/sensors") for ctx in ms_contexts]
+                sensor_results = await asyncio.gather(*sensor_tasks, return_exceptions=True)
+                for ctx, res in zip(ms_contexts, sensor_results):
+                    if not isinstance(res, Exception) and res.status_code == 200:
+                        try:
+                            from xovis.api.device.topology import MultisensorChildrenResponse
+
+                            payload = MultisensorChildrenResponse.model_validate(res.json())
+                            self._state.contexts[ctx].child_sensors = [
+                                TopologyNodeInfo(
+                                    mac_address=child.mac_address,
+                                    ip_address=child.ip_address,
+                                    name=child.name,
+                                    group=child.group,
+                                    status=child.status,
+                                )
+                                for child in payload.sensors
+                            ]
+                        except Exception as e:
+                            logger.debug(f"Failed parsing child sensors for context {ctx}: {e}")
+
+            if self.cache_child_devices:
+                from xovis.api.device.client import DeviceClient
+
+                child_sync_tasks = []
+                for ctx in ms_contexts:
+                    bucket = self._state.contexts.get(ctx)
+                    if bucket and bucket.child_sensors:
+                        for sensor in bucket.child_sensors:
+                            if not sensor.ip_address:
+                                continue
+                            username = "admin"
+                            password = ""
+                            use_ntlm = False
+                            if self._parent_client:
+                                username = self._parent_client._auth.username
+                                password = self._parent_client._auth.password
+                                use_ntlm = self._parent_client._auth.use_ntlm
+                            child_client = DeviceClient(
+                                host=sensor.ip_address,
+                                username=username,
+                                password=password,
+                                use_ntlm=use_ntlm,
+                                cache_child_devices=False,
+                            )
+                            child_sync_tasks.append(child_client.cache.sync())
+                if child_sync_tasks:
+                    await asyncio.gather(*child_sync_tasks, return_exceptions=True)
 
             if True:
                 await self.save_to_disk()

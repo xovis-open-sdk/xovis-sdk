@@ -85,7 +85,7 @@ The **Control Plane** provides low-frequency REST API wrappers for configuring t
 
 ### 3. The State & Topology Plane (Fleet Orchestration)
 
-The **State & Topology Plane** acts as the stateful, topology-aware fleet engine of the SDK. It abstracts physical lenses (`singlesensor`) and virtual stitched environments (`multisensors`) into isolated, structured contexts. It manages persistent configuration cache buckets, offloads local disk I/O to background threads to protect the async event loop, and synthesizes directed network topology graphs.
+The **State & Topology Plane** acts as the stateful, topology-aware fleet engine of the SDK. It abstracts physical sensors (`singlesensor`) and virtual stitched environments (`multisensors`) into isolated, structured contexts. It manages persistent configuration cache buckets, offloads local disk I/O to background threads to protect the async event loop, and synthesizes directed network topology graphs.
 
 **Deep Dive:** Learn how the SDK manages complex device networks and state. Read the [State & Topology Blueprints](architecture/state_topology.md).
 

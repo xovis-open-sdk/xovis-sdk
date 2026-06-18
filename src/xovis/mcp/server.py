@@ -260,7 +260,7 @@ async def main_async() -> None:
             write_stream,
             InitializationOptions(
                 server_name="xovis-mcp",
-                server_version="1.0.0a25",
+                server_version="1.0.0a26",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},

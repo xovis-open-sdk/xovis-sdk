@@ -151,6 +151,7 @@ class DeviceClient:
         # Extract SDK-specific kwargs before passing to HTTP client
         auto_persist_path = kwargs.pop("auto_persist_path", None)
         persistence_dir = kwargs.pop("persistence_dir", None)
+        cache_child_devices = kwargs.pop("cache_child_devices", False)
 
         self._auth = DeviceAuth(username=username, password=password, use_ntlm=use_ntlm)
         self._http_client = XovisHTTPClient(
@@ -168,7 +169,9 @@ class DeviceClient:
             poll_interval=cache_poll_interval,
             auto_persist_path=auto_persist_path,
             persistence_dir=persistence_dir,
+            cache_child_devices=cache_child_devices,
         )
+        self.cache._parent_client = self
 
         self._singlesensor = SinglesensorContext(self)
         self._device_info = {}

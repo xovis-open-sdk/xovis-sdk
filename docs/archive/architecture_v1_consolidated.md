@@ -199,7 +199,7 @@ A stateful, topology-aware engine that abstracts complex sensor graphs into huma
 - **Objective**: Transparent management of multisensor environments and offline-first state persistence. The [Xovis Mission Control TUI](cli.md#ui) serves as the primary visual interface for configuring these buckets and detecting hardware topologies.
 - **Engine**: `TopologyManager` + `ConfigCacheManager`.
 - **Logic**:
-    - **Context Isolation**: Distinguishes between physical lenses (`singlesensor`) and virtual stitched environments (`multisensors`).
+    - **Context Isolation**: Distinguishes between physical sensors (`singlesensor`) and virtual stitched environments (`multisensors`).
     - **Offline Persistence**: Enables zero-latency lookups via localized state caching.
     - **Dynamic Discovery**: Automatically identifies hardware topologies and registers them for easy access.
 

@@ -344,6 +344,28 @@ class DataPushManager:
 
         return updated_agent
 
+    async def enable_agent(self, id_or_name: Union[str, uuid.UUID, int]) -> DataPushAgent:
+        """Enables a specific DataPush agent on a single or multisensor context.
+
+        Args:
+            id_or_name (Union[str, uuid.UUID, int]): The target agent ID or name.
+
+        Returns:
+            DataPushAgent: The updated agent configuration.
+        """
+        return await self.patch_agent(id_or_name, {"enabled": True})
+
+    async def disable_agent(self, id_or_name: Union[str, uuid.UUID, int]) -> DataPushAgent:
+        """Disables a specific DataPush agent on a single or multisensor context.
+
+        Args:
+            id_or_name (Union[str, uuid.UUID, int]): The target agent ID or name.
+
+        Returns:
+            DataPushAgent: The updated agent configuration.
+        """
+        return await self.patch_agent(id_or_name, {"enabled": False})
+
     async def delete_agent(self, id_or_name: Union[str, uuid.UUID, int]) -> None:
         """Removes a specific DataPush agent."""
         await self._pacing_delay()

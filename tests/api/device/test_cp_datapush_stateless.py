@@ -502,3 +502,58 @@ class TestDataPushManagerErrors:
             # Resolve should work because target_id=1 is normalized to "1"
             agent_id = await manager._resolve_agent_id("MSAgent")
             assert str(agent_id) == "101"
+
+    @respx.mock
+    async def test_enable_disable_agent(self) -> None:
+        """
+        Validates that enable_agent and disable_agent correctly patch the agent.
+        """
+        manager = await self._get_manager()
+        manager._client.cache.singlesensor.agents = [
+            DataPushAgent(
+                id=42,
+                name="TelemetryAgent",
+                type=DataPushType.LIVE_DATA,
+                connection=1,
+                enabled=False,
+                config={"scheduler": {"type": "IMMEDIATE"}, "data": {"format": {"type": "JSON"}}},
+            )
+        ]
+
+        # Mock patch response for enabling
+        respx.patch("http://mock.xovis.local/api/v5/singlesensor/data/push/agents/42").mock(
+            return_value=httpx.Response(
+                200,
+                json={
+                    "id": 42,
+                    "name": "TelemetryAgent",
+                    "type": "LIVE_DATA",
+                    "connection": 1,
+                    "enabled": True,
+                    "config": {"scheduler": {"type": "IMMEDIATE"}, "data": {"format": {"type": "JSON"}}},
+                },
+            )
+        )
+
+        agent = await manager.enable_agent("TelemetryAgent")
+        assert agent.enabled is True
+        assert manager._client.cache.singlesensor.agents[0].enabled is True
+
+        # Mock patch response for disabling
+        respx.patch("http://mock.xovis.local/api/v5/singlesensor/data/push/agents/42").mock(
+            return_value=httpx.Response(
+                200,
+                json={
+                    "id": 42,
+                    "name": "TelemetryAgent",
+                    "type": "LIVE_DATA",
+                    "connection": 1,
+                    "enabled": False,
+                    "config": {"scheduler": {"type": "IMMEDIATE"}, "data": {"format": {"type": "JSON"}}},
+                },
+            )
+        )
+
+        agent = await manager.disable_agent("TelemetryAgent")
+        assert agent.enabled is False
+        assert manager._client.cache.singlesensor.agents[0].enabled is False

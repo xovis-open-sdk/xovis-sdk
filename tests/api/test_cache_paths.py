@@ -73,6 +73,8 @@ def test_get_latest_state(tmp_path, monkeypatch) -> None:
 
     monkeypatch.setattr(CachePaths, "STATES_DIR", local_states)
     monkeypatch.setattr(CachePaths, "get_system_cache_dir", lambda: tmp_path / "sys")
+    monkeypatch.setattr(CachePaths, "DEVICE_STATE", local_states / "device_state.json")
+    monkeypatch.setattr(CachePaths, "FLEET_STATE", local_states / "hub_fleet_state.json")
 
     latest = CachePaths.get_latest_state()
     assert latest.name == "state_new.json"
@@ -227,8 +229,11 @@ def test_get_system_cache_dir_platforms() -> None:
 
 def test_get_latest_state_no_existing(tmp_path, monkeypatch) -> None:
     """Validates get_latest_state returns DEVICE_STATE when no state files exist."""
+    local_states = tmp_path / "local" / "states"
     monkeypatch.setattr(CachePaths, "STATES_DIR", tmp_path / "does_not_exist")
     monkeypatch.setattr(CachePaths, "get_system_cache_dir", lambda: tmp_path / "sys_does_not_exist")
+    monkeypatch.setattr(CachePaths, "DEVICE_STATE", local_states / "device_state.json")
+    monkeypatch.setattr(CachePaths, "FLEET_STATE", local_states / "hub_fleet_state.json")
     assert CachePaths.get_latest_state() == CachePaths.DEVICE_STATE
 
 
@@ -408,3 +413,149 @@ def test_get_latest_state_sys_exists(tmp_path, monkeypatch) -> None:
 
     latest = CachePaths.get_latest_state()
     assert latest == f_sys
+
+
+@pytest.mark.asyncio
+async def test_multisensor_child_caching_and_accessors() -> None:
+    """Validates full multisensor child topology auto-discovery and child accessor/facade patterns."""
+    from xovis.api.device.cache import CacheResource, ContextStateBucket
+    from xovis.api.device.client import DeviceClient
+    from xovis.api.device.models import TopologyNodeInfo
+
+    # 1. Test ContextStateBucket child_sensors validation
+    bucket = ContextStateBucket()
+    bucket.child_sensors = [
+        TopologyNodeInfo(
+            mac_address="00:11:22:33:44:55",
+            ip_address="192.168.1.101",
+            name="Sensor_1",
+            group="group1",
+            status="ok",
+        )
+    ]
+    assert len(bucket.child_sensors) == 1
+    assert bucket.child_sensors[0].name == "Sensor_1"
+
+    # 2. Mock parent client, http_client, and sync responses
+    parent_client = MagicMock()
+    parent_client._auth.username = "admin"
+    parent_client._auth.password = "pass"
+    parent_client._auth.use_ntlm = False
+
+    http_mock = MagicMock()
+    http_mock.base_url = "http://192.168.1.50"
+    parent_client._http_client = http_mock
+
+    # Mock responses for discovery
+    ms_status_resp = MagicMock()
+    ms_status_resp.status_code = 200
+    ms_status_resp.json = MagicMock(return_value=[{"id": 1, "name": "Context1"}])
+
+    # Mock standard endpoints (8 of them) returning empty dicts
+    empty_resp = MagicMock()
+    empty_resp.status_code = 200
+    empty_resp.json = MagicMock(return_value={})
+
+    # Mock child sensors endpoint response
+    child_sensors_resp = MagicMock()
+    child_sensors_resp.status_code = 200
+    child_sensors_resp.json = MagicMock(
+        return_value={
+            "sensors": [
+                {
+                    "mac_address": "00:11:22:33:44:55",
+                    "name": "Camera_Left",
+                    "group": "MS1",
+                    "ip_address": "192.168.1.101",
+                    "port": 80,
+                    "protocol": "http",
+                    "username": "admin",
+                    "status": "ok",
+                }
+            ]
+        }
+    )
+
+    # Route GET calls
+    async def mock_get(endpoint, *args, **kwargs):
+        if endpoint == "/api/v5/multisensors/status":
+            return ms_status_resp
+        if endpoint == "/api/v5/multisensors/1/sensors":
+            return child_sensors_resp
+        return empty_resp
+
+    http_mock.get = mock_get
+
+    # 3. Initialize ConfigCacheManager with cache_child_devices=True
+    manager = ConfigCacheManager(
+        http_client=http_mock,
+        strategy=None,
+        ttl_seconds=60,
+        poll_interval=10,
+        cache_child_devices=True,
+    )
+    manager._parent_client = parent_client
+
+    # Mock DeviceClient in cache.py so recursive child client sync doesn't run actual network calls
+    with patch("xovis.api.device.client.DeviceClient") as MockDeviceClient:
+        mock_child = MagicMock()
+        mock_child.cache = MagicMock()
+        mock_child.cache.sync = AsyncMock()
+        MockDeviceClient.return_value = mock_child
+        await manager.sync()
+
+    # Verify child_sensors list populated
+    bucket_1 = manager._state.contexts.get("1")
+    assert bucket_1 is not None
+    assert len(bucket_1.child_sensors) == 1
+    assert bucket_1.child_sensors[0].name == "Camera_Left"
+
+    # 4. Test ContextAccessor and ChildDevicesAccessor
+    accessor = manager.multisensors._1
+    assert accessor.name == "1"
+
+    child_devices = accessor.child_devices
+    assert child_devices.by_name.Camera_Left is not None
+    assert child_devices.by_name.Camera_Left.name == "Camera_Left"
+
+    # Add dummy connections/zones to mock child sensor caches to test aggregation
+    child_client_mock = child_devices.by_name.Camera_Left
+    child_client_mock.cache.singlesensor.connections = [CacheResource(id=1, name="test_conn")]
+    child_client_mock.cache.singlesensor.zones = [CacheResource(id=2, name="test_zone")]
+
+    assert len(child_devices.connections) == 1
+    assert child_devices.connections.by_name.test_conn.id == 1
+    assert len(child_devices.zones) == 1
+    assert child_devices.zones.by_name.test_zone.id == 2
+
+    # 5. Test child_caches property
+    child_caches = accessor.child_caches
+    assert child_caches.Camera_Left is not None
+    assert child_caches.Camera_Left.name == "Camera_Left"
+
+    # 6. Test BulkDeviceFacade and BulkResult
+    # Let's mock a method call on child_devices.images.get_live
+    MagicMock()
+
+    async def mock_get_live(*args, **kwargs):
+        return ("mocked_frame_bytes", {"metadata": True})
+
+    # Patch the child client manager
+    child_client_mock.images = MagicMock()
+    child_client_mock.images.get_live = mock_get_live
+
+    # Patch context manager magic methods of DeviceClient to run without actual http client start
+    async def mock_aenter(self):
+        return self
+
+    async def mock_aexit(self, exc_type, exc_val, exc_tb):
+        pass
+
+    with (
+        patch("xovis.api.device.client.DeviceClient.__aenter__", mock_aenter),
+        patch("xovis.api.device.client.DeviceClient.__aexit__", mock_aexit),
+    ):
+        bulk_result = await child_devices.images.get_live()
+        assert len(bulk_result.successes) == 1
+        assert bulk_result.successes[0][0] == "mocked_frame_bytes"
+        assert len(bulk_result.exceptions) == 0
