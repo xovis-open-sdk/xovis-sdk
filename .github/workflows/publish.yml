@@ -35,11 +35,11 @@ jobs:
       - name: Run Quality Check (Tests)
         run: uv run --extra all pytest tests/ -m "not destructive"
 
-      - name: Build Python package
-        run: uv build
-
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      # - name: Build Python package
+      #   run: uv build
+      #
+      # - name: Publish package distributions to PyPI
+      #   uses: pypa/gh-action-pypi-publish@release/v1
 
       # ==========================================
       # 2. NODE / NPM BUILD & PUBLISH
