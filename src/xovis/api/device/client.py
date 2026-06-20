@@ -15,7 +15,7 @@ import sys
 from typing import Any, Optional
 
 from xovis.api.core.auth import DeviceAuth
-from xovis.api.core.exceptions import AmbiguousDeviceNameError, HardwareNotSupportedError, XovisAuthError
+from xovis.api.core.exceptions import AmbiguousDeviceNameError, EndpointNotFoundError, ForbiddenError, HardwareNotSupportedError, XovisAuthError
 from xovis.api.core.http import XovisHTTPClient
 from xovis.api.device.resources.analytics import AnalyticsManager
 from xovis.api.device.resources.datapush import DataPushManager
@@ -213,12 +213,24 @@ class DeviceClient:
             # FIX: Use configured max_retries
             resp = await self._http_client.get(endpoint, max_retries=self._http_client.max_retries)
             is_supported = resp.status_code == 200
-        except XovisAuthError as e:
-            # Xovis sensors return HTML 403 when features are missing/restricted.
+        except EndpointNotFoundError as e:
+            # Xovis sensors return HTML 403 (mapped to EndpointNotFoundError) when features are missing/restricted.
             # We interpret this as a definitive "False" for the capability.
             import logging
 
-            logging.getLogger(__name__).debug(f"Capability '{key}' restricted at {endpoint}: {e}")
+            logging.getLogger(__name__).debug(f"Capability '{key}' restricted or not found at {endpoint}: {e}")
+            is_supported = False
+        except ForbiddenError as e:
+            # Authorization failure (not HTML 403)
+            import logging
+
+            logging.getLogger(__name__).debug(f"Capability '{key}' forbidden at {endpoint}: {e}")
+            is_supported = False
+        except XovisAuthError as e:
+            # Standard 401 Auth error should still be False for capability
+            import logging
+
+            logging.getLogger(__name__).debug(f"Capability '{key}' auth failed at {endpoint}: {e}")
             is_supported = False
         except Exception as e:
             # FIX: Stop silently swallowing errors! Log the failure for diagnostics.

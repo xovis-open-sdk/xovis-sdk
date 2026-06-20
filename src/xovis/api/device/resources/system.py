@@ -110,6 +110,31 @@ class SystemManager:
         response = await self._http.get(f"{self._resolve_singlesensor_path()}/status")
         return self.models.SinglesensorStatus.model_validate(response.json())
 
+    async def get_light_settings(self) -> Any:
+        """
+        Retrieves the current light frequency and power frequency settings.
+
+        Returns:
+            LightSettings: The current light settings configuration.
+        """
+        response = await self._http.get(f"{self._resolve_singlesensor_path()}/settings/light")
+        return self.models.LightSettings.model_validate(response.json())
+
+    async def update_light_settings(self, settings: Any) -> Any:
+        """
+        Updates the light frequency and power frequency settings.
+        Essential for fixing horizontal barring when light and power frequencies mismatch.
+
+        Args:
+            settings (LightSettings): The new light settings payload.
+
+        Returns:
+            LightSettings: The updated light settings from the sensor.
+        """
+        payload = settings.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        response = await self._http.put(f"{self._resolve_singlesensor_path()}/settings/light", json=payload)
+        return self.models.LightSettings.model_validate(response.json())
+
     async def get_license(self) -> Any:
         """
         Retrieves the active/expired states of premium features.
@@ -235,8 +260,7 @@ class SystemManager:
         Args:
             led_mode (DeviceLedMode): The new LED configuration payload.
         """
-        payload = led_mode.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/led", json=payload)
+        await self._http.put(f"{self._base_path}/led", json=led_mode)
 
     async def reboot(self) -> None:
         """

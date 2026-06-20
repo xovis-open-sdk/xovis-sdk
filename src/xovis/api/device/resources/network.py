@@ -55,8 +55,7 @@ class NetworkManager:
 
     async def update_hostname(self, hostname: Any) -> None:
         """Updates the sensor's logical hostname."""
-        payload = hostname.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/hostname", json=payload)
+        await self._http.put(f"{self._base_path}/hostname", json=hostname)
 
     async def reset_hostname(self) -> None:
         """Resets the hostname to the factory default (XS-SENSOR-[MAC])."""
@@ -69,8 +68,7 @@ class NetworkManager:
 
     async def update_gigabit(self, gigabit: Any) -> None:
         """Enables or disables Gigabit Ethernet capability."""
-        payload = gigabit.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/gigabit", json=payload)
+        await self._http.put(f"{self._base_path}/gigabit", json=gigabit)
 
     # --- IPV4 & IPV6 CONFIGURATION ---
     async def get_ipv4(self) -> Any:
@@ -80,8 +78,7 @@ class NetworkManager:
 
     async def update_ipv4(self, settings: Any) -> None:
         """CRITICAL: Updates IPv4 configuration. May sever active connections."""
-        payload = settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/ipv4", json=payload)
+        await self._http.put(f"{self._base_path}/ipv4", json=settings)
 
     async def reset_ipv4(self) -> None:
         """CRITICAL: Resets IPv4 to factory defaults (DHCP enabled)."""
@@ -94,8 +91,7 @@ class NetworkManager:
 
     async def update_ipv6(self, settings: Any) -> None:
         """CRITICAL: Updates IPv6 configuration."""
-        payload = settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/ipv6", json=payload)
+        await self._http.put(f"{self._base_path}/ipv6", json=settings)
 
     async def reset_ipv6(self) -> None:
         """CRITICAL: Resets IPv6 to factory defaults (Disabled)."""
@@ -119,8 +115,7 @@ class NetworkManager:
         Creates a new remote connection (e.g., establishing a new Hub Tunnel).
         Automatically starts the connection upon creation.
         """
-        payload = remote.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.post(f"{self._base_path}/remotes", json=payload)
+        response = await self._http.post(f"{self._base_path}/remotes", json=remote)
         data = response.json()
         if "uri" in data and isinstance(data["uri"], str) and data["uri"].startswith("/"):
             data["uri"] = f"http://localhost{data['uri']}"
@@ -128,8 +123,7 @@ class NetworkManager:
 
     async def create_remote_from_config(self, config: Any) -> Any:
         """Creates a new remote connection using a base64-encoded configuration payload."""
-        payload = config.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.post(f"{self._base_path}/remotes/configuration", json=payload)
+        response = await self._http.post(f"{self._base_path}/remotes/configuration", json=config)
         data = response.json()
         if "uri" in data and isinstance(data["uri"], str) and data["uri"].startswith("/"):
             data["uri"] = f"http://localhost{data['uri']}"
@@ -204,8 +198,7 @@ class NetworkManager:
 
     async def update_eapol_config(self, config: Any) -> Any:
         """CRITICAL: Updates 802.1X configuration. May cause network drops."""
-        payload = config.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._base_path}/eapol/config", json=payload)
+        response = await self._http.put(f"{self._base_path}/eapol/config", json=config)
         return self.models.EapolConfig.model_validate(response.json())
 
     async def reset_eapol_config(self) -> Any:
@@ -261,8 +254,7 @@ class NetworkManager:
 
     async def update_truststore_config(self, config: Any) -> Any:
         """Updates the truststore configuration."""
-        payload = config.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._base_path}/x509/truststore/config", json=payload)
+        response = await self._http.put(f"{self._base_path}/x509/truststore/config", json=config)
         return self.models.X509TruststoreConfig.model_validate(response.json())
 
     async def get_truststore_cert(self, fingerprint: str) -> Any:
@@ -282,8 +274,7 @@ class NetworkManager:
 
     async def update_wireless(self, settings: Any) -> Any:
         """Updates the global wireless networking configuration."""
-        payload = settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._base_path}/wireless", json=payload)
+        response = await self._http.put(f"{self._base_path}/wireless", json=settings)
         return self.models.WlanSettings.model_validate(response.json())
 
     async def reset_wireless(self) -> Any:
@@ -303,8 +294,7 @@ class NetworkManager:
 
     async def create_wireless_network(self, network: Any) -> Any:
         """Adds a new wireless network profile."""
-        payload = network.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.post(f"{self._base_path}/wireless/networks", json=payload)
+        response = await self._http.post(f"{self._base_path}/wireless/networks", json=network)
         return self.models.WlanNetwork.model_validate(response.json())
 
     async def delete_all_wireless_networks(self) -> Any:
@@ -319,8 +309,7 @@ class NetworkManager:
 
     async def update_wireless_network(self, network_id: int, network: Any) -> Any:
         """Updates a specific wireless network profile."""
-        payload = network.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._base_path}/wireless/networks/{network_id}", json=payload)
+        response = await self._http.put(f"{self._base_path}/wireless/networks/{network_id}", json=network)
         return self.models.WlanNetwork.model_validate(response.json())
 
     async def delete_wireless_network(self, network_id: int) -> Any:
@@ -354,8 +343,7 @@ class NetworkManager:
 
     async def update_proxy(self, proxy: Any) -> None:
         """Updates the network proxy configuration."""
-        payload = proxy.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/proxy", json=payload)
+        await self._http.put(f"{self._base_path}/proxy", json=proxy)
 
     async def reset_proxy(self) -> None:
         """Deletes the current proxy configuration."""
@@ -368,8 +356,7 @@ class NetworkManager:
 
     async def update_mdns_config(self, config: Any) -> None:
         """Updates the mDNS configuration."""
-        payload = config.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/mdns/config", json=payload)
+        await self._http.put(f"{self._base_path}/mdns/config", json=config)
 
     async def get_mdns_state(self) -> Any:
         """Retrieves the currently discovered mDNS services in the local network."""
@@ -384,8 +371,7 @@ class NetworkManager:
 
     async def update_pip_config(self, settings: Any) -> None:
         """Updates the Xovis PIP configuration."""
-        payload = settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/pip", json=payload)
+        await self._http.put(f"{self._base_path}/pip", json=settings)
 
     async def get_pip_state(self) -> Any:
         """Retrieves the state and quota usage of the Xovis PIP service."""

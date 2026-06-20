@@ -222,15 +222,13 @@ class DataPushManager:
         """
         await self._pacing_delay()
         params = {"volatile": "true" if volatile else "false", "id_mode": id_mode}
-        # Use exclude_unset=True to allow sending explicit nulls if required by hardware
-        # Use _recursive_none_filter to remove unwanted nulls that break schema validation
-        payload = _recursive_none_filter(agent.model_dump(by_alias=True, exclude_unset=True, mode="json"))
-        # Force enabled to True in payload if it is unset in the model to ensure activation.
+        
+        # Force enabled to True in the model if it is unset to ensure activation.
         # Xovis firmware defaults new agents to deactivated if this field is missing.
-        if "enabled" not in payload:
-            payload["enabled"] = True
+        if agent.enabled is None:
+            agent.enabled = True
 
-        response = await self._http.post(f"{self._resolve_path()}/agents", params=params, json=payload)
+        response = await self._http.post(f"{self._resolve_path()}/agents", params=params, json=agent)
         created_agent = DataPushAgent.model_validate(response.json())
 
         # Update cache
@@ -291,10 +289,7 @@ class DataPushManager:
         """
         await self._pacing_delay()
         agent_id = await self._resolve_agent_id(id_or_name)
-        # Use exclude_unset=True to allow sending explicit nulls if required by hardware
-        # Use _recursive_none_filter to remove unwanted nulls that break schema validation
-        payload = _recursive_none_filter(agent.model_dump(by_alias=True, exclude_unset=True, mode="json"))
-        response = await self._http.put(f"{self._resolve_path()}/agents/{agent_id}", json=payload)
+        response = await self._http.put(f"{self._resolve_path()}/agents/{agent_id}", json=agent)
         updated_agent = DataPushAgent.model_validate(response.json())
 
         # Update cache
@@ -448,10 +443,7 @@ class DataPushManager:
             return DataPushTriggerInfo(status="IDLE", trigger_config=trigger_config)
 
         agent_id = agent.id
-        # Pydantic V2 mode="json" ensures XovisTime in 'time_from' and 'time_to'
-        # are correctly normalized to Unix milliseconds during serialization.
-        payload = trigger_config.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.post(f"{self._resolve_path()}/agents/{agent_id}/trigger", json=payload)
+        response = await self._http.post(f"{self._resolve_path()}/agents/{agent_id}/trigger", json=trigger_config)
 
         # FIRMWARE BUG WORKAROUND:
         # Some firmware versions return a list containing the status object instead of the object itself.
@@ -518,10 +510,7 @@ class DataPushManager:
         """Provisions a new network target (HTTP, MQTT, TCP, etc.)."""
         await self._pacing_delay()
         params = {"volatile": "true" if volatile else "false", "id_mode": id_mode}
-        # Use exclude_unset=True to avoid stripping mandatory nulls for firmware
-        # Use _recursive_none_filter to remove unwanted nulls that break schema validation
-        payload = _recursive_none_filter(connection.model_dump(by_alias=True, exclude_unset=True, mode="json"))
-        response = await self._http.post(f"{self._resolve_path()}/connections", params=params, json=payload)
+        response = await self._http.post(f"{self._resolve_path()}/connections", params=params, json=connection)
         created_conn = DataPushConnection.model_validate(response.json())
 
         # Sync cache
@@ -573,10 +562,7 @@ class DataPushManager:
         """Replaces an existing connection configuration entirely."""
         await self._pacing_delay()
         conn_id = await self._resolve_connection_id(id_or_name)
-        # Use exclude_unset=True to avoid stripping mandatory nulls for firmware
-        # Use _recursive_none_filter to remove unwanted nulls that break schema validation
-        payload = _recursive_none_filter(connection.model_dump(by_alias=True, exclude_unset=True, mode="json"))
-        response = await self._http.put(f"{self._resolve_path()}/connections/{conn_id}", json=payload)
+        response = await self._http.put(f"{self._resolve_path()}/connections/{conn_id}", json=connection)
         updated_conn = DataPushConnection.model_validate(response.json())
 
         # Update cache
@@ -651,8 +637,7 @@ class DataPushManager:
     async def update_legacy_config(self, config: "LegacyConfigPut") -> "LegacyConfigGet":
         """Updates legacy conversion settings."""
         await self._pacing_delay()
-        payload = _recursive_none_filter(config.model_dump(by_alias=True, exclude_unset=True, mode="json"))
-        response = await self._http.put(f"{self._resolve_path()}/legacy", json=payload)
+        response = await self._http.put(f"{self._resolve_path()}/legacy", json=config)
         return self.models.LegacyConfigGet.model_validate(response.json())
 
     async def delete_legacy_config(self) -> None:

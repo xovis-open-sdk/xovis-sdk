@@ -100,10 +100,11 @@ class HubAuth(httpx.Auth):
 
     def __init__(
         self,
-        client_id: str,
-        client_secret: str,
-        token_url: str,
+        client_id: Optional[str] = None,
+        client_secret: Optional[str] = None,
+        token_url: str = "https://login.xovis.cloud/oauth/token",
         cache_file: Optional[str] = None,
+        token: Optional[str] = None,
     ) -> None:
         """
         Initializes the HubAuth manager for Xovis HUB Cloud communication.
@@ -112,30 +113,34 @@ class HubAuth(httpx.Auth):
         falling back to the user's home directory if not found.
 
         Args:
-            client_id (str): The Auth0 Client ID.
-            client_secret (str): The Auth0 Client Secret.
-            token_url (str): The OAuth2 token endpoint URL.
+            client_id (str, optional): The Auth0 Client ID.
+            client_secret (str, optional): The Auth0 Client Secret.
+            token_url (str, optional): The OAuth2 token endpoint URL.
             cache_file (Optional[str], optional): Custom path for token caching.
                 Defaults to .xovis_hub_token.json.
+            token (Optional[str], optional): Static pre-authorized token.
         """
         self.client_id = client_id
         self.client_secret = client_secret
         self.token_url = token_url
-
-        if cache_file is None:
-            local_cache = Path(".xovis_hub_token.json")
-            if local_cache.exists():
-                self.cache_path = local_cache
-            else:
-                self.cache_path = Path.home() / ".xovis_hub_token.json"
-        else:
-            self.cache_path = Path(cache_file)
-
-        self.access_token: Optional[str] = None
-        self.expires_at: float = 0.0
+        self._static_token = token
+        
+        self.access_token: Optional[str] = token
+        self.expires_at: float = float('inf') if token else 0.0
         self._lock = asyncio.Lock()
+        self.cache_path = None
 
-        self._load_from_cache()
+        if not token:
+            if cache_file is None:
+                local_cache = Path(".xovis_hub_token.json")
+                if local_cache.exists():
+                    self.cache_path = local_cache
+                else:
+                    self.cache_path = Path.home() / ".xovis_hub_token.json"
+            else:
+                self.cache_path = Path(cache_file)
+    
+            self._load_from_cache()
 
     def _load_from_cache(self) -> None:
         """
@@ -232,17 +237,21 @@ class HubAuth(httpx.Auth):
         Yields:
             AsyncGenerator[httpx.Request, httpx.Response]: The request/response sequence.
         """
+        print("ASYNC AUTH FLOW CALLED")
         if not self.access_token or time.time() >= self.expires_at:
+            print("NEED TOKEN")
             async with self._lock:
                 if not self.access_token or time.time() >= self.expires_at:
                     await self._fetch_token_unlocked()
 
         current_token = self.access_token
         request.headers["Authorization"] = f"Bearer {current_token}"
+        print(f"ADDED AUTH HEADER: Bearer {current_token[:10]}... headers now: {request.headers.keys()}")
 
         response = yield request
 
         if response.status_code == 401:
+            print("GOT 401, REFRESHING")
             async with self._lock:
                 if self.access_token == current_token:
                     await self._fetch_token_unlocked()

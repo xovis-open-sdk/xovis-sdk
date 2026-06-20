@@ -37,6 +37,7 @@ class HubClient:
         self,
         client_id: Optional[str] = None,
         client_secret: Optional[str] = None,
+        token: Optional[str] = None,
         base_url: str = "https://api.xovis.cloud",
         token_url: str = "https://login.xovis.cloud/oauth/token",
         tunnel_base_url: Optional[str] = None,
@@ -53,6 +54,7 @@ class HubClient:
                 If not provided, resolves from XOVIS_HUB_CLIENT_ID env var.
             client_secret (Optional[str], optional): The OAuth2 Client Secret provided by Xovis.
                 If not provided, resolves from XOVIS_HUB_CLIENT_SECRET env var.
+            token (Optional[str], optional): Optional static API token.
             base_url (str, optional): The base URL for the Xovis HUB Cloud API.
                 Defaults to "https://api.xovis.cloud".
             token_url (str, optional): The Auth0 token endpoint.
@@ -71,14 +73,15 @@ class HubClient:
 
         cid = client_id or os.getenv("XOVIS_HUB_CLIENT_ID")
         csec = client_secret or os.getenv("XOVIS_HUB_CLIENT_SECRET")
+        static_token = token or os.getenv("XOVIS_HUB_TOKEN")
 
-        if not cid or not csec:
+        if not static_token and (not cid or not csec):
             raise ValueError(
-                "Missing Xovis HUB credentials. Provide client_id/client_secret "
-                "or set XOVIS_HUB_CLIENT_ID/XOVIS_HUB_CLIENT_SECRET environment variables."
+                "Missing Xovis HUB credentials. Provide token, or client_id/client_secret "
+                "or set XOVIS_HUB_TOKEN or XOVIS_HUB_CLIENT_ID/XOVIS_HUB_CLIENT_SECRET environment variables."
             )
 
-        self._auth = HubAuth(client_id=cid, client_secret=csec, token_url=token_url)
+        self._auth = HubAuth(client_id=cid, client_secret=csec, token_url=token_url, token=static_token)
         self._tunnel_base_url = tunnel_base_url
 
         # Extract auto_persist_path if provided

@@ -62,7 +62,8 @@ The SDK uses a four-tier testing strategy. All PRs must include relevant tests:
 
 1. **Tier 1**: Smoke tests for baseline connectivity.
 2. **Tier 2**: CRUD validation (DSC/Idempotency).
-3. **Tier 4**: Long-term stability and data alignment.
+3. **Tier 3**: Data Plane (High-frequency ingestion & socket parsing).
+4. **Tier 4**: Long-term stability and data alignment.
 
 For implementation details, refer to the [Engineering Guidelines](engineering_guidelines.md).
 

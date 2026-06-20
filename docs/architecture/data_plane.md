@@ -73,6 +73,6 @@ graph TD
 To support real-time applications such as queue management, path tracking, and live density analysis, telemetry ingestion must remain completely unblocked by configuration operations or cloud connectivity latency.
 
 *   **Rule - Absolute Throughput:** We use pure native `asyncio` (enhanced by `uvloop` on Linux/macOS or `WindowsProactorEventLoopPolicy` on Windows) for zero-blocking socket management.
-*   **Rule - The Parsing Quirk:** Xovis TCP/UDP streams send raw, concatenated JSON without newlines or length prefixes. You MUST use a sliding string buffer combined with standard library `json.JSONDecoder().raw_decode()` to extract frames safely. Do NOT use `orjson` for this specific extraction step.
+*   **Rule - The Parsing Quirk:** Xovis TCP streams (`LIVE_DATA`) send raw, concatenated JSON without newlines or length prefixes. You MUST use a sliding string buffer combined with standard library `json.JSONDecoder().raw_decode()` to extract frames safely. Do NOT use `orjson` for this specific extraction step.
 *   **Rule - Zero-Copy / Data Handling:** STRICTLY NO `pydantic` validation in this hot path. Telemetry data must be instantly forwarded to the attached sinks to ensure zero-blocking of the high-frequency ingestion stream.
 *   **Rule - Efficient Sinks:** Downstream handoffs MUST utilize batched delivery mechanisms where applicable to minimize network round-trips and maintain high throughput.

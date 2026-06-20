@@ -103,3 +103,4 @@ test_results.log
 .DS_Store
 Thumbs.db
 /device_state.json
+/scripts/run_mcp_inspector.py

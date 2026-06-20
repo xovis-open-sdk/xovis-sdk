@@ -9,6 +9,8 @@ allowing seamless hardware orchestration via Claude Desktop and Cursor.
 import asyncio
 import json
 import os
+import re
+import hashlib
 from collections.abc import Sequence
 from typing import Any, Union
 
@@ -21,6 +23,7 @@ from mcp.types import TextContent, Tool, ToolAnnotations
 from xovis.api.device.client import DeviceClient
 from xovis.api.hub.client import HubClient
 from xovis.skills.toolkit import XovisAIToolkit, XovisSafetyGuardrail
+from xovis.mcp.formatters import mcp_safe_serializer
 
 working_dir_env = os.path.join(os.getcwd(), ".env")
 if os.path.exists(working_dir_env):
@@ -169,83 +172,118 @@ def _from_mcp_name(mcp_name: str) -> str:
     return name.replace(".", "_", 1)
 
 
+_SANITIZED_TO_ORIGINAL: dict[str, str] = {}
+
+
+def _has_proprietary_access() -> bool:
+    """Checks whether proprietary visual SDK resources are present in the environment."""
+    try:
+        from xovis.api.device.resources import images_private
+        return True
+    except ImportError:
+        return False
+
+
+def sanitize_mcp_tool_name(name: str) -> str:
+    """Enforces strict Anthropic MCP tool name regex and deterministic 64-char length limits."""
+    # Replace anything not a-zA-Z0-9_- with underscores
+    sanitized = re.sub(r"[^a-zA-Z0-9_-]", "_", name)
+    if len(sanitized) > 64:
+        # Deterministically truncate and append shake_128 hash
+        h = hashlib.shake_128(name.encode("utf-8")).hexdigest(4)
+        sanitized = f"{sanitized[:55]}_{h}"
+    return sanitized
+
+
+async def _populate_tool_maps() -> None:
+    """Populates the sanitized-to-original tool name mapping context."""
+    global _SANITIZED_TO_ORIGINAL
+    if not _SANITIZED_TO_ORIGINAL:
+        try:
+            async with _get_active_client_context() as client:
+                toolkit = XovisAIToolkit(client)
+                for tool in toolkit.get_callable_tools():
+                    mcp_name = _to_mcp_name(tool["name"])
+                    sanitized_name = sanitize_mcp_tool_name(mcp_name)
+                    _SANITIZED_TO_ORIGINAL[sanitized_name] = tool["name"]
+        except Exception:
+            pass
+
+
+@mcp_safe_serializer
+async def _execute_and_serialize_tool(toolkit: XovisAIToolkit, tool_name: str, args: dict[str, Any]) -> str:
+    """Invokes the toolkit executor and applies the formatting & pagination safety decorator."""
+    return await toolkit.execute_tool(tool_name, args)
+
+
 @server.list_tools()
 async def handle_list_tools() -> list[Tool]:
-    """Exposes the SDK tool registry to the connected MCP client.
+    """Exposes the SDK tool registry to the connected MCP client."""
+    async with _get_active_client_context() as client:
+        toolkit = XovisAIToolkit(client)
+        callable_tools = toolkit.get_callable_tools()
 
-    Bypasses the async context manager to extract Pydantic validation
-    schemas statically, preventing network latency from hanging discovery.
+        await _populate_tool_maps()
 
-    Returns:
-        list[Tool]: A formatted list of MCP-compatible tool definitions.
-    """
-    client = _get_active_client_context()
-    toolkit = XovisAIToolkit(client)
-    callable_tools = toolkit.get_callable_tools()
+        mcp_tools = []
+        has_prop = _has_proprietary_access()
+        for tool in callable_tools:
+            config = toolkit._tools_map.get(tool["name"], {})
+            safety_level = config.get("safety_level")
 
-    mcp_tools = []
-    for tool in callable_tools:
-        config = toolkit._tools_map.get(tool["name"], {})
-        safety_level = config.get("safety_level")
+            description = tool["description"]
+            read_only = False
+            destructive = False
+            if safety_level:
+                description = f"[{safety_level.name}] {description}"
+                if safety_level.name == "OPEN":
+                    read_only = True
+                elif safety_level.name in ("CRITICAL", "RESTRICTED", "BLOCKED"):
+                    destructive = True
 
-        description = tool["description"]
-        read_only = False
-        destructive = False
-        if safety_level:
-            description = f"[{safety_level.name}] {description}"
-            if safety_level.name == "OPEN":
-                read_only = True
-            elif safety_level.name in ("CRITICAL", "RESTRICTED", "BLOCKED"):
-                destructive = True
+            raw_schema = tool["args_model"].model_json_schema()
+            normalized_schema = _normalize_schema(raw_schema)
 
-        raw_schema = tool["args_model"].model_json_schema()
-        normalized_schema = _normalize_schema(raw_schema)
+            mcp_name = _to_mcp_name(tool["name"])
 
-        mcp_name = _to_mcp_name(tool["name"])
+            if not has_prop:
+                if mcp_name in ("xovis.system.get_led", "xovis.network.get_ipv4", "xovis.analytics.get_counter"):
+                    continue
 
-        mcp_tools.append(
-            Tool(
-                name=mcp_name,
-                description=description,
-                inputSchema=normalized_schema,
-                outputSchema={
-                    "type": "object",
-                    "properties": {"result": {"type": "string", "description": "The result payload from the hardware"}},
-                    "description": "Output payload",
-                },
-                annotations=ToolAnnotations(readOnlyHint=read_only, destructiveHint=destructive),
+            sanitized_name = sanitize_mcp_tool_name(mcp_name)
+
+            mcp_tools.append(
+                Tool(
+                    name=sanitized_name,
+                    description=description,
+                    inputSchema=normalized_schema,
+                    outputSchema={
+                        "type": "object",
+                        "properties": {"result": {"type": "string", "description": "The result payload from the hardware"}},
+                        "description": "Output payload",
+                    },
+                    annotations=ToolAnnotations(readOnlyHint=read_only, destructiveHint=destructive),
+                )
             )
-        )
-    return mcp_tools
+        return mcp_tools
 
 
 @server.call_tool()
 async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Sequence[TextContent]:
-    """Executes a requested hardware orchestration tool.
-
-    Dynamically resolves the connection context, enforces runtime safety
-    guardrails, and handles clean session closures following execution.
-    The response string is guaranteed to be AI-Privacy sanitized by the Toolkit.
-
-    Args:
-        name (str): The requested tool identifier.
-        arguments (dict[str, Any] | None): Execution parameters provided by the agent.
-
-    Returns:
-        Sequence[TextContent]: The serialized execution payload or error boundary.
-    """
+    """Executes a requested hardware orchestration tool."""
     args = arguments or {}
-    client = _get_active_client_context()
 
-    original_name = _from_mcp_name(name)
+    await _populate_tool_maps()
+    original_name = _SANITIZED_TO_ORIGINAL.get(name) or _from_mcp_name(name)
 
     try:
-        async with client as active_client:
-            guardrail = XovisSafetyGuardrail(enforce_confirmation=True)
-            toolkit = XovisAIToolkit(active_client, guardrail=guardrail)
+        async with _get_active_client_context() as client:
+            async with client as active_client:
+                guardrail = XovisSafetyGuardrail(enforce_confirmation=True)
+                toolkit = XovisAIToolkit(active_client, guardrail=guardrail)
 
-            result = await toolkit.execute_tool(original_name, args)
-            return [TextContent(type="text", text=result)]
+                result = await _execute_and_serialize_tool(toolkit, original_name, args)
+                return [TextContent(type="text", text=result)]
     except Exception as e:
         return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
 

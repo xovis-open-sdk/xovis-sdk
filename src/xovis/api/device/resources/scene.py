@@ -185,8 +185,7 @@ class SceneManager:
     async def create_geometry(self, geometry: "SceneGeometry", id_mode: str = "SERVER") -> "SceneGeometry":
         """Provisions a new physical tracking geometry (line or polygon)."""
         params = {"id_mode": id_mode}
-        payload = _recursive_none_filter(geometry.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.post(f"{self._resolve_path()}/geometries", params=params, json=payload)
+        response = await self._http.post(f"{self._resolve_path()}/geometries", params=params, json=geometry)
         return self.models.SceneGeometry.model_validate(response.json())
 
     async def update_geometry(self, id_or_name: Union[int, str], geometry: "SceneGeometry") -> "SceneGeometry":
@@ -201,8 +200,7 @@ class SceneManager:
             SceneGeometry: The successfully updated geometry.
         """
         geom_id = await self._resolve_resource_id("geometries", id_or_name)
-        payload = _recursive_none_filter(geometry.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.put(f"{self._resolve_path()}/geometries/{geom_id}", json=payload)
+        response = await self._http.put(f"{self._resolve_path()}/geometries/{geom_id}", json=geometry)
         return self.models.SceneGeometry.model_validate(response.json())
 
     async def delete_geometry(self, id_or_name: Union[int, str]) -> None:
