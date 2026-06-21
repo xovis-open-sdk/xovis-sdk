@@ -124,9 +124,9 @@ class HubAuth(httpx.Auth):
         self.client_secret = client_secret
         self.token_url = token_url
         self._static_token = token
-        
+
         self.access_token: Optional[str] = token
-        self.expires_at: float = float('inf') if token else 0.0
+        self.expires_at: float = float("inf") if token else 0.0
         self._lock = asyncio.Lock()
         self.cache_path = None
 
@@ -139,7 +139,7 @@ class HubAuth(httpx.Auth):
                     self.cache_path = Path.home() / ".xovis_hub_token.json"
             else:
                 self.cache_path = Path(cache_file)
-    
+
             self._load_from_cache()
 
     def _load_from_cache(self) -> None:

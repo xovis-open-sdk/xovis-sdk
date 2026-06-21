@@ -181,6 +181,7 @@ def _has_proprietary_access() -> bool:
     """Checks whether proprietary visual SDK resources are present in the environment."""
     try:
         from xovis.api.device.resources import images_private
+
         return True
     except ImportError:
         return False
@@ -292,7 +293,7 @@ async def main_async() -> None:
     Initializes the standard I/O datapush and boots the MCP server lifecycle.
     """
     global _GLOBAL_CLIENT
-    
+
     # Establish a persistent client connection to reuse HTTPX connection pooling.
     client_context = _get_active_client_context()
     async with client_context as active_client:

@@ -15,13 +15,11 @@ from typing import Any, Callable, Optional, Union
 
 def mcp_tool(visibility: str = "public", safety_level: Optional[str] = None, categories: Optional[list[str]] = None) -> Callable:
     def decorator(func: Callable) -> Callable:
-        func.__mcp_metadata__ = {
-            "visibility": visibility,
-            "safety_level": safety_level,
-            "categories": categories or []
-        }
+        func.__mcp_metadata__ = {"visibility": visibility, "safety_level": safety_level, "categories": categories or []}
         return func
+
     return decorator
+
 
 from pydantic import BaseModel, Field, create_model
 
@@ -116,10 +114,12 @@ class SafetyLevel(str, Enum):
     CRITICAL = "critical"
     BLOCKED = "blocked"
 
+
 class SearchToolsArgs(BaseModel):
     query: Optional[str] = Field(None, description="Category, name, or keyword to search for.")
     safety_level: Optional[SafetyLevel] = Field(None, description="Filter by safety level.")
     visibility: Optional[str] = Field("public", description="Filter by visibility.")
+
 
 class GetToolSchemaArgs(BaseModel):
     tool_name: str = Field(..., description="The exact name of the tool to retrieve the schema for.")
@@ -303,6 +303,7 @@ class XovisAIToolkit:
 
         try:
             from xovis.api.device.client import DeviceClient as DC
+
             is_device = isinstance(self.client, DC)
         except ImportError:
             is_device = False
@@ -395,7 +396,7 @@ class XovisAIToolkit:
             for method_name in method_names:
                 if method_name.startswith("_"):
                     continue
-                
+
                 if "Mock" in str(type(manager)) and not os.environ.get("PYTEST_CURRENT_TEST"):
                     # FORCIBLY REJECT MOCK METHODS
                     continue
@@ -529,7 +530,7 @@ class XovisAIToolkit:
                 mcp_metadata = getattr(method, "__mcp_metadata__", {})
                 visibility = mcp_metadata.get("visibility", "public")
                 categories = mcp_metadata.get("categories", [])
-                
+
                 meta_safety = mcp_metadata.get("safety_level")
                 if meta_safety:
                     safety = SafetyLevel(meta_safety)
@@ -820,7 +821,9 @@ class XovisAIToolkit:
         data["is_spider"] = client.is_spider
         return data
 
-    async def _search_tools(self, client: DeviceClient, query: Optional[str] = None, safety_level: Optional[SafetyLevel] = None, visibility: str = "public") -> list[dict[str, Any]]:
+    async def _search_tools(
+        self, client: DeviceClient, query: Optional[str] = None, safety_level: Optional[SafetyLevel] = None, visibility: str = "public"
+    ) -> list[dict[str, Any]]:
         """Searches available MCP tools."""
         results = []
         for name, config in self._tools_map.items():
@@ -828,7 +831,7 @@ class XovisAIToolkit:
                 continue
             if safety_level and config.get("safety_level") != safety_level:
                 continue
-            
+
             match = True
             if query:
                 q = query.lower()
@@ -836,27 +839,25 @@ class XovisAIToolkit:
                 cats = [c.lower() for c in config.get("categories", [])]
                 if q not in name.lower() and q not in desc and not any(q in c for c in cats):
                     match = False
-            
+
             if match:
-                results.append({
-                    "name": name,
-                    "description": config.get("description"),
-                    "safety_level": config.get("safety_level", "open"),
-                    "categories": config.get("categories", [])
-                })
+                results.append(
+                    {
+                        "name": name,
+                        "description": config.get("description"),
+                        "safety_level": config.get("safety_level", "open"),
+                        "categories": config.get("categories", []),
+                    }
+                )
         return results
 
     async def _get_tool_schema(self, client: DeviceClient, tool_name: str) -> dict[str, Any]:
         """Retrieves the JSON Schema for a specific tool."""
         if tool_name not in self._tools_map:
             raise ValueError(f"Tool '{tool_name}' not found in registry.")
-        
+
         config = self._tools_map[tool_name]
-        return {
-            "name": tool_name,
-            "description": config.get("description"),
-            "schema": config["args_model"].model_json_schema()
-        }
+        return {"name": tool_name, "description": config.get("description"), "schema": config["args_model"].model_json_schema()}
 
     async def execute_tool(self, tool_name: str, arguments: dict) -> str:
         if tool_name not in self._tools_map:
@@ -890,7 +891,6 @@ class XovisAIToolkit:
 
         exclude_fields = {"confirmation", "delay_seconds", "mac"}
         exec_kwargs = {field: getattr(validated_args, field) for field in validated_args.model_fields_set if field not in exclude_fields}
-
 
         # The ?id_mode=CLIENT Override
         # Only enforce CLIENT mode if the AI explicitly passed an 'id' to map to the UI
