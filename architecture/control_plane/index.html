@@ -426,7 +426,7 @@
 <span class="md-ellipsis">
     
   
-    Edge API
+    Device API
   
 
     
@@ -682,6 +682,18 @@
   </span>
 </a>
 </li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../recipes/crewai_fleet_monitoring/">
+<span class="md-ellipsis">
+    
+  
+    CrewAI Fleet Monitoring
+  
+
+    
+  </span>
+</a>
+</li>
 </ul>
 </nav>
 </li>
@@ -859,8 +871,16 @@
 <ul>
 <li><strong>Rule - Robustness:</strong> We use <code>httpx</code> for async networking, and <code>tenacity</code> for rate-limit (HTTP 429) and server-error (HTTP 50x) backoffs.</li>
 <li><strong>Rule - Strict Pydantic CRUD:</strong> All resource managers (Analytics, Scene, DataPush, etc.) MUST enforce strict schema validation using the auto-generated Pydantic V2 models. Never use raw <code>Dict[str, Any]</code> in method signatures for payloads.</li>
-<li><strong>Rule - Pydantic Serialization:</strong> When posting Pydantic models to <code>httpx</code>, you MUST use <code>payload = obj.model_dump(mode="json", by_alias=True, exclude_unset=True)</code> to ensure <code>Enums</code> and <code>AnyUrl</code> serialize correctly.</li>
-<li><strong>Rule - Proactive Hardware Probing:</strong> Do not rely on brittle <code>try...except 403/404</code> blocks for missing hardware features. Use the lazy, asynchronous <code>_probe_capability</code> cache (e.g., <code>client.has_wifi</code>, <code>client.has_analytics</code>) or license-aware checks (e.g. <code>client.has_object_detection</code>, <code>client.has_pram_detection</code>) to gracefully handle hardware constraints.</li>
+<li><strong>Rule - Pydantic Serialization:</strong> The SDK handles Pydantic serialization natively at the <code>XovisHTTPClient</code> layer. It is hardcoded to use <code>exclude_unset=True</code> and <code>by_alias=True</code> for all Pydantic models. This is a HARD RULE to prevent <code>PATCH</code> and <code>PUT</code> requests from overwriting edge configurations with unset fields.<ul>
+<li><strong>Context-Aware Serialization:</strong><ul>
+<li><strong>Standard Usage:</strong> Pass raw Pydantic models directly to Resource Managers or the MCP Toolkit.</li>
+<li><strong>Internal SDK / Bypass:</strong> The global <code>request</code> wrapper handles serialization automatically, ensuring consistent <code>exclude_unset=True</code> and <code>by_alias=True</code> behavior.</li>
+<li><strong>Data Plane:</strong> NEVER use Pydantic in the hot path. Use raw <code>json</code>/<code>orjson</code>.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Rule - Proactive Hardware Probing:</strong> Do not rely on brittle <code>try...except</code> blocks for missing hardware features. Use the lazy, asynchronous <code>_probe_capability</code> cache or license-aware checks. Note that Xovis sensors return 403 HTML (mapped to <code>EndpointNotFoundError</code>) for missing/restricted endpoints.</li>
 <li><strong>Rule - Hub Auth0:</strong> The Xovis Hub uses Auth0. Token requests MUST be sent as a form-encoded POST (<code>data={...}</code>, NOT <code>json={...}</code>) to <code>https://login.xovis.cloud/oauth/token</code> including the <code>"audience": "https://api.xovis.cloud/"</code> parameter. Tokens MUST be cached to disk to prevent 429 rate-limiting.</li>
 </ul>
 </article>

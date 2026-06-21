@@ -461,7 +461,7 @@
 <span class="md-ellipsis">
     
   
-    Edge API
+    Device API
   
 
     
@@ -717,6 +717,18 @@
   </span>
 </a>
 </li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../recipes/crewai_fleet_monitoring/">
+<span class="md-ellipsis">
+    
+  
+    CrewAI Fleet Monitoring
+  
+
+    
+  </span>
+</a>
+</li>
 </ul>
 </nav>
 </li>
@@ -938,7 +950,7 @@
 <p>To support real-time applications such as queue management, path tracking, and live density analysis, telemetry ingestion must remain completely unblocked by configuration operations or cloud connectivity latency.</p>
 <ul>
 <li><strong>Rule - Absolute Throughput:</strong> We use pure native <code>asyncio</code> (enhanced by <code>uvloop</code> on Linux/macOS or <code>WindowsProactorEventLoopPolicy</code> on Windows) for zero-blocking socket management.</li>
-<li><strong>Rule - The Parsing Quirk:</strong> Xovis TCP/UDP streams send raw, concatenated JSON without newlines or length prefixes. You MUST use a sliding string buffer combined with standard library <code>json.JSONDecoder().raw_decode()</code> to extract frames safely. Do NOT use <code>orjson</code> for this specific extraction step.</li>
+<li><strong>Rule - The Parsing Quirk:</strong> Xovis TCP streams (<code>LIVE_DATA</code>) send raw, concatenated JSON without newlines or length prefixes. You MUST use a sliding string buffer combined with standard library <code>json.JSONDecoder().raw_decode()</code> to extract frames safely. Do NOT use <code>orjson</code> for this specific extraction step.</li>
 <li><strong>Rule - Zero-Copy / Data Handling:</strong> STRICTLY NO <code>pydantic</code> validation in this hot path. Telemetry data must be instantly forwarded to the attached sinks to ensure zero-blocking of the high-frequency ingestion stream.</li>
 <li><strong>Rule - Efficient Sinks:</strong> Downstream handoffs MUST utilize batched delivery mechanisms where applicable to minimize network round-trips and maintain high throughput.</li>
 </ul>

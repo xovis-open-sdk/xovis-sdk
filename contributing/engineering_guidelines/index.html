@@ -13,7 +13,7 @@
       
       
       
-        <link rel="prev" href="../../recipes/langgraph_congestion_control/">
+        <link rel="prev" href="../../recipes/crewai_fleet_monitoring/">
       
       
         <link rel="next" href="../agent_instructions/">
@@ -798,7 +798,7 @@
   <span class="md-ellipsis">
     
   
-    Edge API
+    Device API
   
 
     
@@ -1394,6 +1394,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/crewai_fleet_monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CrewAI Fleet Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1865,7 +1893,7 @@ The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP We
 </li>
 <li><strong>Unified Ingestion:</strong> Leverages the <code>DataPlaneIngestor</code> to standardize parsing and sink routing across all transport layers.</li>
 <li><strong>Parsing Strategy:</strong> <ul>
-<li><strong>TCP Streaming Data (Server &amp; Client)</strong>: Uses a sliding string buffer combined with standard library <code>json.JSONDecoder().raw_decode()</code> to safely carve out concatenated, newline-free JSON frames. This is mandatory for TCP because of MTU fragmentation.</li>
+<li><strong>TCP Streaming Data (Server &amp; Client)</strong>: Uses a sliding string buffer combined with standard library <code>json.JSONDecoder().raw_decode()</code> to safely carve out concatenated, newline-free JSON frames. This is mandatory for TCP because of MTU fragmentation. Do NOT use <code>orjson</code> for this specific extraction step.</li>
 <li><strong>Discrete Messages (Server &amp; Client)</strong>: Uses <code>orjson.loads()</code> via the centralized <code>DataPlaneIngestor.parse_frame</code> helper for UDP datagrams, HTTP webhooks, and MQTT topic payloads to minimize deserialization overhead.</li>
 </ul>
 </li>
@@ -1880,7 +1908,7 @@ Focuses on structural robustness, strict schema adherence, and network resilienc
 <ul>
 <li><strong>Networking:</strong> Uses <code>httpx</code> for asynchronous HTTP connection pooling and strict redirect handling.</li>
 <li><strong>Token Resilience:</strong> The <code>HubAuth</code> manager handles stateful token caching and autonomous refreshes via <code>asyncio.Lock()</code>.</li>
-<li><strong>Proactive Hardware Probing:</strong> Utilizes a lazy, asynchronous <code>_probe_capability</code> cache to prevent fragile 403/404 handling for missing hardware features.</li>
+<li><strong>Proactive Hardware Probing:</strong> Utilizes a lazy, asynchronous <code>_probe_capability</code> cache to prevent fragile 403/404 handling for missing hardware features. Note that Xovis sensors return 403 HTML (mapped to <code>EndpointNotFoundError</code>) for missing/restricted endpoints.</li>
 <li><strong>Time Normalization (XovisTime):</strong> Normalizes all time-sensitive inputs (relative strings, ISO 8601, datetime) to UTC Unix milliseconds.</li>
 <li><strong>Data Validation:</strong> Employs Pydantic v2 heavily for structural validation of OpenAPI-generated models.</li>
 <li><strong>Configuration Nuances:</strong> In <code>HTTPConfig</code>, the <code>uri</code> must exclude the port. <code>DataPushAgent</code> instances MUST have <code>enabled=True</code> explicitly set to prevent deactivation via <code>exclude_unset=True</code>.</li>
@@ -1904,7 +1932,7 @@ Maintains graph-aware context, stateful caching, and Desired State Configuration
 <p><strong>Path:</strong> <code>src/xovis/skills/</code>
 Provides safe, pseudonymized, and strictly validated hardware orchestration for autonomous agents.</p>
 <ul>
-<li><strong>Privacy First:</strong> <code>AIPrivacyEngine</code> handles two-way mapping of sensitive identifiers to format-preserving hashes.</li>
+<li><strong>Privacy First:</strong> <code>AIPrivacySession</code> handles two-way mapping of sensitive identifiers to format-preserving hashes.</li>
 <li><strong>Safety Guardrails:</strong> Assigns a <code>SafetyLevel</code> (OPEN, RESTRICTED, CRITICAL, BLOCKED) to every tool.</li>
 <li><strong>Strict Mapping:</strong> Only explicitly mapped SDK methods are exposed as tools to the AI.</li>
 </ul>

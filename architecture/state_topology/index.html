@@ -448,7 +448,7 @@
 <span class="md-ellipsis">
     
   
-    Edge API
+    Device API
   
 
     
@@ -698,6 +698,18 @@
     
   
     LangGraph Congestion Control
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../recipes/crewai_fleet_monitoring/">
+<span class="md-ellipsis">
+    
+  
+    CrewAI Fleet Monitoring
   
 
     
@@ -983,7 +995,7 @@
 <h2 id="core-philosophy">Core Philosophy</h2>
 <p>A standard sensor is more than just a single IP address—it represents an entire network topology of physical sensors, stitched virtual environments, and configuration buckets. This plane manages these relationships seamlessly.</p>
 <ul>
-<li><strong>Rule - Context Isolation:</strong> A device IP is a "Host". A host runs isolated "Contexts". The <code>singlesensor</code> context applies strictly to the physical lens (and MUST gracefully raise <code>HardwareNotSupportedError</code> if the host is a lensless Spider NUC). The <code>multisensors</code> context applies to 0..N virtual stitched environments. Geometries and DataPushes are strictly partitioned by context.</li>
+<li><strong>Rule - Context Isolation:</strong> A device IP is a "Host". A host runs isolated "Contexts". The <code>singlesensor</code> context applies strictly to physical lenses (and MUST gracefully raise <code>HardwareNotSupportedError</code> if the host is a lensless Spider NUC). The <code>multisensors</code> context applies to 0..N virtual stitched environments. Geometries and DataPushes are strictly partitioned by context.</li>
 <li><strong>Rule - Multisensor Cache Rooting:</strong> Virtual contexts discovered via <code>multisensors.sync()</code> MUST be rooted into the persistent <code>HostStateBucket</code> via the <code>@multisensors.setter</code>. This ensures that DataPush agents and connections persist across CRUD operations and are visible to the <code>REPLAccessor</code>.</li>
 <li><strong>Rule - String-Normalized Resolution:</strong> All resource managers MUST normalize context and resource IDs to strings when interacting with the stateful cache. Integer keys are strictly forbidden in the <code>multisensors</code> mapping to prevent resolution failures.</li>
 <li><strong>Rule - Proactive Context Discovery:</strong> Resource managers SHOULD trigger a proactive <code>multisensors.sync()</code> if a targeted virtual context is missing from the local cache, enabling on-the-fly recovery of hardware state.</li>
@@ -991,7 +1003,7 @@
 <li><strong>Rule - Smart Caching &amp; GC Trap:</strong> The SDK uses a <code>ConfigCacheManager</code> (Device) and <code>HubCacheManager</code> (Hub, with client-side <code>fleet_filter</code> mapping). <strong>CRITICAL:</strong> If <code>BACKGROUND_WATCHER</code> is active, the <code>asyncio.create_task</code> loop MUST be stored in a hard-referenced <code>Set</code> (to prevent Python 3.11+ GC mid-execution) and cleanly cancelled in <code>__aexit__</code>.</li>
 <li><strong>Rule - Offline-First Persistence:</strong> The <code>ConfigCacheManager</code> supports auto-persistence via <code>auto_persist_path</code>. Disk serialization/deserialization MUST be offloaded using <code>asyncio.to_thread</code> to ensure zero blocking of the async event loop.</li>
 <li><strong>Rule - Edge Topology Synthesis:</strong> The <code>TopologyManager</code> synthesizes directed graphs (<code>MSGraph</code>) by concurrently cross-referencing multisensor child clusters with physical local network nodes.</li>
-<li><strong>Rule - Multisensor Discovery Fallbacks:</strong> Global status endpoints (e.g., <code>/multisensors/status</code>) may fail on restrictive hardware. Discovery logic MUST fallback to probing explicit IDs (e.g., 1, 2, 3) to ensure context isolation.</li>
+<li><strong>Rule - Multisensor Discovery Synthesis (Top-Down Only):</strong> Discovery MUST be synthesized Top-Down. Children are "ignorant" and return fake standalone status. You MUST scan all local nodes (<code>/discover/localnetwork</code>), query their <code>/multisensors/status</code>, and correlate <code>sensors[].mac_address</code> lists from Master nodes (where <code>enabled: true</code>) to build the hierarchy.</li>
 </ul>
 </article>
 </div>

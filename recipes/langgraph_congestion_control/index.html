@@ -16,7 +16,7 @@
         <link rel="prev" href="../../troubleshooting_ai/">
       
       
-        <link rel="next" href="../../contributing/engineering_guidelines/">
+        <link rel="next" href="../crewai_fleet_monitoring/">
       
       
         
@@ -798,7 +798,7 @@
   <span class="md-ellipsis">
     
   
-    Edge API
+    Device API
   
 
     
@@ -1407,6 +1407,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crewai_fleet_monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CrewAI Fleet Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1615,7 +1643,7 @@ The agent reads the local state via <code>XovisAgentMemory</code>, executes a ta
 
         <span class="c1"># Retrieving LangChain tools dynamically via the unified adapter registry</span>
         <span class="n">tools</span> <span class="o">=</span> <span class="n">toolkit</span><span class="o">.</span><span class="n">get_tools</span><span class="p">(</span><span class="s2">&quot;langchain&quot;</span><span class="p">)</span>
-        <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bind_tools</span><span class="p">(</span><span class="n">tools</span><span class="p">)</span>
+        <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-5.5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bind_tools</span><span class="p">(</span><span class="n">tools</span><span class="p">)</span>
 
         <span class="n">memory</span> <span class="o">=</span> <span class="n">XovisAgentMemory</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">_state</span><span class="p">)</span>
         <span class="n">compressed_state</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">get_compressed_state</span><span class="p">()</span>

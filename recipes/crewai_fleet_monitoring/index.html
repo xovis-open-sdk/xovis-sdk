@@ -13,28 +13,28 @@
       
       
       
-        <link rel="prev" href="../ai/mcp/">
+        <link rel="prev" href="../langgraph_congestion_control/">
       
       
-        <link rel="next" href="../recipes/langgraph_congestion_control/">
+        <link rel="next" href="../../contributing/engineering_guidelines/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/logo.jpg">
+      <link rel="icon" href="../../assets/images/logo.jpg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Troubleshooting - xovis-sdk</title>
+        <title>CrewAI Fleet Monitoring - xovis-sdk</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,11 +53,11 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../stylesheets/extra.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#troubleshooting-ai-implementations" class="md-skip">
+        <a href="#recipe-crewai-fleet-monitoring" class="md-skip">
           Skip to content
         </a>
       
@@ -96,9 +96,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="xovis-sdk" class="md-header__button md-logo" aria-label="xovis-sdk" data-md-component="logo">
+    <a href="../.." title="xovis-sdk" class="md-header__button md-logo" aria-label="xovis-sdk" data-md-component="logo">
       
-  <img src="../assets/images/logo.jpg" alt="logo">
+  <img src="../../assets/images/logo.jpg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Troubleshooting
+              CrewAI Fleet Monitoring
             
           </span>
         </div>
@@ -216,7 +216,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -237,7 +237,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -257,7 +257,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../api/" class="md-tabs__link">
+        <a href="../../api/" class="md-tabs__link">
           
   
   
@@ -275,7 +275,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../cli/" class="md-tabs__link">
+      <a href="../../cli/" class="md-tabs__link">
         
   
   
@@ -294,7 +294,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../project_structure/" class="md-tabs__link">
+      <a href="../../project_structure/" class="md-tabs__link">
         
   
   
@@ -311,13 +311,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../ai/agentic_layer/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../ai/agentic_layer/" class="md-tabs__link">
           
   
   
@@ -333,11 +331,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../recipes/langgraph_congestion_control/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../langgraph_congestion_control/" class="md-tabs__link">
           
   
   
@@ -357,7 +357,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../contributing/engineering_guidelines/" class="md-tabs__link">
+        <a href="../../contributing/engineering_guidelines/" class="md-tabs__link">
           
   
   
@@ -375,7 +375,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../llms.txt" class="md-tabs__link">
+      <a href="../../llms.txt" class="md-tabs__link">
         
   
   
@@ -410,9 +410,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="xovis-sdk" class="md-nav__button md-logo" aria-label="xovis-sdk" data-md-component="logo">
+    <a href="../.." title="xovis-sdk" class="md-nav__button md-logo" aria-label="xovis-sdk" data-md-component="logo">
       
-  <img src="../assets/images/logo.jpg" alt="logo">
+  <img src="../../assets/images/logo.jpg" alt="logo">
 
     </a>
     xovis-sdk
@@ -427,7 +427,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -508,7 +508,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
@@ -536,7 +536,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/data_plane/" class="md-nav__link">
+      <a href="../../architecture/data_plane/" class="md-nav__link">
         
   
   
@@ -564,7 +564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/control_plane/" class="md-nav__link">
+      <a href="../../architecture/control_plane/" class="md-nav__link">
         
   
   
@@ -592,7 +592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/state_topology/" class="md-nav__link">
+      <a href="../../architecture/state_topology/" class="md-nav__link">
         
   
   
@@ -620,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/agentic_layer/" class="md-nav__link">
+      <a href="../../architecture/agentic_layer/" class="md-nav__link">
         
   
   
@@ -709,7 +709,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
+      <a href="../../api/" class="md-nav__link">
         
   
   
@@ -791,7 +791,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/reference/" class="md-nav__link">
+      <a href="../../api/reference/" class="md-nav__link">
         
   
   
@@ -819,7 +819,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/hub_device_ref/" class="md-nav__link">
+      <a href="../../api/hub_device_ref/" class="md-nav__link">
         
   
   
@@ -847,7 +847,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/hub_license_ref/" class="md-nav__link">
+      <a href="../../api/hub_license_ref/" class="md-nav__link">
         
   
   
@@ -937,7 +937,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/python/core/" class="md-nav__link">
+      <a href="../../api/python/core/" class="md-nav__link">
         
   
   
@@ -965,7 +965,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/python/device/" class="md-nav__link">
+      <a href="../../api/python/device/" class="md-nav__link">
         
   
   
@@ -993,7 +993,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/python/hub/" class="md-nav__link">
+      <a href="../../api/python/hub/" class="md-nav__link">
         
   
   
@@ -1021,7 +1021,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/python/datapush/" class="md-nav__link">
+      <a href="../../api/python/datapush/" class="md-nav__link">
         
   
   
@@ -1049,7 +1049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/python/skills/" class="md-nav__link">
+      <a href="../../api/python/skills/" class="md-nav__link">
         
   
   
@@ -1092,7 +1092,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
+      <a href="../../cli/" class="md-nav__link">
         
   
   
@@ -1119,7 +1119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project_structure/" class="md-nav__link">
+      <a href="../../project_structure/" class="md-nav__link">
         
   
   
@@ -1135,6 +1135,179 @@
   
 
       </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI & Agents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AI & Agents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai/agentic_layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai/safety_guardrails/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety & Guardrails
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai/mcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Context Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting_ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1164,17 +1337,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    AI & Agents
+    Recipes
   
 
     
@@ -1185,12 +1358,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
-    AI & Agents
+    Recipes
   
 
           </label>
@@ -1203,70 +1376,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../ai/agentic_layer/" class="md-nav__link">
+      <a href="../langgraph_congestion_control/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Introduction
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ai/safety_guardrails/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Safety & Guardrails
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ai/mcp/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model Context Protocol
+    LangGraph Congestion Control
   
 
     
@@ -1296,228 +1413,7 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Troubleshooting
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Troubleshooting
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-http-403-forbidden-existence--capability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. HTTP 403 Forbidden (Existence &amp; Capability)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-http-412-precondition-failed-time-sync" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. HTTP 412 Precondition Failed (Time Sync)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-http-429-rate-limit-exhaustion-cloud-hub" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. HTTP 429 Rate Limit Exhaustion (Cloud Hub)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-permissionerror-tool-is-critical" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. PermissionError: "Tool is CRITICAL"
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-hardware-capability-blocks-lensless-spider" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Hardware Capability Blocks (Lensless Spider)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-ai-safety-tui-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. AI Safety TUI Configuration
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
-        
-          
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Recipes
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Recipes
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../recipes/langgraph_congestion_control/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LangGraph Congestion Control
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../recipes/crewai_fleet_monitoring/" class="md-nav__link">
         
   
   
@@ -1533,6 +1429,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1606,7 +1503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/engineering_guidelines/" class="md-nav__link">
+      <a href="../../contributing/engineering_guidelines/" class="md-nav__link">
         
   
   
@@ -1634,7 +1531,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/agent_instructions/" class="md-nav__link">
+      <a href="../../contributing/agent_instructions/" class="md-nav__link">
         
   
   
@@ -1669,7 +1566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../llms.txt" class="md-nav__link">
+      <a href="../../llms.txt" class="md-nav__link">
         
   
   
@@ -1709,80 +1606,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-http-403-forbidden-existence--capability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. HTTP 403 Forbidden (Existence &amp; Capability)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-http-412-precondition-failed-time-sync" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. HTTP 412 Precondition Failed (Time Sync)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-http-429-rate-limit-exhaustion-cloud-hub" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. HTTP 429 Rate Limit Exhaustion (Cloud Hub)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-permissionerror-tool-is-critical" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. PermissionError: "Tool is CRITICAL"
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-hardware-capability-blocks-lensless-spider" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Hardware Capability Blocks (Lensless Spider)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-ai-safety-tui-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. AI Safety TUI Configuration
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1798,32 +1621,53 @@
 
 
 
-<h1 id="troubleshooting-ai-implementations">Troubleshooting AI Implementations</h1>
-<p>When providing the <code>xovis-sdk</code> to autonomous agents (like Claude or GPT-5.5), you may encounter specific architectural failure modes. Ensure your agent prompts or instructions account for these strict parameters.</p>
-<h3 id="1-http-403-forbidden-existence--capability">1. HTTP 403 Forbidden (Existence &amp; Capability)</h3>
-<p><strong>Symptom:</strong> The API returns an HTML-formatted 403 error for a path that appears valid.
-<strong>Cause:</strong> Xovis sensors prioritize <strong>existence over auth</strong>. A <code>403 Forbidden</code> with an HTML body (mapped to <code>EndpointNotFoundError</code>) signifies the path is physically invalid, the firmware version doesn't support it, or a hardware-level lockdown (Privacy Mode 3/4) is active. It is NOT a credential failure. Retrying with different credentials will not resolve this.
-<strong>Solution:</strong> Verify the hardware model (e.g., checking if it's a Spider trying to use <code>singlesensor</code>) and the active <code>Privacy Mode</code>.</p>
-<h3 id="2-http-412-precondition-failed-time-sync">2. HTTP 412 Precondition Failed (Time Sync)</h3>
-<p><strong>Symptom:</strong> Attempting to set manual time yields a 412 error.
-<strong>Cause:</strong> Manual time synchronization is strictly blocked if the NTP client is active.
-<strong>Solution:</strong> Explicitly disable NTP via the <code>/api/v5/device/time/config</code> endpoint before pushing manual time payloads.</p>
-<h3 id="3-http-429-rate-limit-exhaustion-cloud-hub">3. HTTP 429 Rate Limit Exhaustion (Cloud Hub)</h3>
-<p><strong>Symptom:</strong> Operations against the Hub start returning strict rate limit errors.
-<strong>Cause:</strong> The agent is dynamically instantiating <code>HubClient</code> objects inside a loop, requesting a new Auth0 token on every iteration.
-<strong>Solution:</strong> Force the agent to use the asynchronous context manager (<code>async with HubClient(...) as hub:</code>) and pass the initialized client or Toolkit down through the execution chain. The SDK now implements <strong>Adaptive Pacing</strong> (1.0s delay for Cloud) to mitigate this.</p>
-<h3 id="4-permissionerror-tool-is-critical">4. PermissionError: "Tool is CRITICAL"</h3>
-<p><strong>Symptom:</strong> The agent fails to execute a tool like <code>factory_reset</code> or <code>clear_sensor_db</code>.
-<strong>Cause:</strong> The <code>XovisSafetyGuardrail</code> is intercepting the command because it is marked as <code>CRITICAL</code> in the Enterprise Safety Policy and lacks confirmation.
-<strong>Solution:</strong> The agent MUST pass <code>{"confirmation": True}</code> in the tool arguments. If the tool is still blocked, it may be set to <code>SafetyLevel.BLOCKED</code> (e.g., <code>flash_format</code>), which is hardcoded and cannot be bypassed.</p>
-<h3 id="5-hardware-capability-blocks-lensless-spider">5. Hardware Capability Blocks (Lensless Spider)</h3>
-<p><strong>Symptom:</strong> The agent attempts to configure physical zones on a Spider NUC, but the API rejects it.
-<strong>Cause:</strong> Spider NUCs lack physical lenses and only support <code>multisensors</code> contexts.
-<strong>Solution:</strong> The agent must always evaluate <code>get_system_info</code> first. If <code>is_spider</code> is True, it must strictly use the <code>multisensor</code> context for analytics and geometries.</p>
-<h3 id="6-ai-safety-tui-configuration">6. AI Safety TUI Configuration</h3>
-<p><strong>Symptom:</strong> The agent is hashing or blocking data (like MAC addresses) that the user needs to see in the final report.
-<strong>Cause:</strong> The <code>AIPrivacySession</code> is performing pseudonymization based on the default or user-configured privacy levels.
-<strong>Solution:</strong> Use the built-in <strong>AI Safety TUI</strong> to adjust field-level privacy (HASH/BLOCK/ALLOW) or tool safety mappings. Changes are persisted in <code>.xovis_ai_privacy.json</code> and applied at runtime.</p>
+<h1 id="recipe-crewai-fleet-monitoring">Recipe: CrewAI Fleet Monitoring</h1>
+<p>This recipe demonstrates how to utilize the <code>xovis-sdk</code> with CrewAI agents. 
+The agent accesses the toolkit tools via the <code>crewai</code> adapter to interact with the device.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">crewai</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">Task</span><span class="p">,</span> <span class="n">Crew</span><span class="p">,</span> <span class="n">Process</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">xovis</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnifiedDeviceClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xovis.skills.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">XovisAIToolkit</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_crewai_monitoring</span><span class="p">():</span>
+    <span class="c1"># Utilizing UnifiedDeviceClient for robust hybrid local/remote routing</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">UnifiedDeviceClient</span><span class="p">(</span><span class="n">mac_address</span><span class="o">=</span><span class="s2">&quot;00:26:8c:12:34:56&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;10.0.0.50&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">device</span><span class="p">:</span>
+        <span class="n">toolkit</span> <span class="o">=</span> <span class="n">XovisAIToolkit</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Retrieving CrewAI tools dynamically via the unified adapter registry</span>
+        <span class="n">crewai_tools</span> <span class="o">=</span> <span class="n">toolkit</span><span class="o">.</span><span class="n">get_tools</span><span class="p">(</span><span class="s2">&quot;crewai&quot;</span><span class="p">)</span>
+        <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-5.5&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Define the monitoring agent</span>
+        <span class="n">monitor_agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+            <span class="n">role</span><span class="o">=</span><span class="s2">&quot;Xovis Sensor Monitor&quot;</span><span class="p">,</span>
+            <span class="n">goal</span><span class="o">=</span><span class="s2">&quot;Analyze the device telemetry and ensure congestion control.&quot;</span><span class="p">,</span>
+            <span class="n">backstory</span><span class="o">=</span><span class="s2">&quot;You are an AI assistant specialized in Xovis hardware.&quot;</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">crewai_tools</span><span class="p">,</span>
+            <span class="n">llm</span><span class="o">=</span><span class="n">llm</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Define the task</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">(</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Fetch the system info and recent historical counts. Check if any intervention is needed.&quot;</span><span class="p">,</span>
+            <span class="n">expected_output</span><span class="o">=</span><span class="s2">&quot;A summary report of the device status.&quot;</span><span class="p">,</span>
+            <span class="n">agent</span><span class="o">=</span><span class="n">monitor_agent</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Define the crew</span>
+        <span class="n">crew</span> <span class="o">=</span> <span class="n">Crew</span><span class="p">(</span>
+            <span class="n">agents</span><span class="o">=</span><span class="p">[</span><span class="n">monitor_agent</span><span class="p">],</span>
+            <span class="n">tasks</span><span class="o">=</span><span class="p">[</span><span class="n">task</span><span class="p">],</span>
+            <span class="n">process</span><span class="o">=</span><span class="n">Process</span><span class="o">.</span><span class="n">sequential</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Execute</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">crew</span><span class="o">.</span><span class="n">kickoff</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Crew execution result:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+</code></pre></div>
 
 
 
@@ -1892,10 +1736,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

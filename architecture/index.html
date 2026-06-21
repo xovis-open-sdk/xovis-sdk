@@ -435,7 +435,7 @@
 <span class="md-ellipsis">
     
   
-    Edge API
+    Device API
   
 
     
@@ -691,6 +691,18 @@
   </span>
 </a>
 </li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../recipes/crewai_fleet_monitoring/">
+<span class="md-ellipsis">
+    
+  
+    CrewAI Fleet Monitoring
+  
+
+    
+  </span>
+</a>
+</li>
 </ul>
 </nav>
 </li>
@@ -890,7 +902,7 @@
 <p><strong>Deep Dive:</strong> Ready to master the high-speed telemetry engine? Read the <a href="data_plane/">Data Plane Blueprints</a>.</p>
 <hr/>
 <h3 id="2-the-control-plane-configuration-management">2. The Control Plane (Configuration Management)</h3>
-<p>The <strong>Control Plane</strong> provides low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors. It utilizes <code>httpx</code> async pooling, token authentication caching with stateful locks, and proactive hardware capability probing to guarantee operational safety. This plane also exposes the <code>SmartDeviceClient</code>—a hybrid router that automatically probes local network paths before securely falling back to cloud-proxied HUB tunnel routes.</p>
+<p>The <strong>Control Plane</strong> provides low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors. It utilizes <code>httpx</code> async pooling, token authentication caching with stateful locks, and proactive hardware capability probing to guarantee operational safety. This plane also exposes the <code>UnifiedDeviceClient</code>—a hybrid router that automatically probes local network paths before securely falling back to cloud-proxied HUB tunnel routes.</p>
 <p><strong>Deep Dive:</strong> Want to build robust configuration and control flows? Read the <a href="control_plane/">Control Plane Blueprints</a>.</p>
 <hr/>
 <h3 id="3-the-state--topology-plane-fleet-orchestration">3. The State &amp; Topology Plane (Fleet Orchestration)</h3>

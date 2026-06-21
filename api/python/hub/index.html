@@ -804,7 +804,7 @@
   <span class="md-ellipsis">
     
   
-    Edge API
+    Device API
   
 
     
@@ -2103,6 +2103,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../recipes/crewai_fleet_monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CrewAI Fleet Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -3211,7 +3239,10 @@ tunneling. Acts as the definitive orchestrator for distributed sensor networks.<
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">HubClient</span><span class="p">:</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">HubClient</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Asynchronous client for interacting with the Xovis HUB Cloud.</span>
 
@@ -3224,6 +3255,7 @@ tunneling. Acts as the definitive orchestrator for distributed sensor networks.<
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">client_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">client_secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;https://api.xovis.cloud&quot;</span><span class="p">,</span>
         <span class="n">token_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;https://login.xovis.cloud/oauth/token&quot;</span><span class="p">,</span>
         <span class="n">tunnel_base_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3240,6 +3272,7 @@ tunneling. Acts as the definitive orchestrator for distributed sensor networks.<
 <span class="sd">                If not provided, resolves from XOVIS_HUB_CLIENT_ID env var.</span>
 <span class="sd">            client_secret (Optional[str], optional): The OAuth2 Client Secret provided by Xovis.</span>
 <span class="sd">                If not provided, resolves from XOVIS_HUB_CLIENT_SECRET env var.</span>
+<span class="sd">            token (Optional[str], optional): Optional static API token.</span>
 <span class="sd">            base_url (str, optional): The base URL for the Xovis HUB Cloud API.</span>
 <span class="sd">                Defaults to &quot;https://api.xovis.cloud&quot;.</span>
 <span class="sd">            token_url (str, optional): The Auth0 token endpoint.</span>
@@ -3258,14 +3291,15 @@ tunneling. Acts as the definitive orchestrator for distributed sensor networks.<
 
         <span class="n">cid</span> <span class="o">=</span> <span class="n">client_id</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XOVIS_HUB_CLIENT_ID&quot;</span><span class="p">)</span>
         <span class="n">csec</span> <span class="o">=</span> <span class="n">client_secret</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XOVIS_HUB_CLIENT_SECRET&quot;</span><span class="p">)</span>
+        <span class="n">static_token</span> <span class="o">=</span> <span class="n">token</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XOVIS_HUB_TOKEN&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">cid</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">csec</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">static_token</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cid</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">csec</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Missing Xovis HUB credentials. Provide client_id/client_secret &quot;</span>
-                <span class="s2">&quot;or set XOVIS_HUB_CLIENT_ID/XOVIS_HUB_CLIENT_SECRET environment variables.&quot;</span>
+                <span class="s2">&quot;Missing Xovis HUB credentials. Provide token, or client_id/client_secret &quot;</span>
+                <span class="s2">&quot;or set XOVIS_HUB_TOKEN or XOVIS_HUB_CLIENT_ID/XOVIS_HUB_CLIENT_SECRET environment variables.&quot;</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_auth</span> <span class="o">=</span> <span class="n">HubAuth</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span> <span class="n">client_secret</span><span class="o">=</span><span class="n">csec</span><span class="p">,</span> <span class="n">token_url</span><span class="o">=</span><span class="n">token_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_auth</span> <span class="o">=</span> <span class="n">HubAuth</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span> <span class="n">client_secret</span><span class="o">=</span><span class="n">csec</span><span class="p">,</span> <span class="n">token_url</span><span class="o">=</span><span class="n">token_url</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">static_token</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tunnel_base_url</span> <span class="o">=</span> <span class="n">tunnel_base_url</span>
 
         <span class="c1"># Extract auto_persist_path if provided</span>
@@ -3463,17 +3497,17 @@ tunneling. Acts as the definitive orchestrator for distributed sensor networks.<
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/xovis/api/hub/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
-<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;HubClient&quot;</span><span class="p">:</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;HubClient&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enables asynchronous context management and triggers initial sync.</span>
 
@@ -3510,11 +3544,11 @@ tunneling. Acts as the definitive orchestrator for distributed sensor networks.<
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/xovis/api/hub/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensures graceful teardown of the HTTP connection pool.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3568,17 +3602,17 @@ tunneling. Acts as the definitive orchestrator for distributed sensor networks.<
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/xovis/api/hub/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
-<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">DeviceClient</span><span class="p">]:</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">DeviceClient</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enables asynchronous iteration over the cached fleet devices.</span>
 
@@ -3599,7 +3633,7 @@ tunneling. Acts as the definitive orchestrator for distributed sensor networks.<
 
 
 <h6 id="xovis.api.hub.client.HubClient.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">client_secret</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="s1">&#39;https://api.xovis.cloud&#39;</span><span class="p">,</span> <span class="n">token_url</span><span class="o">=</span><span class="s1">&#39;https://login.xovis.cloud/oauth/token&#39;</span><span class="p">,</span> <span class="n">tunnel_base_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fleet_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">client_secret</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="s1">&#39;https://api.xovis.cloud&#39;</span><span class="p">,</span> <span class="n">token_url</span><span class="o">=</span><span class="s1">&#39;https://login.xovis.cloud/oauth/token&#39;</span><span class="p">,</span> <span class="n">tunnel_base_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fleet_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 </h6>
 
@@ -3648,6 +3682,22 @@ If not provided, resolves from XOVIS_HUB_CLIENT_ID env var.</p>
               <div class="doc-md-description">
                 <p>The OAuth2 Client Secret provided by Xovis.
 If not provided, resolves from XOVIS_HUB_CLIENT_SECRET env var.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>token</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional static API token.</p>
               </div>
             </td>
             <td>
@@ -3834,10 +3884,14 @@ to restrict the visible fleet scope.</p>
 <span class="normal">89</span>
 <span class="normal">90</span>
 <span class="normal">91</span>
-<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">client_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">client_secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;https://api.xovis.cloud&quot;</span><span class="p">,</span>
     <span class="n">token_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;https://login.xovis.cloud/oauth/token&quot;</span><span class="p">,</span>
     <span class="n">tunnel_base_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3854,6 +3908,7 @@ to restrict the visible fleet scope.</p>
 <span class="sd">            If not provided, resolves from XOVIS_HUB_CLIENT_ID env var.</span>
 <span class="sd">        client_secret (Optional[str], optional): The OAuth2 Client Secret provided by Xovis.</span>
 <span class="sd">            If not provided, resolves from XOVIS_HUB_CLIENT_SECRET env var.</span>
+<span class="sd">        token (Optional[str], optional): Optional static API token.</span>
 <span class="sd">        base_url (str, optional): The base URL for the Xovis HUB Cloud API.</span>
 <span class="sd">            Defaults to &quot;https://api.xovis.cloud&quot;.</span>
 <span class="sd">        token_url (str, optional): The Auth0 token endpoint.</span>
@@ -3872,14 +3927,15 @@ to restrict the visible fleet scope.</p>
 
     <span class="n">cid</span> <span class="o">=</span> <span class="n">client_id</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XOVIS_HUB_CLIENT_ID&quot;</span><span class="p">)</span>
     <span class="n">csec</span> <span class="o">=</span> <span class="n">client_secret</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XOVIS_HUB_CLIENT_SECRET&quot;</span><span class="p">)</span>
+    <span class="n">static_token</span> <span class="o">=</span> <span class="n">token</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XOVIS_HUB_TOKEN&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">cid</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">csec</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">static_token</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cid</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">csec</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Missing Xovis HUB credentials. Provide client_id/client_secret &quot;</span>
-            <span class="s2">&quot;or set XOVIS_HUB_CLIENT_ID/XOVIS_HUB_CLIENT_SECRET environment variables.&quot;</span>
+            <span class="s2">&quot;Missing Xovis HUB credentials. Provide token, or client_id/client_secret &quot;</span>
+            <span class="s2">&quot;or set XOVIS_HUB_TOKEN or XOVIS_HUB_CLIENT_ID/XOVIS_HUB_CLIENT_SECRET environment variables.&quot;</span>
         <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">_auth</span> <span class="o">=</span> <span class="n">HubAuth</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span> <span class="n">client_secret</span><span class="o">=</span><span class="n">csec</span><span class="p">,</span> <span class="n">token_url</span><span class="o">=</span><span class="n">token_url</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_auth</span> <span class="o">=</span> <span class="n">HubAuth</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span> <span class="n">client_secret</span><span class="o">=</span><span class="n">csec</span><span class="p">,</span> <span class="n">token_url</span><span class="o">=</span><span class="n">token_url</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">static_token</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_tunnel_base_url</span> <span class="o">=</span> <span class="n">tunnel_base_url</span>
 
     <span class="c1"># Extract auto_persist_path if provided</span>
@@ -3917,11 +3973,11 @@ to restrict the visible fleet scope.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/xovis/api/hub/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aclose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aclose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manually releases all underlying network resources.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4029,10 +4085,7 @@ respective execution outcomes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/xovis/api/hub/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span>
 <span class="normal">145</span>
@@ -4073,7 +4126,10 @@ respective execution outcomes.</p>
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
-<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">bulk_execute</span><span class="p">(</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">bulk_execute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">DeviceClient</span><span class="p">],</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
     <span class="n">fleet_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4207,10 +4263,7 @@ the target device.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/xovis/api/hub/client.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
@@ -4250,7 +4303,10 @@ the target device.</p>
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
-<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">connect_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_or_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeviceClient</span><span class="p">:</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">connect_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_or_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeviceClient</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spawns a DeviceClient routed through the Hub&#39;s dynamic secure tunnel.</span>
 
