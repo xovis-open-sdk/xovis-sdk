@@ -542,12 +542,12 @@ class XovisFleetTable(Screen):
 
             discovery_master = None
             for dev in self._fleet_data:
-                if dev.status == "🟢 ONLINE":
+                if "ONLINE" in dev.status or "LOCAL" in dev.status:
                     discovery_master = dev
                     break
 
             if not discovery_master:
-                self.notify("No online Hub devices available to act as Discovery Proxy.", severity="warning")
+                self.notify("No available online or local devices to act as Discovery Proxy.", severity="warning")
                 table.loading = False
                 return
 

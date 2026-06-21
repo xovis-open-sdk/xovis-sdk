@@ -966,11 +966,18 @@ class ConfigCacheManager:
             contexts_to_sync = ["singlesensor"]
             try:
                 ms_resp = await self._http_client.get("/api/v5/multisensors/status")
-                ms_status = ms_resp.json()
-                if isinstance(ms_status, list):
-                    for ms in ms_status:
-                        if "id" in ms:
-                            contexts_to_sync.append(str(ms["id"]))
+                data = ms_resp.json()
+                if isinstance(data, list):
+                    ms_list = data
+                else:
+                    ms_list = data.get("multisensors_status") or data.get("multisensors")
+                    if ms_list is None and isinstance(data, dict) and "multisensor_id" in data:
+                        ms_list = [data]
+                if isinstance(ms_list, list):
+                    for ms in ms_list:
+                        ms_id = ms.get("multisensor_id") or ms.get("id") or ms.get("custom_id")
+                        if ms_id is not None:
+                            contexts_to_sync.append(str(ms_id))
             except (XovisClientError, Exception) as e:
                 logger.debug(f"Multisensor discovery skipped: {e}")
 

@@ -4465,7 +4465,7 @@ wheels = [
 
 [[package]]
 name = "xovis-sdk"
-version = "1.0.0a27"
+version = "1.0.0a28"
 source = { editable = "." }
 dependencies = [
     { name = "aiomqtt" },

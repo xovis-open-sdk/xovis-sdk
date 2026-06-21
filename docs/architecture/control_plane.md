@@ -4,13 +4,16 @@ The Control Plane manages low-frequency REST API wrappers for configuring the Xo
 
 ## Unified Device Routing Layer (`UnifiedDeviceClient`)
 
-To solve issues where the Xovis HUB does not contain real local LAN IPs (e.g., behind gateways or NAT), the SDK introduces a **Multi-Plane Hybrid Routing Strategy** via the `UnifiedDeviceClient`. 
+To solve issues where the Xovis HUB does not contain real local LAN IPs (the **Gateway Proxy IP Quirk**, where the Hub proxies connections via Gateway IPs), the SDK introduces an **Intelligent MAC/IP Routing Protocol** via the `UnifiedDeviceClient`. 
 
-When connecting to a device:
+When connecting to a device, the router evaluates the target and executes the following protocol:
 
-1.  **Local Handshake Check:** The client performs a fast TCP/HTTP probe of local IP addresses (either cached or discovered).
-2.  **Direct LAN Execution:** If reachable, a direct, low-latency `DeviceClient` connection is used.
-3.  **HUB Proxy Fallback:** If the local path is blocked or the device is remote, the SDK automatically falls back to spawning a secure connection routed through the Cloud HUB proxy tunnel (`HubClient.connect_device`).
+1.  **IP Target Resolution:**
+    *   **Attempt Direct Local LAN:** Immediately attempts a direct, low-latency `DeviceClient` connection on the local network.
+    *   **Hub Quirk Guardrail & Fallback:** If local connection fails, it cross-references the Hub Cache to map the IP to a safe MAC address before attempting a Cloud Tunnel. It strictly prevents routing raw IPs through the Hub to avoid Gateway proxying instability.
+2.  **MAC Target Resolution:**
+    *   **Attempt Local LAN (Primary):** Utilizes the 3-Tier Network Discovery (ARP Cache, Proxy Sensor, etc.) to resolve a local IP for a direct LAN connection (prioritizing local traffic).
+    *   **HUB Proxy Fallback (Secondary):** If local resolution fails (the device is remote), it falls back to a highly stable Hub MAC connection (`HubClient.connect_device`).
 
 ---
 

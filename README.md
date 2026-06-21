@@ -133,9 +133,9 @@ async def main():
     # Connect via HUB to manage Local, VPN, and Cloud-Proxy Tunnel connections
     async with HubClient() as hub:
         # Unified clients automatically probe and resolve different connection paths
-        device_lan = UnifiedDeviceClient(host="192.168.1.10")
-        device_vpn = UnifiedDeviceClient(host="10.8.0.5")
-        device_hub = UnifiedDeviceClient(mac_address="00:26:8c:12:34:56", hub_client=hub)
+        device_lan = UnifiedDeviceClient("192.168.1.10")
+        device_vpn = UnifiedDeviceClient("10.8.0.5")
+        device_hub = UnifiedDeviceClient("00:26:8c:12:34:56", hub_client=hub)
         
         # Concurrently synchronize and cache configurations for offline-first operations
         async with device_lan, device_vpn, device_hub:
@@ -173,7 +173,7 @@ async def main():
     await asyncio.gather(server_1.start(), server_2.start())
     
     # Connect to device, mutate local ports on the connection agent to prevent conflicts
-    async with UnifiedDeviceClient(host="10.8.0.5") as device:
+    async with UnifiedDeviceClient("10.8.0.5") as device:
         await device.cache.load_from_disk()
         
         # Fetch configurations safely via autocomplete-friendly dot-notation
@@ -251,8 +251,9 @@ xovis-cli warmup 192.168.1.10 --user admin --pass secret_pass
 # Warm up entire cloud fleet state and cloud schemas from Xovis HUB
 xovis-cli warmup-hub --client-id MY_ID --client-secret MY_SECRET
 
-# Generate static types from local state cache files for perfect autocomplete
-xovis-cli generate-types --source ./_local_resources/states/device_state.json
+# Generate static types from a device (local IP or MAC via Hub tunnel) for perfect autocomplete
+xovis-cli generate-types --device 192.168.1.10
+xovis-cli generate-types --device 00:11:22:33:44:55 --via-hub
 
 # Launch Xovis Open SDK Mission Control TUI
 xovis-cli ui

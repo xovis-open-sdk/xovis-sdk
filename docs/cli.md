@@ -48,7 +48,8 @@ Parses an offline `HostStateBucket` cache and generates strict Python `Literal` 
 
 - `--source`: Path to the cache JSON (auto-detected; prioritizes `_local_resources/states/` and falls back to `device_state.json`).
 - `--output`: Target Python file path.
-- `--host`: Optional: Pull state from this device IP before generating.
+- `--device`: Unified target argument accepting an IP or MAC address. Replaces `--host` and `--hub-device`.
+- `--via-hub`: Optional boolean flag to explicitly route the connection through the Xovis Hub Cloud tunnel.
 - `--dry-run`: Analyze without writing to disk.
 
 ### `probe`

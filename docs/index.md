@@ -23,7 +23,7 @@ Welcome to the **xovis-sdk** documentation. This is an enterprise-grade, high-pe
 - **Quadrifurcated Architecture**: Separation of [Data](architecture/data_plane.md), [Control](architecture/control_plane.md), [State](architecture/state_topology.md), and [Agentic](architecture/agentic_layer.md) planes.
 - **Zero-Copy Telemetry**: [High-speed Live-Push (up to 12.5Hz) ingestion](architecture/data_plane.md) with binary packing.
 - **Fleet Orchestration**: Resilient [bulk operations](architecture/control_plane.md) via Xovis HUB Cloud.
-- **Topology Awareness**: Automatic resolution of physical vs. virtual [sensor contexts](cli.md#ui).
+- **Topology Awareness**: Automatic resolution of physical vs. virtual [sensor contexts](cli.md#ui) via Top-Down Synthesis and 3-Tier ARP/L2 network discovery fallback.
 - **AI-Ready**: Native toolkits for OpenAI, Anthropic, LangGraph, and [Model Context Protocol (MCP)](ai/mcp.md) support.
 
 ## AI & Autonomous Agents

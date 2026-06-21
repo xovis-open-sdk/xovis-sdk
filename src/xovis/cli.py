@@ -165,7 +165,7 @@ def print_receipt(stats: dict[str, int]) -> None:
     print(f"  {F.BOLD}Total Entities Typed:  {total}{F.RESET}\n")
 
 
-def generate_types(source_path: str, output_path: str, dry_run: bool = False, host: str = None) -> None:
+def generate_types(source_path: str, output_path: str, dry_run: bool = False, device: str = None, via_hub: bool = False) -> None:
     """
     Parses offline cache, tracks analytics, and safely generates Literal types.
 
@@ -173,21 +173,55 @@ def generate_types(source_path: str, output_path: str, dry_run: bool = False, ho
         source_path (str): File path to HostStateBucket JSON.
         output_path (str): Target file path for the generated Python module.
         dry_run (bool): If True, parses and analyzes without writing to disk.
-        host (str, optional): If provided, pulls state from the device first.
+        device (str, optional): Target IP or MAC address to pull state from.
+        via_hub (bool): If True, route connection through the Xovis Hub tunnel.
     """
-    if host:
+    if device:
         import asyncio
+        import ipaddress
 
         from xovis.api.device.client import DeviceClient
+        from xovis.api.hub.client import HubClient
+        
+        def is_ip_address(val: str) -> bool:
+            try:
+                ipaddress.ip_address(val)
+                return True
+            except ValueError:
+                return False
 
         async def fetch_state():
             """Authenticates with the device and exports its current state to a JSON bucket."""
-            logger.info(f"Connecting to {host} to fetch live state...")
-            async with DeviceClient(host, "admin", "pass") as client:
-                state = await client.cache.get_state()
-                with open(source_path, "w", encoding="utf-8") as f:
-                    f.write(state.model_dump_json(indent=2))
-                logger.info(f"Live state exported to {source_path}")
+            if is_ip_address(device):
+                if via_hub:
+                    raise ValueError("Hub routing requires a MAC address, not an IP.")
+                logger.info(f"Connecting to {device} to fetch live state...")
+                async with DeviceClient(device, "admin", "pass") as client:
+                    await client.cache.sync()
+                    client.cache.export_to_file(source_path)
+                    logger.info(f"Live state exported to {source_path}")
+            else:
+                if via_hub:
+                    logger.info(f"Connecting to hub to tunnel to device {device}...")
+                    async with HubClient() as hub:
+                        async with await hub.connect_device(device) as client:
+                            await client.cache.sync()
+                            client.cache.export_to_file(source_path)
+                            logger.info(f"Live state of {device} exported to {source_path} via HUB")
+                else:
+                    # Local LAN connection via MAC discovery
+                    from xovis.api.device.network_discovery import NetworkDiscoveryService
+                    logger.info(f"Discovering local IP for MAC {device}...")
+                    local_ip = await NetworkDiscoveryService.resolve_mac_to_ip(device)
+                    
+                    if not local_ip:
+                        raise ValueError(f"Could not discover device with MAC {device} on the local network. Ensure it is powered on and reachable.")
+                        
+                    logger.info(f"Resolved MAC {device} to IP {local_ip}. Connecting to fetch live state...")
+                    async with DeviceClient(local_ip, "admin", "pass") as client:
+                        await client.cache.sync()
+                        client.cache.export_to_file(source_path)
+                        logger.info(f"Live state exported to {source_path}")
 
         try:
             asyncio.run(fetch_state())
@@ -824,9 +858,14 @@ def main() -> None:
         help="Path to the exported HostStateBucket JSON file.",
     )
     type_parser.add_argument(
-        "--host",
+        "--device",
         type=str,
-        help="Optional: Pull state from this device IP before generating.",
+        help="Optional: Pull state from this device (IP or MAC) before generating.",
+    )
+    type_parser.add_argument(
+        "--via-hub",
+        action="store_true",
+        help="Optional: Route connection through the Xovis Hub tunnel.",
     )
     type_parser.add_argument(
         "--output",
@@ -969,8 +1008,9 @@ def main() -> None:
         source = getattr(args, "source", resolved_default_source)
         output = getattr(args, "output", default_output)
         dry_run = getattr(args, "dry_run", False)
-        host = getattr(args, "host", None)
-        generate_types(source, output, dry_run=dry_run, host=host)
+        device = getattr(args, "device", None)
+        via_hub = getattr(args, "via_hub", False)
+        generate_types(source, output, dry_run=dry_run, device=device, via_hub=via_hub)
     elif args.command is None:
         parser.print_help()
     elif args.command in ["generate-rules", "gen-rules"]:

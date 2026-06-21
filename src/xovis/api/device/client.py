@@ -769,17 +769,8 @@ class UnifiedDeviceClient:
             matched_dev = matches[0]
             d_id = getattr(matched_dev, "id", None)
             resolved_mac = (d_id.root if hasattr(d_id, "root") else d_id) if d_id else None
-            resolved_host = getattr(matched_dev, "ip", None)
 
-        if resolved_mac and not resolved_host and self.hub_client:
-            normalized_mac = resolved_mac.upper().replace("-", ":")
-            for d in getattr(self.hub_client.cache._state, "devices", []):
-                d_id = getattr(d, "id", None)
-                d_mac = (d_id.root if hasattr(d_id, "root") else d_id) if d_id else None
-                if d_mac and d_mac.upper().replace("-", ":") == normalized_mac:
-                    resolved_host = getattr(d, "ip", None)
-                    break
-
+        # Path 2: Explicit IP Address is available
         if resolved_host:
             probe_kwargs = self.kwargs.copy()
             probe_kwargs["timeout"] = 2.0
@@ -803,25 +794,61 @@ class UnifiedDeviceClient:
             except Exception:
                 pass
 
-        if not resolved_mac and resolved_host and self.hub_client:
-            for d in getattr(self.hub_client.cache._state, "devices", []):
-                if getattr(d, "ip", None) == resolved_host:
-                    d_id = getattr(d, "id", None)
-                    resolved_mac = (d_id.root if hasattr(d_id, "root") else d_id) if d_id else None
-                    break
+        # If IP failed or was not provided, but we don't have a MAC yet
+        if not resolved_mac and resolved_host:
+            # Cross-Reference for Hub Routing (Fallback)
+            if self.hub_client:
+                for d in getattr(self.hub_client.cache._state, "devices", []):
+                    if getattr(d, "ip", None) == resolved_host:
+                        d_id = getattr(d, "id", None)
+                        resolved_mac = (d_id.root if hasattr(d_id, "root") else d_id) if d_id else None
+                        break
 
-        if self.hub_client and resolved_mac:
-            try:
-                self._client = await self.hub_client.connect_device(resolved_mac)
-                await self._client.__aenter__()
-                return self._client
-            except Exception as e:
-                raise ConnectionError(
-                    f"Could not connect to device {resolved_mac} via LAN (host={resolved_host}) or via Cloud Hub Tunnel: {e}"
-                ) from e
+            if not resolved_mac:
+                raise ValueError(
+                    f"IP {resolved_host} is unreachable on local LAN and cannot be safely routed via Hub without a matching cache entry. Please provide a MAC address."
+                )
+
+        # Path 1: Target is a MAC Address (or was resolved to a MAC)
+        if resolved_mac:
+            from xovis.api.device.network_discovery import NetworkDiscoveryService
+            local_ip = await NetworkDiscoveryService.resolve_mac_to_ip(resolved_mac)
+
+            if local_ip and local_ip != resolved_host:
+                probe_kwargs = self.kwargs.copy()
+                probe_kwargs["timeout"] = 2.0
+                probe_client = DeviceClient(
+                    host=local_ip,
+                    username=self.username,
+                    password=self.password,
+                    **probe_kwargs,
+                )
+                try:
+                    async with probe_client:
+                        pass
+                    self._client = DeviceClient(
+                        host=local_ip,
+                        username=self.username,
+                        password=self.password,
+                        **self.kwargs,
+                    )
+                    await self._client.__aenter__()
+                    return self._client
+                except Exception:
+                    pass
+
+            if self.hub_client:
+                try:
+                    self._client = await self.hub_client.connect_device(resolved_mac)
+                    await self._client.__aenter__()
+                    return self._client
+                except Exception as e:
+                    raise ConnectionError(
+                        f"Could not connect to device {resolved_mac} via LAN or via Cloud Hub Tunnel: {e}"
+                    ) from e
 
         desc = resolved_mac or resolved_host or self.name or "unknown"
-        raise ConnectionError(f"Device {desc} offline/unreachable on LAN (host={resolved_host}) and no HubClient/MAC is available for fallback.")
+        raise ConnectionError(f"Device {desc} offline/unreachable on LAN and no HubClient/MAC is available for fallback.")
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """

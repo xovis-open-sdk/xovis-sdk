@@ -360,29 +360,36 @@ class TopologyManager:
             MSGraph: The mapped topology with IP resolutions.
         """
         # Fetch multisensor status and network nodes concurrently
-        ms_resp = await self._http_client.get("/api/v5/multisensors/status")
-        ms_text = ms_resp.text.strip()
+        ms_task = self._http_client.get("/api/v5/multisensors/status")
+        discovery_task = self._http_client.get("/api/v5/discover/localnetwork")
+
+        ms_resp, discovery_resp = await asyncio.gather(ms_task, discovery_task, return_exceptions=True)
+
         ms_data = []
-        if ms_text:
+        if not isinstance(ms_resp, Exception) and getattr(ms_resp, "status_code", 500) == 200:
             try:
-                ms_data = ms_resp.json().get("multisensors_status", [])
+                data = ms_resp.json()
+                if isinstance(data, list):
+                    ms_data = data
+                else:
+                    ms_data = data.get("multisensors_status") or data.get("multisensors") or []
+                    if not ms_data and isinstance(data, dict) and "multisensor_id" in data:
+                        ms_data = [data]
             except Exception as e:
-                logging.warning(f"Failed to parse multisensor status JSON: {e}. Text: {ms_text[:100]}")
-        else:
-            logging.info("Multisensor status is empty.")
+                logging.warning(f"Failed to parse multisensor status JSON: {e}")
+        elif isinstance(ms_resp, Exception):
+            logging.warning(f"Failed to fetch multisensor status: {ms_resp}")
 
         # We also need the local IP mapping from discovery
-        discovery_resp = await self._http_client.get("/api/v5/discover/localnetwork")
-        disc_text = discovery_resp.text.strip()
         ip_map = {}
-        if disc_text:
+        if not isinstance(discovery_resp, Exception) and getattr(discovery_resp, "status_code", 500) == 200:
             try:
                 discovery_data = DiscoveryScanResult.model_validate(discovery_resp.json())
                 ip_map = {s.mac: s.ip for s in discovery_data.sensors}
             except Exception as e:
                 logging.warning(f"Failed to parse discovery JSON: {e}")
-        else:
-            logging.info("Discovery data is empty.")
+        elif isinstance(discovery_resp, Exception):
+            logging.warning(f"Failed to fetch discovery data: {discovery_resp}")
 
         children = []
         master_mac = ""
@@ -426,18 +433,6 @@ class TopologyManager:
                 # If the cluster master is not the primary master_mac, it's an alternative
                 if cluster_master != master_mac and cluster_master not in alternative_masters:
                     alternative_masters.append(cluster_master)
-
-        # Fallback to current device info for master_mac if not found
-        if not master_mac:
-            info_resp = await self._http_client.get("/api/v5/device/info")
-            info_text = info_resp.text.strip()
-            if info_text:
-                try:
-                    master_mac = info_resp.json().get("mac_address", "00:00:00:00:00:00")
-                except Exception:
-                    master_mac = "00:00:00:00:00:00"
-            else:
-                master_mac = "00:00:00:00:00:00"
 
         return MSGraph(
             master_mac=master_mac,
