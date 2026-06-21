@@ -64,10 +64,10 @@ async def test_mcp_error_handling_sanitization():
     """
     Tier 2 - MCP Output Test: Ensure errors are also returned as JSON and don't leak internals.
     """
-    with patch("xovis.mcp.server._get_active_client_context") as mock_get_context:
-        mock_client = AsyncMock()
-        mock_get_context.return_value = mock_client
-        mock_client.__aenter__.side_effect = Exception("Internal Connection Failure: 10.10.10.5")
+    with patch("xovis.mcp.server.XovisAIToolkit") as mock_toolkit_cls:
+        mock_toolkit_instance = MagicMock()
+        mock_toolkit_cls.return_value = mock_toolkit_instance
+        mock_toolkit_instance.execute_tool = AsyncMock(side_effect=Exception("Internal Connection Failure: 10.10.10.5"))
 
         response = await handle_call_tool("xovis.system.get_info", {})
 

@@ -86,3 +86,19 @@ jobs:
         run: uv python install 3.12
       - name: Run Bandit Scan
         run: uv run --extra test bandit -r src/ -ll
+
+  docs-readiness:
+    name: Documentation Readiness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Git for LF line endings
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Enforce Docstrings
+        run: uv run xovis-cli docs check-docstrings

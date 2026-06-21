@@ -12,6 +12,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Optional, Union
 
+
 def mcp_tool(visibility: str = "public", safety_level: Optional[str] = None, categories: Optional[list[str]] = None) -> Callable:
     def decorator(func: Callable) -> Callable:
         func.__mcp_metadata__ = {

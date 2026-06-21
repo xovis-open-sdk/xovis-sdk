@@ -1,6 +1,6 @@
 {
   "name": "xovis-sdk",
-  "version": "1.0.0a26",
+  "version": "1.0.0-a27",
   "description": "Unofficial Xovis Hardware integration via MCP that seamlessly bridges the Xovis Python SDK to autonomous AI agents. Features zero-trust pseudonymization, human-in-the-loop safety guardrails, and unlocks the full suite of 261 tools (including analytics, datapush, and system commands) when configured with correct device/hub credentials.",
   "keywords": [
     "xovis",

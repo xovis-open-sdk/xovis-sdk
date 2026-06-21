@@ -7,10 +7,10 @@ allowing seamless hardware orchestration via Claude Desktop and Cursor.
 """
 
 import asyncio
+import hashlib
 import json
 import os
 import re
-import hashlib
 from collections.abc import Sequence
 from typing import Any, Union
 
@@ -22,8 +22,8 @@ from mcp.types import TextContent, Tool, ToolAnnotations
 
 from xovis.api.device.client import DeviceClient
 from xovis.api.hub.client import HubClient
-from xovis.skills.toolkit import XovisAIToolkit, XovisSafetyGuardrail
 from xovis.mcp.formatters import mcp_safe_serializer
+from xovis.skills.toolkit import XovisAIToolkit, XovisSafetyGuardrail
 
 working_dir_env = os.path.join(os.getcwd(), ".env")
 if os.path.exists(working_dir_env):
@@ -303,7 +303,7 @@ async def main_async() -> None:
                 write_stream,
                 InitializationOptions(
                     server_name="xovis-mcp",
-                    server_version="1.0.0a26",
+                    server_version="1.0.0a27",
                     capabilities=server.get_capabilities(
                         notification_options=NotificationOptions(),
                         experimental_capabilities={},

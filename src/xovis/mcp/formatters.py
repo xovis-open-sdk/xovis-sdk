@@ -1,10 +1,12 @@
-import json
 import functools
-from typing import Any, Callable
+import json
 from enum import Enum
 from ipaddress import IPv4Address, IPv6Address
+from typing import Any, Callable
+
 from pydantic import BaseModel
 from pydantic_core import Url
+
 
 def serialize_mcp_value(obj: Any) -> Any:
     """Recursively serializes complex objects into JSON-compatible primitives,
