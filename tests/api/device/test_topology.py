@@ -1,6 +1,8 @@
 import pytest
 from httpx import Response
+
 from xovis.api.device.client import DeviceClient
+
 
 @pytest.mark.asyncio
 async def test_get_ms_graph_top_down_resolution(respx_mock):

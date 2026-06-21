@@ -331,21 +331,53 @@ class TopologyManager:
         payload = DiscoveryScanResult.model_validate(response.json())
         return self._instantiate_clients(payload.sensors)
 
-    async def scan(self, first_ip: str = "10.0.0.1", count: int = 255) -> list[Any]:
+    async def scan(self, first_ip: str = "10.0.0.1", count: int = 255, timeout: float = 30.0, chunk_size: int = 16, max_concurrency: int = 8) -> list[Any]:
         """
-        Performs active Layer 3 network scanning.
+        Performs active Layer 3 network scanning concurrently in chunks to ensure it is fast and snappy.
 
         Args:
             first_ip (str, optional): Starting IP address. Defaults to "10.0.0.1".
             count (int, optional): Number of addresses to scan. Defaults to 255.
+            timeout (float, optional): Request timeout in seconds per chunk. Defaults to 30.0.
+            chunk_size (int, optional): Number of IPs per chunk. Defaults to 16.
+            max_concurrency (int, optional): Maximum parallel requests to the sensor. Defaults to 8.
 
         Returns:
             List[DeviceClient]: Collection of discovered sensor clients.
         """
-        job = DiscoveryScanJob(first_ip=first_ip, count=count)
-        response = await self._http_client.post("/api/v5/discover/scan", json=job)
-        payload_res = DiscoveryScanResult.model_validate(response.json())
-        return self._instantiate_clients(payload_res.sensors)
+        import asyncio
+        import ipaddress
+
+        if "tunnel" in str(self._http_client.base_url) or getattr(self._parent_client, "username", "") == "hub_tunnel":
+            max_concurrency = 1
+
+        start_ip_obj = ipaddress.IPv4Address(first_ip)
+        sem = asyncio.Semaphore(max_concurrency)
+
+        async def _scan_chunk(c_start: str, c_count: int) -> list[Any]:
+            async with sem:
+                job = DiscoveryScanJob(first_ip=c_start, count=c_count)
+                resp = await self._http_client.post("/api/v5/discover/scan", json=job, timeout=timeout, max_retries=1)
+                payload_res = DiscoveryScanResult.model_validate(resp.json())
+                return payload_res.sensors
+
+        tasks = []
+        for i in range(0, count, chunk_size):
+            chunk_start = str(start_ip_obj + i)
+            chunk_count = min(chunk_size, count - i)
+            tasks.append(_scan_chunk(chunk_start, chunk_count))
+
+        responses = await asyncio.gather(*tasks, return_exceptions=True)
+
+        all_sensors = []
+        for resp in responses:
+            if isinstance(resp, Exception):
+                import logging
+                logging.warning(f"Scan chunk failed: {resp}")
+            else:
+                all_sensors.extend(resp)
+
+        return self._instantiate_clients(all_sensors)
 
     async def get_ms_graph(self) -> MSGraph:
         """

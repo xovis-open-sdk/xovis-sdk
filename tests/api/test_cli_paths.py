@@ -184,8 +184,9 @@ def test_cli_gen_types_device_routing() -> None:
 @pytest.mark.asyncio
 async def test_discover_device_ip_by_mac_windows_arp() -> None:
     """Verifies ARP resolution logic works for MAC discovery."""
-    from xovis.api.device.network_discovery import NetworkDiscoveryService
     import platform
+
+    from xovis.api.device.network_discovery import NetworkDiscoveryService
     
     with patch("platform.system", return_value="Windows"):
         with patch("subprocess.check_output") as mock_run:
