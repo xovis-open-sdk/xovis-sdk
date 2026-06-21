@@ -47,6 +47,7 @@ xovis-sdk/
 |   |   +- agent_instructions.md
 |   |   *- engineering_guidelines.md
 |   +- recipes
+|   |   +- crewai_fleet_monitoring.md
 |   |   *- langgraph_congestion_control.md
 |   +- stylesheets
 |   |   *- extra.css
@@ -68,6 +69,7 @@ xovis-sdk/
 |   |   +- llms-full.txt
 |   |   +- llms-small.txt
 |   |   *- llms.txt
+|   +- junies_scripts
 |   +- generate_ai_context.py
 |   +- prepare_docs.py
 |   +- sync_models.py

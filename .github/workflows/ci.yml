@@ -13,6 +13,8 @@ jobs:
     name: Lint & Format
     runs-on: ubuntu-latest
     steps:
+      - name: Configure Git for LF line endings
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -39,6 +41,8 @@ jobs:
       XOVIS_HUB_CLIENT_ID: ${{ secrets.XOVIS_HUB_CLIENT_ID }}
       XOVIS_HUB_CLIENT_SECRET: ${{ secrets.XOVIS_HUB_CLIENT_SECRET }}
     steps:
+      - name: Configure Git for LF line endings
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -55,6 +59,8 @@ jobs:
     name: CLI Dry-Run
     runs-on: ubuntu-latest
     steps:
+      - name: Configure Git for LF line endings
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -69,6 +75,8 @@ jobs:
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
+      - name: Configure Git for LF line endings
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v5
