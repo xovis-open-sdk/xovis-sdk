@@ -222,7 +222,7 @@ class DataPushManager:
         """
         await self._pacing_delay()
         params = {"volatile": "true" if volatile else "false", "id_mode": id_mode}
-        
+
         # Force enabled to True in the model if it is unset to ensure activation.
         # Xovis firmware defaults new agents to deactivated if this field is missing.
         if agent.enabled is None:

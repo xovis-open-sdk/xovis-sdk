@@ -179,7 +179,7 @@ class XovisHTTPClient:
         """
         # --- Native Pydantic Serialization ---
         # If a Pydantic model is passed in 'json' or 'params', we handle serialization.
-        # HARD RULE: We MUST use exclude_unset=True and by_alias=True to prevent 
+        # HARD RULE: We MUST use exclude_unset=True and by_alias=True to prevent
         # overwriting existing edge config with nulls/defaults during PATCH/PUT.
         if "json" in kwargs and isinstance(kwargs["json"], BaseModel):
             kwargs["json"] = kwargs["json"].model_dump(mode="json", by_alias=True, exclude_unset=True)

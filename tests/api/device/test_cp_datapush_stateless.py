@@ -250,6 +250,7 @@ class MockDeviceClient:
             async_client (httpx.AsyncClient): The isolated transport object routing to Respx.
         """
         from xovis.api.core.http import XovisHTTPClient
+
         self._http_client = XovisHTTPClient(base_url=str(async_client.base_url))
         self._http_client.client = async_client
         self.cache = MockContext()
@@ -294,6 +295,7 @@ class TestDataPushManagerErrors:
         )
 
         from xovis.api.core.exceptions import XovisClientError
+
         with pytest.raises(XovisClientError) as exc_info:
             await manager.create_agent(agent)
 
@@ -314,6 +316,7 @@ class TestDataPushManagerErrors:
         respx.get("http://mock.xovis.local/api/v5/singlesensor/data/push/agents").respond(status_code=401, text="Unauthorized")
 
         from xovis.api.core.exceptions import XovisAuthError
+
         with pytest.raises(XovisAuthError) as exc_info:
             await manager.get_all_agents()
 
