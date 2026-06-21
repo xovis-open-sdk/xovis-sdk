@@ -33,6 +33,8 @@ else:
 
 server = Server("xovis-mcp")
 
+_GLOBAL_CLIENT: Union[DeviceClient, HubClient] | None = None
+
 
 def _get_active_client_context() -> Union[DeviceClient, HubClient]:
     """Evaluates environment infrastructure variables to determine client context.
@@ -200,12 +202,11 @@ async def _populate_tool_maps() -> None:
     global _SANITIZED_TO_ORIGINAL
     if not _SANITIZED_TO_ORIGINAL:
         try:
-            async with _get_active_client_context() as client:
-                toolkit = XovisAIToolkit(client)
-                for tool in toolkit.get_callable_tools():
-                    mcp_name = _to_mcp_name(tool["name"])
-                    sanitized_name = sanitize_mcp_tool_name(mcp_name)
-                    _SANITIZED_TO_ORIGINAL[sanitized_name] = tool["name"]
+            toolkit = XovisAIToolkit(_GLOBAL_CLIENT)
+            for tool in toolkit.get_callable_tools():
+                mcp_name = _to_mcp_name(tool["name"])
+                sanitized_name = sanitize_mcp_tool_name(mcp_name)
+                _SANITIZED_TO_ORIGINAL[sanitized_name] = tool["name"]
         except Exception:
             pass
 
@@ -219,72 +220,70 @@ async def _execute_and_serialize_tool(toolkit: XovisAIToolkit, tool_name: str, a
 @server.list_tools()
 async def handle_list_tools() -> list[Tool]:
     """Exposes the SDK tool registry to the connected MCP client."""
-    async with _get_active_client_context() as client:
-        toolkit = XovisAIToolkit(client)
-        callable_tools = toolkit.get_callable_tools()
+    toolkit = XovisAIToolkit(_GLOBAL_CLIENT)
+    callable_tools = toolkit.get_callable_tools()
 
-        await _populate_tool_maps()
+    await _populate_tool_maps()
 
-        mcp_tools = []
-        has_prop = _has_proprietary_access()
-        for tool in callable_tools:
-            config = toolkit._tools_map.get(tool["name"], {})
-            safety_level = config.get("safety_level")
+    mcp_tools = []
+    has_prop = _has_proprietary_access()
+    for tool in callable_tools:
+        config = toolkit._tools_map.get(tool["name"], {})
+        safety_level = config.get("safety_level")
 
-            description = tool["description"]
-            read_only = False
-            destructive = False
-            if safety_level:
-                description = f"[{safety_level.name}] {description}"
-                if safety_level.name == "OPEN":
-                    read_only = True
-                elif safety_level.name in ("CRITICAL", "RESTRICTED", "BLOCKED"):
-                    destructive = True
+        description = tool["description"]
+        read_only = False
+        destructive = False
+        if safety_level:
+            description = f"[{safety_level.name}] {description}"
+            if safety_level.name == "OPEN":
+                read_only = True
+            elif safety_level.name in ("CRITICAL", "RESTRICTED", "BLOCKED"):
+                destructive = True
 
-            raw_schema = tool["args_model"].model_json_schema()
-            normalized_schema = _normalize_schema(raw_schema)
+        raw_schema = tool["args_model"].model_json_schema()
+        normalized_schema = _normalize_schema(raw_schema)
 
-            mcp_name = _to_mcp_name(tool["name"])
+        mcp_name = _to_mcp_name(tool["name"])
 
-            if not has_prop:
-                if mcp_name in ("xovis.system.get_led", "xovis.network.get_ipv4", "xovis.analytics.get_counter"):
-                    continue
+        if not has_prop:
+            if mcp_name in ("xovis.system.get_led", "xovis.network.get_ipv4", "xovis.analytics.get_counter"):
+                continue
 
-            sanitized_name = sanitize_mcp_tool_name(mcp_name)
+        sanitized_name = sanitize_mcp_tool_name(mcp_name)
 
-            mcp_tools.append(
-                Tool(
-                    name=sanitized_name,
-                    description=description,
-                    inputSchema=normalized_schema,
-                    outputSchema={
-                        "type": "object",
-                        "properties": {"result": {"type": "string", "description": "The result payload from the hardware"}},
-                        "description": "Output payload",
-                    },
-                    annotations=ToolAnnotations(readOnlyHint=read_only, destructiveHint=destructive),
-                )
+        mcp_tools.append(
+            Tool(
+                name=sanitized_name,
+                description=description,
+                inputSchema=normalized_schema,
+                annotations=ToolAnnotations(readOnlyHint=read_only, destructiveHint=destructive),
             )
-        return mcp_tools
+        )
+    return mcp_tools
 
 
 @server.call_tool()
 async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Sequence[TextContent]:
     """Executes a requested hardware orchestration tool."""
+    import logging
+
     args = arguments or {}
 
     await _populate_tool_maps()
     original_name = _SANITIZED_TO_ORIGINAL.get(name) or _from_mcp_name(name)
 
-    try:
-        async with _get_active_client_context() as client:
-            async with client as active_client:
-                guardrail = XovisSafetyGuardrail(enforce_confirmation=True)
-                toolkit = XovisAIToolkit(active_client, guardrail=guardrail)
+    logging.info(f"Tool called: {original_name} with arguments: {args}")
 
-                result = await _execute_and_serialize_tool(toolkit, original_name, args)
-                return [TextContent(type="text", text=result)]
+    try:
+        guardrail = XovisSafetyGuardrail(enforce_confirmation=True)
+        toolkit = XovisAIToolkit(_GLOBAL_CLIENT, guardrail=guardrail)
+
+        result = await _execute_and_serialize_tool(toolkit, original_name, args)
+        logging.info(f"Tool {original_name} completed successfully.")
+        return [TextContent(type="text", text=result)]
     except Exception as e:
+        logging.error(f"Error executing tool {original_name}: {str(e)}")
         return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
 
 
@@ -292,25 +291,46 @@ async def main_async() -> None:
     """
     Initializes the standard I/O datapush and boots the MCP server lifecycle.
     """
-    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-        await server.run(
-            read_stream,
-            write_stream,
-            InitializationOptions(
-                server_name="xovis-mcp",
-                server_version="1.0.0a26",
-                capabilities=server.get_capabilities(
-                    notification_options=NotificationOptions(),
-                    experimental_capabilities={},
+    global _GLOBAL_CLIENT
+    
+    # Establish a persistent client connection to reuse HTTPX connection pooling.
+    client_context = _get_active_client_context()
+    async with client_context as active_client:
+        _GLOBAL_CLIENT = active_client
+        async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+            await server.run(
+                read_stream,
+                write_stream,
+                InitializationOptions(
+                    server_name="xovis-mcp",
+                    server_version="1.0.0a26",
+                    capabilities=server.get_capabilities(
+                        notification_options=NotificationOptions(),
+                        experimental_capabilities={},
+                    ),
                 ),
-            ),
-        )
+            )
 
 
 def main() -> None:
     """
     Synchronous entry point for console_scripts.
     """
+    import argparse
+    import logging
+
+    parser = argparse.ArgumentParser(description="Xovis MCP Server")
+    parser.add_argument("--log-file", type=str, help="Optional log file path.")
+    args = parser.parse_args()
+
+    if args.log_file:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s [%(levelname)s] %(message)s",
+            handlers=[logging.FileHandler(args.log_file)],
+        )
+        logging.info("MCP Server starting...")
+
     asyncio.run(main_async())
 
 

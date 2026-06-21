@@ -509,7 +509,7 @@ def sync_models(device_ip: str, version_tag: str) -> None:
         logger.error(f"Sync failed: {e}")
 
 
-def start_mcp() -> None:
+def start_mcp(log_file: str | None = None, daemon: bool = False) -> None:
     """Launches the Xovis MCP Server."""
     try:
         import mcp
@@ -517,9 +517,34 @@ def start_mcp() -> None:
         logger.error(f'MCP dependencies are missing. Please install with: {F.BOLD}pip install "xovis-sdk[mcp]"{F.RESET}')
         return
 
-    logger.info("Initializing Xovis MCP Server...")
+    cmd = [sys.executable, "-m", "xovis.mcp.server"]
+    if log_file:
+        cmd.extend(["--log-file", log_file])
+
+    sys.stderr.write("Initializing Xovis MCP Server...\n")
     try:
-        subprocess.run([sys.executable, "-m", "xovis.mcp.server"])
+        if daemon:
+            sys.stderr.write("Starting in daemon mode...\n")
+            if os.name == "nt":
+                # Create detached process on Windows
+                subprocess.Popen(
+                    cmd,
+                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS,
+                    stdin=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+            else:
+                subprocess.Popen(
+                    cmd,
+                    start_new_session=True,
+                    stdin=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+            sys.stderr.write("MCP Server detached and running in background.\n")
+        else:
+            subprocess.run(cmd)
     except KeyboardInterrupt:
         logger.info("MCP Server stopped.")
     except Exception as e:
@@ -927,7 +952,9 @@ def main() -> None:
     hub_list_parser.add_argument("--status", choices=["ONLINE", "OFFLINE"], help="Filter by connection status.")
 
     # MCP Command
-    subparsers.add_parser("mcp", help="[AI] Launch the Xovis MCP Server for Claude/Cursor integration (Requires: [mcp]).")
+    mcp_parser = subparsers.add_parser("mcp", help="[AI] Launch the Xovis MCP Server for Claude/Cursor integration (Requires: [mcp]).")
+    mcp_parser.add_argument("--log-file", type=str, help="Optional path to a log file for the MCP Server.")
+    mcp_parser.add_argument("--daemon", action="store_true", help="Start the MCP Server in the background as a daemon.")
 
     # Setup Command
     subparsers.add_parser("setup", help="[DX] Launch the guided SDK setup wizard (Requires: [tui]).")
@@ -964,7 +991,7 @@ def main() -> None:
     elif args.command == "warmup-hub":
         asyncio.run(start_hub_warmup(args.client_id, args.client_secret, args.force))
     elif args.command == "mcp":
-        start_mcp()
+        start_mcp(getattr(args, "log_file", None), getattr(args, "daemon", False))
     elif args.command == "setup":
         start_setup()
     elif args.command == "ui":
