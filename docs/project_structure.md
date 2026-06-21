@@ -47,6 +47,7 @@ xovis-sdk/
 |   |   +- agent_instructions.md
 |   |   *- engineering_guidelines.md
 |   +- recipes
+|   |   +- crewai_fleet_monitoring.md
 |   |   *- langgraph_congestion_control.md
 |   +- stylesheets
 |   |   *- extra.css
@@ -68,11 +69,11 @@ xovis-sdk/
 |   |   +- llms-full.txt
 |   |   +- llms-small.txt
 |   |   *- llms.txt
+|   +- junies_scripts
 |   +- generate_ai_context.py
 |   +- prepare_docs.py
 |   +- sync_models.py
-|   +- sync_project_structure.py
-|   *- test_docs.py
+|   *- sync_project_structure.py
 +- src
 |   +- xovis
 |   |   +- api
@@ -127,6 +128,7 @@ xovis-sdk/
 |   |   |   *- utils.py
 |   |   +- mcp
 |   |   |   +- README.md
+|   |   |   +- formatters.py
 |   |   |   *- server.py
 |   |   +- models
 |   |   |   +- device_auto
@@ -217,10 +219,7 @@ xovis-sdk/
 |   |   *- test_mcp_server_privacy.py
 |   +- README.md
 |   +- __init__.py
-|   +- conftest.py
-|   +- test_tui_fleet.py
-|   +- test_tui_paths.py
-|   *- verify_examples.py
+|   *- conftest.py
 +- .env.example
 +- .gitignore
 +- CONTRIBUTING.md
@@ -228,6 +227,7 @@ xovis-sdk/
 +- README.md
 +- manifest.json
 +- mkdocs.yml
++- package.json
 +- pyproject.toml
 +- requirements.txt
 +- server.mcpb

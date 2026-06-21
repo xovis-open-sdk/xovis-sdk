@@ -81,8 +81,7 @@ class PrivacyManager:
         Returns:
             PrivacyMode: The updated privacy mode settings.
         """
-        payload = mode.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._resolve_mode_path()}/mode", json=payload)
+        response = await self._http.put(f"{self._resolve_mode_path()}/mode", json=mode)
         return self.models.PrivacyMode.model_validate(response.json())
 
     async def reset_privacy_mode(self) -> None:
@@ -110,8 +109,7 @@ class PrivacyManager:
         Returns:
             PrivacySettings: The updated RF privacy settings.
         """
-        payload = settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put("/api/v5/rf/privacy", json=payload)
+        response = await self._http.put("/api/v5/rf/privacy", json=settings)
         return self.models.PrivacySettings.model_validate(response.json())
 
     async def reset_rf_privacy(self) -> Any:
@@ -144,8 +142,7 @@ class PrivacyManager:
         Returns:
             PrivacySaltSettings: The updated hashing salt.
         """
-        payload = settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put("/api/v5/rf/privacy/salt", json=payload)
+        response = await self._http.put("/api/v5/rf/privacy/salt", json=settings)
         return self.models.PrivacySaltSettings.model_validate(response.json())
 
     async def reset_rf_salt(self) -> Any:
@@ -179,8 +176,7 @@ class PrivacyManager:
         Returns:
             BluetoothSettings: The updated Bluetooth settings.
         """
-        payload = settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put("/api/v5/rf/bluetooth", json=payload)
+        response = await self._http.put("/api/v5/rf/bluetooth", json=settings)
         return self.models.BluetoothSettings.model_validate(response.json())
 
     async def reset_bluetooth(self) -> Any:
@@ -214,8 +210,7 @@ class PrivacyManager:
         Returns:
             WifiSettings: The updated Wi-Fi settings.
         """
-        payload = settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put("/api/v5/rf/wifi", json=payload)
+        response = await self._http.put("/api/v5/rf/wifi", json=settings)
         return self.models.WifiSettings.model_validate(response.json())
 
     async def reset_wifi(self) -> Any:

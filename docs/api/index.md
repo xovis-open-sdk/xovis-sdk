@@ -6,11 +6,11 @@ The Xovis SDK provides multiple ways to interact with the hardware and cloud inf
     For enterprise-scale fleet orchestration via the `HubClient`, a **Xovis HUB Pro** subscription is recommended to ensure stable rate limits for high-concurrency operations.
     <br><br>**Compliance Note:** This project is an independent, open-source initiative. It is not officially affiliated with, maintained by, or endorsed by Xovis AG.
 
-## 📡 Edge & Hub API (OpenAPI)
+## 📡 Device & Hub API (OpenAPI)
 
 The raw hardware and cloud APIs are documented via interactive Scalar references.
 
-- [Xovis Edge API (Scalar)](reference.md)
+- [Xovis Device API (Scalar)](reference.md)
 - [Xovis Hub Device API (Scalar)](hub_device_ref.md)
 - [Xovis Hub License API (Scalar)](hub_license_ref.md)
 

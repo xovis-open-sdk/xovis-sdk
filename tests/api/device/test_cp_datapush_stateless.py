@@ -249,7 +249,9 @@ class MockDeviceClient:
         Args:
             async_client (httpx.AsyncClient): The isolated transport object routing to Respx.
         """
-        self._http_client = async_client
+        from xovis.api.core.http import XovisHTTPClient
+        self._http_client = XovisHTTPClient(base_url=str(async_client.base_url))
+        self._http_client.client = async_client
         self.cache = MockContext()
         self.models = None
 
@@ -264,6 +266,7 @@ class TestDataPushManagerErrors:
         """Helper to create a manager with a mock client."""
 
         async def raise_on_4xx_5xx(response: httpx.Response) -> None:
+            await response.aread()
             response.raise_for_status()
 
         http = httpx.AsyncClient(base_url="http://mock.xovis.local", event_hooks={"response": [raise_on_4xx_5xx]})
@@ -290,10 +293,11 @@ class TestDataPushManagerErrors:
             config=AgentConfig(scheduler=Scheduler(type=SchedulerType.IMMEDIATE), data=DataConfig()),
         )
 
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        from xovis.api.core.exceptions import XovisClientError
+        with pytest.raises(XovisClientError) as exc_info:
             await manager.create_agent(agent)
 
-        assert exc_info.value.response.status_code == 400
+        assert exc_info.value.status_code == 400
 
     @respx.mock
     async def test_manager_http_401_auth_error(self) -> None:
@@ -309,10 +313,11 @@ class TestDataPushManagerErrors:
         manager = await self._get_manager()
         respx.get("http://mock.xovis.local/api/v5/singlesensor/data/push/agents").respond(status_code=401, text="Unauthorized")
 
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        from xovis.api.core.exceptions import XovisAuthError
+        with pytest.raises(XovisAuthError) as exc_info:
             await manager.get_all_agents()
 
-        assert exc_info.value.response.status_code == 401
+        assert exc_info.value.status_code == 401
 
     @respx.mock
     async def test_manager_404_resource_not_found(self) -> None:
@@ -477,6 +482,7 @@ class TestDataPushManagerErrors:
         """
 
         async def raise_on_4xx_5xx(response: httpx.Response) -> None:
+            await response.aread()
             response.raise_for_status()
 
         async with httpx.AsyncClient(base_url="http://mock.xovis.local", event_hooks={"response": [raise_on_4xx_5xx]}) as http:

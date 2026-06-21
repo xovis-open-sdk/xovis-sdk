@@ -23,7 +23,7 @@ async def process_hardware_loop():
         
         # Retrieving LangChain tools dynamically via the unified adapter registry
         tools = toolkit.get_tools("langchain")
-        llm = ChatOpenAI(model="gpt-4o").bind_tools(tools)
+        llm = ChatOpenAI(model="gpt-5.5").bind_tools(tools)
 
         memory = XovisAgentMemory(device.cache._state)
         compressed_state = memory.get_compressed_state()

@@ -21,7 +21,7 @@ Synchronizes proprietary resources from a physical Xovis sensor to the local env
 
 **Options:**
 
-- `--host`: IP address of the sensor.
+- `host`: (Positional) IP address of the sensor.
 - `--user`: Username (default: `admin`).
 - `--pass`: Password (default: `pass`).
 - `--force`: Overwrite existing local schemas.
@@ -60,6 +60,12 @@ Syncs Pydantic models from a physical device for a specific version tag (e.g., `
 ### `mcp`
 Launches the Xovis MCP Server for integration with Claude Desktop, Cursor, and Windsurf.
 
+### `hub`
+Orchestrates Xovis HUB Cloud fleet operations (e.g., `list-devices`).
+
+### `discovery`
+Internal tool to analyze firmware drift and identify unknown API fields via agentic semantic analysis.
+
 ### `setup`
 Launches the guided SDK setup wizard for initial configuration.
 
@@ -74,7 +80,7 @@ Launches the **Xovis Mission Control TUI**, the primary visual interface for SDK
 - **Localized Caching**: Automatically manages state and resource caches for selected devices to ensure offline-first performance.
 - **AI Scope Control**: Toggle the "AI Security" whitelist (`ctrl+a`) to restrict which devices are visible to autonomous agents.
 
-### `transmission-check`
+### `datapush` (alias: `studio`)
 Launches the interactive **Datapush Studio TUI** to monitor DataPush stream throughput and frame integrity. This tool supports autonomous sensor provisioning directly from the UI for TCP, UDP, and HTTP protocols.
 
 ![Datapush Studio](ai/img/push_studio.png)
@@ -84,13 +90,20 @@ Figure: Xovis-SDK Datapush Studio Screen.
 
 - `--port`: Listen port (default: 9000).
 - `--protocol`: Transport protocol (`TCP`, `UDP`, or `HTTP`).
+- `--agent-type`: The type of DataPush agent to provision (default: `LIVE_DATA`).
+- `--pass`: Password (default: `pass`).
 - `--host`: Optional: Sensor IP for auto-provisioning.
 
 ### `generate-rules`
 Generates a `.cursorrules` file to guide AI agents in respecting the SDK's quadrifurcated architecture.
 
-### `docs check-docstrings`
-Scans the codebase for "Max-Docstring" compliance, ensuring all public methods have Google-style docstrings (The Receipt).
+### `docs`
+SDK documentation management commands.
+
+**Subcommands:**
+
+- `check-docstrings`: Scans the codebase for "Max-Docstring" compliance, ensuring all public methods have Google-style docstrings (The Receipt).
+- `serve`: Scans, builds, and serves the local SDK Markdown documentation.
 
 ---
 

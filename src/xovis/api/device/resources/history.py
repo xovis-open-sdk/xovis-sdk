@@ -107,20 +107,11 @@ class HistoryManager:
             include_empty=include_empty,
         )
 
-        # exclude_unset=True ensures we don't pass default None values to HTTPX
-        params = query.model_dump(mode="json", exclude_unset=True, by_alias=True)
-
-        # CRITICAL FIX 3: ARCHITECTURE.md Strict Query Parameter Serialization
-        # Overwrite native Python booleans to lowercase strings to prevent Edge HTTP 500s.
-        for key, value in params.items():
-            if isinstance(value, bool):
-                params[key] = "true" if value else "false"
-
         endpoint = f"{self._resolve_path()}/logics"
         if logic_id is not None:
             endpoint += f"/{logic_id}"
 
-        response = await self._http.get(endpoint, params=params)
+        response = await self._http.get(endpoint, params=query)
         return self._client.models.HistoryLogics.model_validate(response.json())
 
     async def get_start_stop_points(self, start_time: XovisTime, end_time: XovisTime = "now", max_points: int = 1000) -> Any:
@@ -140,14 +131,7 @@ class HistoryManager:
                 3D coordinate vectors.
         """
         query = StartStopQuery(begin=start_time, end=end_time, max=max_points)
-        params = query.model_dump(mode="json", exclude_unset=True, by_alias=True)
-
-        # Apply strict lowercase boolean casting
-        for key, value in params.items():
-            if isinstance(value, bool):
-                params[key] = "true" if value else "false"
-
-        response = await self._http.get(f"{self._resolve_path()}/start_stop", params=params)
+        response = await self._http.get(f"{self._resolve_path()}/start_stop", params=query)
         return StartStopPoints.model_validate(response.json())
 
     async def get_heat_map(self) -> HeatHeightMap:

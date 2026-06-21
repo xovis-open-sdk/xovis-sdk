@@ -36,7 +36,7 @@ A stateful engine that abstracts complex sensor graphs. Contributions here maint
 
 - **Principle - Context Isolation**: Maintain the strict separation between `singlesensor` (physical) and `multisensors` (virtual) contexts.
 - **Principle - Threaded Persistence**: Disk I/O for state caching MUST be offloaded using `asyncio.to_thread`.
-- **Principle - Smart Topology**: The `TopologyManager` is responsible for synthesizing directed graphs (`StitchGraph`) from physical network nodes.
+- **Principle - Smart Topology**: The `TopologyManager` is responsible for synthesizing directed graphs (`MSGraph`) from physical network nodes.
 
 ### 4. The Agentic Layer (AI Integration)
 **Path:** `src/xovis/skills/`
@@ -62,7 +62,8 @@ The SDK uses a four-tier testing strategy. All PRs must include relevant tests:
 
 1. **Tier 1**: Smoke tests for baseline connectivity.
 2. **Tier 2**: CRUD validation (DSC/Idempotency).
-3. **Tier 4**: Long-term stability and data alignment.
+3. **Tier 3**: Data Plane (High-frequency ingestion & socket parsing).
+4. **Tier 4**: Long-term stability and data alignment.
 
 For implementation details, refer to the [Engineering Guidelines](engineering_guidelines.md).
 

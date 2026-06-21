@@ -75,8 +75,7 @@ class TimeManager:
         Args:
             settings (TimeSettings): The updated time configuration model.
         """
-        payload = settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(self._base_path, json=payload)
+        await self._http.put(self._base_path, json=settings)
 
     async def reset_settings(self) -> None:
         """
@@ -99,8 +98,7 @@ class TimeManager:
             time_settings (TimeManualSettings): The manual time details containing
                 either `time_utc` or `time_local`.
         """
-        payload = time_settings.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/manual", json=payload)
+        await self._http.put(f"{self._base_path}/manual", json=time_settings)
 
     async def get_state(self) -> Any:
         """

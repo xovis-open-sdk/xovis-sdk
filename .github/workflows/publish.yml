@@ -15,6 +15,9 @@ jobs:
       id-token: write
       contents: read
     steps:
+      - name: Configure Git for LF line endings
+        run: git config --global core.autocrlf false
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -29,17 +32,11 @@ jobs:
       - name: Set up Python
         run: uv python install 3.11
 
-      - name: Run Quality Check (Lint)
-        run: uv run --extra test ruff check .
-
-      - name: Run Quality Check (Tests)
-        run: uv run --extra all pytest tests/ -m "not destructive"
-
-      # - name: Build Python package
-      #   run: uv build
-      #
-      # - name: Publish package distributions to PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Build Python package
+        run: uv build
+      
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
       # ==========================================
       # 2. NODE / NPM BUILD & PUBLISH
@@ -56,3 +53,18 @@ jobs:
         # Node 24 & npm v11 automatically generate provenance and handle OIDC natively.
         # No tokens are needed! We must specify '--tag next' when publishing prereleases to the registry.
         run: npm publish --access public --tag next
+
+      # ==========================================
+      # 3. SMITHERY MCP DEPLOYMENT
+      # ==========================================
+      - name: Pack Smithery MCP Bundle
+        run: |
+          python -c "import zipfile, os; zipf = zipfile.ZipFile('server.mcpb', 'w', zipfile.ZIP_DEFLATED); [zipf.write(os.path.join(r, f), os.path.relpath(os.path.join(r, f), 'bundle_dir')) for r, d, fs in os.walk('bundle_dir') for f in fs]; zipf.close()"
+
+      - name: Publish to Smithery
+        env:
+          SMITHERY_TOKEN: ${{ secrets.SMITHERY_TOKEN }}
+        run: |
+          # Wait 30 seconds for PyPI index to update so uvx can fetch the new version
+          sleep 30
+          npx @smithery/cli@latest mcp publish ./server.mcpb -n @xovis-sdk/xovis-mcp

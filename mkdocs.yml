@@ -99,7 +99,7 @@ nav:
   - API Reference:
       - Introduction: api/index.md
       - REST API (Scalar):
-          - Edge API: api/reference.md
+          - Device API: api/reference.md
           - Hub Device API: api/hub_device_ref.md
           - Hub License API: api/hub_license_ref.md
       - Python SDK:
@@ -117,6 +117,7 @@ nav:
       - Troubleshooting: troubleshooting_ai.md
   - Recipes:
       - LangGraph Congestion Control: recipes/langgraph_congestion_control.md
+      - CrewAI Fleet Monitoring: recipes/crewai_fleet_monitoring.md
   - Contributing:
       - Engineering Guidelines: contributing/engineering_guidelines.md
       - Agent Instructions: contributing/agent_instructions.md

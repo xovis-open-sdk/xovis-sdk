@@ -204,10 +204,7 @@ class UpdateManager:
         Returns:
             UpdateSchedule: The confirmed active schedule.
         """
-        # Pydantic V2 mode="json" ensures XovisTime is serialized to an integer or
-        # compliant ISO string as per the model's configuration.
-        payload = schedule.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._resolve_path()}/schedule", json=payload)
+        response = await self._http.put(f"{self._resolve_path()}/schedule", json=schedule)
         return self.models.UpdateSchedule.model_validate(response.json())
 
     async def delete_schedule(self) -> None:
@@ -234,8 +231,7 @@ class UpdateManager:
         Returns:
             DownloadConfig: The successfully applied configuration.
         """
-        payload = config.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._resolve_path()}/config", json=payload)
+        response = await self._http.put(f"{self._resolve_path()}/config", json=config)
         return self.models.DownloadConfig.model_validate(response.json())
 
     async def delete_config(self) -> None:

@@ -63,6 +63,10 @@ While the Data Plane prioritizes high throughput and zero blocking, the Control 
 
 *   **Rule - Robustness:** We use `httpx` for async networking, and `tenacity` for rate-limit (HTTP 429) and server-error (HTTP 50x) backoffs.
 *   **Rule - Strict Pydantic CRUD:** All resource managers (Analytics, Scene, DataPush, etc.) MUST enforce strict schema validation using the auto-generated Pydantic V2 models. Never use raw `Dict[str, Any]` in method signatures for payloads.
-*   **Rule - Pydantic Serialization:** When posting Pydantic models to `httpx`, you MUST use `payload = obj.model_dump(mode="json", by_alias=True, exclude_unset=True)` to ensure `Enums` and `AnyUrl` serialize correctly.
-*   **Rule - Proactive Hardware Probing:** Do not rely on brittle `try...except 403/404` blocks for missing hardware features. Use the lazy, asynchronous `_probe_capability` cache (e.g., `client.has_wifi`, `client.has_analytics`) or license-aware checks (e.g. `client.has_object_detection`, `client.has_pram_detection`) to gracefully handle hardware constraints.
+*   **Rule - Pydantic Serialization:** The SDK handles Pydantic serialization natively at the `XovisHTTPClient` layer. It is hardcoded to use `exclude_unset=True` and `by_alias=True` for all Pydantic models. This is a HARD RULE to prevent `PATCH` and `PUT` requests from overwriting edge configurations with unset fields.
+    *   **Context-Aware Serialization:**
+        *   **Standard Usage:** Pass raw Pydantic models directly to Resource Managers or the MCP Toolkit.
+        *   **Internal SDK / Bypass:** The global `request` wrapper handles serialization automatically, ensuring consistent `exclude_unset=True` and `by_alias=True` behavior.
+        *   **Data Plane:** NEVER use Pydantic in the hot path. Use raw `json`/`orjson`.
+*   **Rule - Proactive Hardware Probing:** Do not rely on brittle `try...except` blocks for missing hardware features. Use the lazy, asynchronous `_probe_capability` cache or license-aware checks. Note that Xovis sensors return 403 HTML (mapped to `EndpointNotFoundError`) for missing/restricted endpoints.
 *   **Rule - Hub Auth0:** The Xovis Hub uses Auth0. Token requests MUST be sent as a form-encoded POST (`data={...}`, NOT `json={...}`) to `https://login.xovis.cloud/oauth/token` including the `"audience": "https://api.xovis.cloud/"` parameter. Tokens MUST be cached to disk to prevent 429 rate-limiting.

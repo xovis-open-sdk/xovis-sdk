@@ -343,14 +343,18 @@ class TopologyManager:
             List[DeviceClient]: Collection of discovered sensor clients.
         """
         job = DiscoveryScanJob(first_ip=first_ip, count=count)
-        payload = job.model_dump(exclude_unset=True)
-        response = await self._http_client.post("/api/v5/discover/scan", json=payload)
+        response = await self._http_client.post("/api/v5/discover/scan", json=job)
         payload_res = DiscoveryScanResult.model_validate(response.json())
         return self._instantiate_clients(payload_res.sensors)
 
     async def get_ms_graph(self) -> MSGraph:
         """
         Synthesizes a Layer 2.5 directed graph of the multisensor cluster.
+
+        Note:
+            Xovis hardware uses a 'Top-Down' discovery model. Child sensors are 'ignorant'
+            of their parent cluster. This method correctly synthesizes the hierarchy by
+            cross-referencing Master status (enabled: true) with local network node discovery.
 
         Returns:
             MSGraph: The mapped topology with IP resolutions.

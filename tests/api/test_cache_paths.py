@@ -127,6 +127,7 @@ async def test_3_tier_folder_creation_fallback_to_sys(tmp_path) -> None:
     with (
         patch("xovis.api.device.cache.CachePaths.BASE_DIR", tmp_path / "_local_resources"),
         patch("xovis.api.device.cache.CachePaths.STATES_DIR", tmp_path / "_local_resources" / "states"),
+        patch("xovis.api.device.cache.CachePaths.DEVICE_STATE", tmp_path / "device_state.json"),
         patch("xovis.api.device.cache.CachePaths.get_system_cache_dir", return_value=sys_target_dir),
         patch.object(Path, "mkdir", mock_mkdir),
     ):
@@ -321,6 +322,7 @@ async def test_save_load_to_disk_success(tmp_path) -> None:
     with (
         patch("xovis.api.device.cache.CachePaths.BASE_DIR", tmp_path / "_local_resources"),
         patch("xovis.api.device.cache.CachePaths.STATES_DIR", tmp_path / "_local_resources" / "states"),
+        patch("xovis.api.device.cache.CachePaths.DEVICE_STATE", tmp_path / "device_state.json"),
     ):
         manager = ConfigCacheManager(
             http_client=http_mock,

@@ -74,11 +74,40 @@ class HardwareSyncer:
                 unified_state_path = states_dir / "device_state.json"
                 unified_state_path.write_text(state_json)
 
+                await self._generate_discovery_delta(client)
+
                 logger.info("Hardware warmup completed successfully.")
                 return True
         except Exception as e:
             logger.error(f"Hardware warmup failed: {e}")
             return False
+
+    async def _generate_discovery_delta(self, client: DeviceClient):
+        """Generates a discovery_delta.json by extracting the Python Bridge schema."""
+        try:
+            from xovis.skills.toolkit import XovisAIToolkit
+            toolkit = XovisAIToolkit(client=client)
+            # Fetch the Python Bridge JSON schemas
+            bridge_schemas = toolkit.get_openai_tools(visibility="all")
+            
+            # Save the delta file
+            fw_version = client.fw_version.replace(".", "-") if hasattr(client, "fw_version") else "unknown"
+            delta_path = self.resource_dir / "schemas" / fw_version / "discovery_delta.json"
+            
+            # In a full implementation, we'd diff the raw OpenAPI vs bridge_schemas here.
+            # For now, we log the extraction to enable human-in-the-loop comparison.
+            delta_payload = {
+                "firmware_version": fw_version,
+                "note": "Human-in-the-loop delta alert. Run SchemaAnalyst to diff with raw api.yaml.",
+                "bridge_tools_count": len(bridge_schemas),
+                "bridge_schema_snapshot": bridge_schemas
+            }
+            
+            delta_path.parent.mkdir(parents=True, exist_ok=True)
+            delta_path.write_text(json.dumps(delta_payload, indent=2))
+            logger.info(f"Generated discovery delta alert at {delta_path}")
+        except Exception as e:
+            logger.warning(f"Failed to generate discovery delta: {e}")
 
     async def _fetch_openapi(self, client: DeviceClient, force: bool):
         """Fetches the OpenAPI v5 schema from the device."""

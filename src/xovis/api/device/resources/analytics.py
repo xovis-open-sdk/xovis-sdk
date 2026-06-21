@@ -209,8 +209,7 @@ class AnalyticsManager:
         """
         await self._pacing_delay()
         params = {"id_mode": id_mode}
-        payload = _recursive_none_filter(transaction.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.post(f"{self._resolve_path()}/transaction", params=params, json=payload)
+        response = await self._http.post(f"{self._resolve_path()}/transaction", params=params, json=transaction)
         return self.models.Transaction.model_validate(response.json())
 
     # --- LOGICS ---
@@ -269,8 +268,7 @@ class AnalyticsManager:
         """
         await self._pacing_delay()
         params = {"id_mode": id_mode}
-        payload = _recursive_none_filter(logic.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.post(f"{self._resolve_path()}/logics", params=params, json=payload)
+        response = await self._http.post(f"{self._resolve_path()}/logics", params=params, json=logic)
         return self.models.Logic.model_validate(response.json())
 
     async def update_logic(self, id_or_name: Union[int, str], logic: "Logic") -> "Logic":
@@ -286,8 +284,7 @@ class AnalyticsManager:
         """
         await self._pacing_delay()
         logic_id = await self._resolve_logic_id(id_or_name)
-        payload = _recursive_none_filter(logic.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.put(f"{self._resolve_path()}/logics/{logic_id}", json=payload)
+        response = await self._http.put(f"{self._resolve_path()}/logics/{logic_id}", json=logic)
         return self.models.Logic.model_validate(response.json())
 
     async def delete_logic(self, id_or_name: Union[int, str], force: bool = False) -> None:
@@ -341,8 +338,7 @@ class AnalyticsManager:
         """
         await self._pacing_delay()
         params = {"id_mode": id_mode}
-        payload = _recursive_none_filter(template.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.post(f"{self._resolve_path()}/logics/templates", params=params, json=payload)
+        response = await self._http.post(f"{self._resolve_path()}/logics/templates", params=params, json=template)
         return self.models.LogicTemplate.model_validate(response.json())
 
     async def delete_logic_template(self, id_or_name: Union[int, str]) -> None:
@@ -417,8 +413,7 @@ class AnalyticsManager:
         """
         await self._pacing_delay()
         params = {"id_mode": id_mode}
-        payload = _recursive_none_filter(modifier.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.post(f"{self._resolve_path()}/modifiers", params=params, json=payload)
+        response = await self._http.post(f"{self._resolve_path()}/modifiers", params=params, json=modifier)
         return self.models.Modifier.model_validate(response.json())
 
     async def update_modifier(self, id_or_name: Union[int, str], modifier: "Modifier") -> "Modifier":
@@ -434,8 +429,7 @@ class AnalyticsManager:
         """
         await self._pacing_delay()
         modifier_id = await self._resolve_modifier_id(id_or_name)
-        payload = _recursive_none_filter(modifier.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.put(f"{self._resolve_path()}/modifiers/{modifier_id}", json=payload)
+        response = await self._http.put(f"{self._resolve_path()}/modifiers/{modifier_id}", json=modifier)
         return self.models.Modifier.model_validate(response.json())
 
     async def delete_modifier(self, id_or_name: Union[int, str]) -> None:
@@ -511,8 +505,7 @@ class AnalyticsManager:
         """
         await self._pacing_delay()
         params = {"id_mode": id_mode}
-        payload = _recursive_none_filter(counter.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.post(f"{self._resolve_path()}/counters", params=params, json=payload)
+        response = await self._http.post(f"{self._resolve_path()}/counters", params=params, json=counter)
         return self.models.Counter.model_validate(response.json())
 
     async def update_counter(self, id_or_name: Union[int, str], counter: "Counter") -> "Counter":
@@ -528,8 +521,7 @@ class AnalyticsManager:
         """
         await self._pacing_delay()
         counter_id = await self._resolve_counter_id(id_or_name)
-        payload = _recursive_none_filter(counter.model_dump(mode="json", by_alias=True, exclude_unset=True))
-        response = await self._http.put(f"{self._resolve_path()}/counters/{counter_id}", json=payload)
+        response = await self._http.put(f"{self._resolve_path()}/counters/{counter_id}", json=counter)
         return self.models.Counter.model_validate(response.json())
 
     async def delete_counter(self, id_or_name: Union[int, str], force: bool = False) -> None:

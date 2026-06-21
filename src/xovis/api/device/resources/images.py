@@ -103,6 +103,34 @@ class ImagesManager:
         metadata = json.loads(response.headers.get("x-image-metadata", "{}"))
         return response.content, metadata
 
+    async def get_background_tarball(
+        self,
+        perspective: str = "scene",
+        json_int64_workaround: bool = False,
+        tracked_objects: bool = True,
+        events: bool = True,
+    ) -> bytes:
+        """
+        Fetches the static background image and metadata as a raw tarball.
+
+        Args:
+            perspective (str): The coordinate projection to use ("scene" or "view"). Defaults to "scene".
+            json_int64_workaround (bool): Include workaround for 64-bit JSON ints. Defaults to False.
+            tracked_objects (bool): Include tracked objects overlay data. Defaults to True.
+            events (bool): Include events overlay data. Defaults to True.
+
+        Returns:
+            bytes: The raw tarball binary data containing 'image.jpg' and 'X-Image-Metadata.json'.
+        """
+        params = {
+            "json_int64_workaround": str(json_int64_workaround).lower(),
+            "tracked_objects": str(tracked_objects).lower(),
+            "events": str(events).lower(),
+        }
+        headers = {"accept": "application/x-tar"}
+        response = await self._http.get(f"{self._resolve_path(perspective)}/background.tar", params=params, headers=headers)
+        return response.content
+
     async def get_live(self, perspective: str = "scene") -> tuple[bytes, dict[str, Any]]:
         """
         Fetches the live image.

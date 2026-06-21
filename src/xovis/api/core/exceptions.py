@@ -50,7 +50,16 @@ class XovisAPIError(Exception):
 
 class XovisAuthError(XovisAPIError):
     """
-    Raised when authentication fails (HTTP 401/403) or token acquisition fails.
+    Raised when authentication fails (HTTP 401) or token acquisition fails.
+    """
+
+    pass
+
+
+class ForbiddenError(XovisAPIError):
+    """
+    Raised when access is forbidden (HTTP 403).
+    This often indicates missing hardware capabilities or restrictive privacy modes.
     """
 
     pass
@@ -95,6 +104,15 @@ class ResourceNotFoundError(XovisClientError):
     """
     Raised when the Resolver attempts to look up a resource by its string name,
     but no matching resource exists on the device.
+    """
+
+    pass
+
+
+class EndpointNotFoundError(XovisClientError):
+    """
+    Raised when the API endpoint itself does not exist (HTTP 403 HTML with a 404-like context).
+    Xovis sensors often return 403 Forbidden instead of 404 Not Found for non-existing endpoints.
     """
 
     pass

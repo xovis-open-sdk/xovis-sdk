@@ -56,8 +56,7 @@ class ITxPTManager:
         """
         Updates the global ITxPT configuration.
         """
-        payload = config.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._base_path}/config", json=payload)
+        response = await self._http.put(f"{self._base_path}/config", json=config)
         return self.models.ItxptConfig.model_validate(response.json())
 
     async def get_state(self) -> Any:
@@ -87,8 +86,7 @@ class ITxPTManager:
         """
         Updates the ITxPT time discovery configuration.
         """
-        payload = config.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._base_path}/config/time", json=payload)
+        response = await self._http.put(f"{self._base_path}/config/time", json=config)
         return self.models.ItxptTimeConfig.model_validate(response.json())
 
     async def get_time_status(self) -> Any:
@@ -111,8 +109,7 @@ class ITxPTManager:
         """
         Updates the extra TXT records for the mDNS broadcast.
         """
-        payload = txt_records.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._base_path}/config/txt", json=payload)
+        response = await self._http.put(f"{self._base_path}/config/txt", json=txt_records)
         return self.models.ItxptConfigTxt.model_validate(response.json())
 
     # --- CUSTOM CONFIGURATIONS (BLOB) ---
@@ -127,8 +124,7 @@ class ITxPTManager:
         """
         Updates the custom free text configurations blob.
         """
-        payload = custom_configs.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put("/api/v5/blob/store/itxpt_custom_configurations.json", json=payload)
+        await self._http.put("/api/v5/blob/store/itxpt_custom_configurations.json", json=custom_configs)
 
     # --- APC DOOR MANAGEMENT ---
     async def get_all_doors(self) -> Any:
@@ -138,8 +134,7 @@ class ITxPTManager:
 
     async def create_door(self, door: Any) -> Any:
         """Creates a new ITxPT APC door configuration."""
-        payload = door.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.post(f"{self._base_path}/config/doors", json=payload)
+        response = await self._http.post(f"{self._base_path}/config/doors", json=door)
         return self.models.ItxptConfigDoorApcPathRequired.model_validate(response.json())
 
     async def delete_all_doors(self) -> None:
@@ -153,8 +148,7 @@ class ITxPTManager:
 
     async def update_door(self, door_id: int, door: Any) -> Any:
         """Updates an existing APC door configuration."""
-        payload = door.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._base_path}/config/doors/{door_id}", json=payload)
+        response = await self._http.put(f"{self._base_path}/config/doors/{door_id}", json=door)
         return self.models.ItxptConfigDoorApcPathRequired.model_validate(response.json())
 
     async def delete_door(self, door_id: int) -> None:

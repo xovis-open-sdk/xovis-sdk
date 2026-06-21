@@ -70,8 +70,7 @@ class UsersManager:
         Args:
             credentials (UserCredentials): The new password details.
         """
-        payload = credentials.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.put(f"{self._base_path}/current/password", json=payload)
+        await self._http.put(f"{self._base_path}/current/password", json=credentials)
 
     async def login(self) -> Any:
         """
@@ -94,8 +93,7 @@ class UsersManager:
         Args:
             smk (UserSmk): The SMK authorization payload.
         """
-        payload = smk.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        await self._http.post(f"{self._base_path}/reset", json=payload)
+        await self._http.post(f"{self._base_path}/reset", json=smk)
 
     async def get_user(self, user_id: str) -> Any:
         """
@@ -121,8 +119,7 @@ class UsersManager:
         Returns:
             UserActivation: The updated activation state.
         """
-        payload = activation.model_dump(by_alias=True, exclude_unset=True, mode="json")
-        response = await self._http.put(f"{self._base_path}/{user_id}/activation", json=payload)
+        response = await self._http.put(f"{self._base_path}/{user_id}/activation", json=activation)
         return self.models.UserActivation.model_validate(response.json())
 
     async def reset_password(self, user_id: str) -> None:

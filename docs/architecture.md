@@ -77,7 +77,7 @@ The **Data Plane** handles ultra-high-frequency (12.5Hz) ingestion of live track
 
 ### 2. The Control Plane (Configuration Management)
 
-The **Control Plane** provides low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors. It utilizes `httpx` async pooling, token authentication caching with stateful locks, and proactive hardware capability probing to guarantee operational safety. This plane also exposes the `SmartDeviceClient`—a hybrid router that automatically probes local network paths before securely falling back to cloud-proxied HUB tunnel routes.
+The **Control Plane** provides low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors. It utilizes `httpx` async pooling, token authentication caching with stateful locks, and proactive hardware capability probing to guarantee operational safety. This plane also exposes the `UnifiedDeviceClient`—a hybrid router that automatically probes local network paths before securely falling back to cloud-proxied HUB tunnel routes.
 
 **Deep Dive:** Want to build robust configuration and control flows? Read the [Control Plane Blueprints](architecture/control_plane.md).
 

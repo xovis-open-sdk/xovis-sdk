@@ -19,7 +19,7 @@ The objective is zero-copy, non-blocking maximum throughput for raw TCP, HTTP We
     - **Active Receivers (Clients)**: Connect or subscribe outward to retrieve telemetry from remote interfaces (`XovisTCPClient` connecting to sensors in SERVER mode, `XovisMQTTClient` subscribing to external brokers).
 * **Unified Ingestion:** Leverages the `DataPlaneIngestor` to standardize parsing and sink routing across all transport layers.
 * **Parsing Strategy:** 
-    - **TCP Streaming Data (Server & Client)**: Uses a sliding string buffer combined with standard library `json.JSONDecoder().raw_decode()` to safely carve out concatenated, newline-free JSON frames. This is mandatory for TCP because of MTU fragmentation.
+    - **TCP Streaming Data (Server & Client)**: Uses a sliding string buffer combined with standard library `json.JSONDecoder().raw_decode()` to safely carve out concatenated, newline-free JSON frames. This is mandatory for TCP because of MTU fragmentation. Do NOT use `orjson` for this specific extraction step.
     - **Discrete Messages (Server & Client)**: Uses `orjson.loads()` via the centralized `DataPlaneIngestor.parse_frame` helper for UDP datagrams, HTTP webhooks, and MQTT topic payloads to minimize deserialization overhead.
 * **Binary Fallback**: Automatically wraps non-JSON payloads (e.g. binary recordings) in a `recording_data` pseudo-frame.
 * **Data Packing:** STRICTLY NO Pydantic validation is allowed in this hot path to ensure zero-blocking of high-frequency streams.
@@ -34,7 +34,7 @@ Focuses on structural robustness, strict schema adherence, and network resilienc
 
 * **Networking:** Uses `httpx` for asynchronous HTTP connection pooling and strict redirect handling.
 * **Token Resilience:** The `HubAuth` manager handles stateful token caching and autonomous refreshes via `asyncio.Lock()`.
-* **Proactive Hardware Probing:** Utilizes a lazy, asynchronous `_probe_capability` cache to prevent fragile 403/404 handling for missing hardware features.
+* **Proactive Hardware Probing:** Utilizes a lazy, asynchronous `_probe_capability` cache to prevent fragile 403/404 handling for missing hardware features. Note that Xovis sensors return 403 HTML (mapped to `EndpointNotFoundError`) for missing/restricted endpoints.
 * **Time Normalization (XovisTime):** Normalizes all time-sensitive inputs (relative strings, ISO 8601, datetime) to UTC Unix milliseconds.
 * **Data Validation:** Employs Pydantic v2 heavily for structural validation of OpenAPI-generated models.
 * **Configuration Nuances:** In `HTTPConfig`, the `uri` must exclude the port. `DataPushAgent` instances MUST have `enabled=True` explicitly set to prevent deactivation via `exclude_unset=True`.
@@ -62,7 +62,7 @@ Maintains graph-aware context, stateful caching, and Desired State Configuration
 **Path:** `src/xovis/skills/`
 Provides safe, pseudonymized, and strictly validated hardware orchestration for autonomous agents.
 
-* **Privacy First:** `AIPrivacyEngine` handles two-way mapping of sensitive identifiers to format-preserving hashes.
+* **Privacy First:** `AIPrivacySession` handles two-way mapping of sensitive identifiers to format-preserving hashes.
 * **Safety Guardrails:** Assigns a `SafetyLevel` (OPEN, RESTRICTED, CRITICAL, BLOCKED) to every tool.
 * **Strict Mapping:** Only explicitly mapped SDK methods are exposed as tools to the AI.
 

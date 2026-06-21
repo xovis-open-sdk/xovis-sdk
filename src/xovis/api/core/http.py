@@ -11,6 +11,7 @@ import logging
 from typing import Any, Optional, Union
 
 import httpx
+from pydantic import BaseModel
 from tenacity import (
     AsyncRetrying,
     retry_if_exception_type,
@@ -20,6 +21,8 @@ from tenacity import (
 
 from .auth import DeviceAuth, HubAuth
 from .exceptions import (
+    EndpointNotFoundError,
+    ForbiddenError,
     RateLimitError,
     XovisAPIError,
     XovisAuthError,
@@ -133,15 +136,17 @@ class XovisHTTPClient:
         elif status == 403:
             content_type = response.headers.get("Content-Type", "")
             if "text/html" in content_type:
-                # Xovis sensors return HTML 403 when hardware features are missing (e.g. WiFi on non-WiFi sensor)
-                # OR when the Hub Cloud WAF/Privacy Mode blocks the request.
-                raise XovisAuthError(
-                    "Access Forbidden: This typically indicates missing hardware capabilities, "
-                    "restrictive Edge Privacy Mode, or Hub Cloud Proxy Firewall blocks.",
+                # Xovis sensors often return HTML 403 instead of 404 for non-existent endpoints.
+                # If the title is "403 - Forbidden" it's ambiguous, but in Xovis context
+                # it frequently means the endpoint is either not supported by this hardware
+                # or simply does not exist.
+                raise EndpointNotFoundError(
+                    "Endpoint not found or restricted. This typically indicates missing hardware capabilities, "
+                    "restrictive Edge Privacy Mode, or an invalid API path.",
                     status_code=status,
                     response_body=text,
                 )
-            raise XovisAuthError("Authorization failed", status_code=status, response_body=text)
+            raise ForbiddenError("Authorization failed", status_code=status, response_body=text)
         elif status == 429:
             raise RateLimitError("Rate limited by endpoint", status_code=status, response_body=text)
         elif status in (502, 503, 504):
@@ -172,6 +177,26 @@ class XovisHTTPClient:
             XovisConnectionError: If a network error occurs during the request.
             XovisAPIError: If a critical failure occurs in the retry mechanism.
         """
+        # --- Native Pydantic Serialization ---
+        # If a Pydantic model is passed in 'json' or 'params', we handle serialization.
+        # HARD RULE: We MUST use exclude_unset=True and by_alias=True to prevent 
+        # overwriting existing edge config with nulls/defaults during PATCH/PUT.
+        if "json" in kwargs and isinstance(kwargs["json"], BaseModel):
+            kwargs["json"] = kwargs["json"].model_dump(mode="json", by_alias=True, exclude_unset=True)
+
+        if "params" in kwargs and kwargs.get("params"):
+            if isinstance(kwargs["params"], BaseModel):
+                kwargs["params"] = kwargs["params"].model_dump(mode="json", by_alias=True, exclude_unset=True)
+            elif isinstance(kwargs["params"], dict):
+                # Ensure nested models or list of models in params are also serialized
+                new_params = {}
+                for k, v in kwargs["params"].items():
+                    if isinstance(v, BaseModel):
+                        new_params[k] = v.model_dump(mode="json", by_alias=True, exclude_unset=True)
+                    else:
+                        new_params[k] = v
+                kwargs["params"] = new_params
+
         max_retries = kwargs.pop("max_retries", self.max_retries)
 
         def before_sleep(retry_state):

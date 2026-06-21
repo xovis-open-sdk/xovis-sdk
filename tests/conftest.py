@@ -45,8 +45,20 @@ async def real_hub():
         pytest.skip("Xovis Hub API credentials not found. Skipping.")
 
     # Note: HubClient.__aenter__ triggers cache sync
-    async with client as c:
-        yield c
+    try:
+        async with client as c:
+            try:
+                # Explicitly verify authorization to skip test suite if tokens are expired
+                await c.devices.get_devices()
+            except Exception as e:
+                if "403" in str(e) or "401" in str(e) or "Forbidden" in str(e):
+                    pytest.skip(f"Hub API authentication failed (Credentials might be expired). Skipping. Details: {e}")
+                raise
+            yield c
+    except Exception as e:
+        if "403" in str(e) or "401" in str(e) or "Forbidden" in str(e):
+            pytest.skip(f"Hub API authentication failed. Skipping. Details: {e}")
+        raise
 
 
 @pytest.fixture(scope="session")
