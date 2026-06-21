@@ -58,6 +58,7 @@ graph TD
     HC -->|Secure Tunnel Proxy / httpx| Edge
     HC -->|Hub APIs / httpx| Hub
 ```
+
 ---
 
 ## Core Philosophy
@@ -72,4 +73,4 @@ While the Data Plane prioritizes high throughput and zero blocking, the Control 
         *   **Internal SDK / Bypass:** The global `request` wrapper handles serialization automatically, ensuring consistent `exclude_unset=True` and `by_alias=True` behavior.
         *   **Data Plane:** NEVER use Pydantic in the hot path. Use raw `json`/`orjson`.
 *   **Rule - Proactive Hardware Probing:** Do not rely on brittle `try...except` blocks for missing hardware features. Use the lazy, asynchronous `_probe_capability` cache or license-aware checks. Note that Xovis sensors return 403 HTML (mapped to `EndpointNotFoundError`) for missing/restricted endpoints.
-*   **Rule - Hub Auth0:** The Xovis Hub uses Auth0. Token requests MUST be sent as a form-encoded POST (`data={...}`, NOT `json={...}`) to `https://login.xovis.cloud/oauth/token` including the `"audience": "https://api.xovis.cloud/"` parameter. Tokens MUST be cached to disk to prevent 429 rate-limiting.
+*   **Rule - Hub Auth0:** The Xovis Hub uses Auth0 for API access. The SDK automatically manages token requests, refresh cycles, and disk persistence to prevent 429 rate-limiting. Users MUST NOT manually request or cache tokens.

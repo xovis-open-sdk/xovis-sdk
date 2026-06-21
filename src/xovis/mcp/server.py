@@ -261,6 +261,14 @@ async def handle_list_tools() -> list[Tool]:
                 annotations=ToolAnnotations(readOnlyHint=read_only, destructiveHint=destructive),
             )
         )
+        
+    limit = int(os.getenv("XOVIS_MCP_TOOL_LIMIT", "90"))
+    if limit > 0 and len(mcp_tools) > limit:
+        meta_tools = ["xovis_search_tools", "xovis_get_tool_schema", "xovis_execute_tool"]
+        prioritized = [t for t in mcp_tools if t.name in meta_tools]
+        others = [t for t in mcp_tools if t.name not in meta_tools]
+        mcp_tools = prioritized + others[:max(0, limit - len(prioritized))]
+
     return mcp_tools
 
 
@@ -273,6 +281,10 @@ async def handle_call_tool(name: str, arguments: dict[str, Any] | None) -> Seque
 
     await _populate_tool_maps()
     original_name = _SANITIZED_TO_ORIGINAL.get(name) or _from_mcp_name(name)
+
+    if original_name == "execute_tool" and "tool_name" in args:
+        inner_name = args["tool_name"]
+        args["tool_name"] = _SANITIZED_TO_ORIGINAL.get(inner_name) or _from_mcp_name(inner_name)
 
     logging.info(f"Tool called: {original_name} with arguments: {args}")
 

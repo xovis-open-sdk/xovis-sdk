@@ -125,6 +125,12 @@ class GetToolSchemaArgs(BaseModel):
     tool_name: str = Field(..., description="The exact name of the tool to retrieve the schema for.")
 
 
+class ExecuteToolArgs(BaseModel):
+    tool_name: str = Field(..., description="The exact name of the tool to execute.")
+    arguments: dict[str, Any] = Field(default_factory=dict, description="The arguments to pass to the tool.")
+    mac: Optional[str] = Field(None, description="Optional MAC address if the underlying tool requires it.")
+
+
 class AgentAuthorizationScope(BaseModel):
     allowed_macs: Optional[set[str]] = Field(default=None)
     allowed_groups: Optional[set[str]] = Field(default=None)
@@ -625,6 +631,12 @@ class XovisAIToolkit:
                 "func": "_get_tool_schema",
                 "safety_level": SafetyLevel.OPEN,
             },
+            "execute_tool": {
+                "description": "Executes an MCP tool by its name. Use this to call tools that are hidden due to MCP limits.",
+                "args_model": ExecuteToolArgs,
+                "func": "_execute_tool_bridge",
+                "safety_level": SafetyLevel.OPEN,
+            },
         }
         self._tools_map.update(bridge_tools)
 
@@ -859,7 +871,13 @@ class XovisAIToolkit:
         config = self._tools_map[tool_name]
         return {"name": tool_name, "description": config.get("description"), "schema": config["args_model"].model_json_schema()}
 
+    async def _execute_tool_bridge(self, client: DeviceClient, tool_name: str, arguments: dict[str, Any]) -> str:
+        pass
+
     async def execute_tool(self, tool_name: str, arguments: dict) -> str:
+        if tool_name == "execute_tool":
+            return await self.execute_tool(arguments["tool_name"], arguments.get("arguments", {}))
+            
         if tool_name not in self._tools_map:
             raise ValueError(f"Tool '{tool_name}' not found.")
         tool_config = self._tools_map[tool_name]

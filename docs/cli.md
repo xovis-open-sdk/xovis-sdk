@@ -60,6 +60,9 @@ Syncs Pydantic models from a physical device for a specific version tag (e.g., `
 
 ### `mcp`
 Launches the Xovis MCP Server for integration with Claude Desktop, Cursor, and Windsurf.
+- `--log-file <path>`: Optional path to a log file for the MCP Server.
+- `--daemon`: Start the MCP Server in the background as a daemon.
+- `--tool-limit <limit>`: Optional limit for the number of tools exposed (default: 90, 0 to disable).
 
 ### `hub`
 Orchestrates Xovis HUB Cloud fleet operations (e.g., `list-devices`).

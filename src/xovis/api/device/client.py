@@ -107,7 +107,10 @@ class SinglesensorContext:
         return self._privacy
 
 
-class DeviceClient:
+from xovis.api.device.base import BaseControlPlane
+
+
+class DeviceClient(BaseControlPlane):
     """
     Stateful & Topology-Aware Asynchronous Client for Xovis environments.
 
@@ -628,6 +631,9 @@ class DeviceClient:
         self._capability_cache["advanced_zones"] = "5.9.2" in self.fw_version
 
         # Model Versioning Selection
+        from xovis.models import device_auto
+        self.models = device_auto
+
         if "5.9.2" in self.fw_version:
             self.models = self.models.v5_9_2_models
         else:
