@@ -244,10 +244,13 @@ class XovisFleetTable(Screen):
 
             existing_is_selected, existing_is_cached = current_states.get(mac_address, (False, False))
 
+            res_dir = Path("_local_resources") / "states"
+            cache_file = res_dir / f"{mac_address.replace(':', '-')}.state.json"
+
             if ms_role != "Unknown":
                 logging.info(f"UI Rebuild: Device {mac_address} has role {ms_role}, marking as cached.")
                 existing_is_cached = True
-            elif device_state.get("cache"):
+            elif device_state.get("cache") or cache_file.exists():
                 existing_is_cached = True
 
             device_entry = FleetDevice(
@@ -270,9 +273,15 @@ class XovisFleetTable(Screen):
 
         hub_macs = {d.mac_address: d for d in fetched_devices}
         for lan_device in self._lan_devices.values():
+            res_dir = Path("_local_resources") / "states"
+            cache_file = res_dir / f"{lan_device.mac_address.replace(':', '-')}.state.json"
+            if cache_file.exists():
+                lan_device.is_cached = True
+                
             if lan_device.mac_address in hub_macs:
                 hub_macs[lan_device.mac_address].source = "Both"
                 hub_macs[lan_device.mac_address].ip_address = lan_device.ip_address
+                hub_macs[lan_device.mac_address].is_cached = hub_macs[lan_device.mac_address].is_cached or lan_device.is_cached
             else:
                 fetched_devices.append(lan_device)
 
@@ -478,10 +487,10 @@ class XovisFleetTable(Screen):
             )
             return
 
-        online_macs = [d.mac_address for d in self._fleet_data if d.mac_address in target_macs and "ONLINE" in d.status]
+        online_macs = [d.mac_address for d in self._fleet_data if d.mac_address in target_macs and ("ONLINE" in d.status or "LOCAL" in d.status)]
 
         if not online_macs:
-            self.notify("No online devices selected for Deep Dive", severity="warning")
+            self.notify("No online or local devices selected for Deep Dive", severity="warning")
             return
 
         target_desc = f"{len(online_macs)} SELECTED" if selected_macs else f"ALL {len(online_macs)} VISIBLE"
@@ -707,6 +716,15 @@ class XovisFleetTable(Screen):
                             password=os.getenv("XOVIS_DEVICE_PASSWORD", "pass"),
                         ) as device:
                             graph = await device.topology.get_ms_graph()
+
+                            # Cache device state to local resources
+                            await device.cache.sync()
+                            from pathlib import Path
+                            res_dir = Path("_local_resources") / "states"
+                            res_dir.mkdir(parents=True, exist_ok=True)
+                            
+                            cache_file = res_dir / f"{mac.replace(':', '-')}.state.json"
+                            device.cache.export_to_file(str(cache_file.resolve()))
 
                             is_master = False
                             if (graph.master_mac and graph.master_mac.upper() == mac) or any(
