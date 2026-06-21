@@ -63,7 +63,7 @@ jobs:
 
       - name: Publish to Smithery
         env:
-          SMITHERY_TOKEN: ${{ secrets.SMITHERY_TOKEN }}
+          SMITHERY_API_KEY: ${{ secrets.SMITHERY_TOKEN }}
         run: |
           # Wait 30 seconds for PyPI index to update so uvx can fetch the new version
           sleep 30
