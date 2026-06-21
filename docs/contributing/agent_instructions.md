@@ -36,7 +36,7 @@ A stateful engine that abstracts complex sensor graphs. Contributions here maint
 
 - **Principle - Context Isolation**: Maintain the strict separation between `singlesensor` (physical) and `multisensors` (virtual) contexts.
 - **Principle - Threaded Persistence**: Disk I/O for state caching MUST be offloaded using `asyncio.to_thread`.
-- **Principle - Smart Topology**: The `TopologyManager` is responsible for synthesizing directed graphs (`StitchGraph`) from physical network nodes.
+- **Principle - Smart Topology**: The `TopologyManager` is responsible for synthesizing directed graphs (`MSGraph`) from physical network nodes.
 
 ### 4. The Agentic Layer (AI Integration)
 **Path:** `src/xovis/skills/`

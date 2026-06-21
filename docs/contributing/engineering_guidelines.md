@@ -62,7 +62,7 @@ Maintains graph-aware context, stateful caching, and Desired State Configuration
 **Path:** `src/xovis/skills/`
 Provides safe, pseudonymized, and strictly validated hardware orchestration for autonomous agents.
 
-* **Privacy First:** `AIPrivacyEngine` handles two-way mapping of sensitive identifiers to format-preserving hashes.
+* **Privacy First:** `AIPrivacySession` handles two-way mapping of sensitive identifiers to format-preserving hashes.
 * **Safety Guardrails:** Assigns a `SafetyLevel` (OPEN, RESTRICTED, CRITICAL, BLOCKED) to every tool.
 * **Strict Mapping:** Only explicitly mapped SDK methods are exposed as tools to the AI.
 

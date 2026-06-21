@@ -16,7 +16,7 @@ The `xovis.skills` module is the definitive **Agentic Layer** of the Xovis SDK. 
 
 ## Architectural Intent
 
-In the current state-of-the-art landscape, hardware nodes are no longer passive targets for scripts; they are intelligent participants in autonomous ecosystems. This module provides the "Universal Translator" required to bridge the gap between low-level Universal Translator SDK logic and high-level business logic AI reasoning loops.
+In the current state-of-the-art landscape, hardware nodes are no longer passive targets for scripts; they are intelligent participants in autonomous ecosystems. This module provides the "Universal Translator" required to bridge the gap between low-level SDK logic and high-level business logic AI reasoning loops.
 
 ### Architectural Pillars:
 

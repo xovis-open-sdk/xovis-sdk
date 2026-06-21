@@ -1,11 +1,11 @@
 # Core SDK Reference
 
-The Core SDK provides the foundational type system, Pydantic models, and cross-plane utilities that power the Xovis Open SDK. It serves as the \\Base Layer\\ ensuring strict validation and consistent behavior across the entire quadrifurcated architecture.
+The Core SDK provides the foundational type system, Pydantic models, and cross-plane utilities that power the Xovis Open SDK. It serves as the **Base Layer** ensuring strict validation and consistent behavior across the entire quadrifurcated architecture.
 
 ## Architectural Pillars
 
 1.  **Strict Type Enforcement**: Leveraging Pydantic V2, the core models ensure that every piece of data entering the SDK—whether from an edge sensor or a Cloud HUB—is validated against rigorous schemas.
-2.  **Universal Models**: Unified representations for \Device\ and \HubDevice\ allow for seamless transition between single-sensor management and fleet-scale orchestration.
+2.  **Universal Models**: Unified representations for `Device` and `HubDevice` allow for seamless transition between single-sensor management and fleet-scale orchestration.
 3.  **High-Performance Utilities**: Specialized primitives for asynchronous loops, privacy hashing, and ISO-8601 time handling, optimized for the SDK's high-throughput requirements.
 
 ## Models

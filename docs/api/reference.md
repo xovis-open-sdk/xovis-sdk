@@ -1,4 +1,4 @@
-# Edge API Reference (Scalar)
+# Device API Reference (Scalar)
 
 This specification defines the foundational **Data Plane** and **Control Plane** structures that the `xovis-sdk` automatically validates via **Pydantic V2**. 
 
@@ -9,7 +9,7 @@ While the SDK abstracts these endpoints natively through the `DeviceClient`, thi
 <div id="setup-instructions" class="setup-instructions-container" style="display: none;" markdown="1">
 
 !!! failure "Interactive Explorer Disabled"
-    The interactive explorer is currently disabled because the proprietary **Edge API schema** (`api.yaml`) was not found in your local environment.
+    The interactive explorer is currently disabled because the proprietary **Device API schema** (`api.yaml`) was not found in your local environment.
 
     The SDK generates strict `RootModels` and `typing.Literal` definitions directly from this proprietary specification to guarantee zero-drift between the hardware and your Python runtime.
 
