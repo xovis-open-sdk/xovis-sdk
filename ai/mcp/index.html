@@ -993,6 +993,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/python/fleet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fleet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/python/hub/" class="md-nav__link">
         
   
@@ -1435,6 +1463,17 @@
     <span class="md-ellipsis">
       
         Dynamic Environment Loading (.env)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-limits--execution-workaround" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Limits &amp; Execution Workaround
       
     </span>
   </a>
@@ -1934,6 +1973,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tool-limits--execution-workaround" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Limits &amp; Execution Workaround
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#ide-integration-cursor--windsurf" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2037,6 +2087,13 @@
 </ul>
 <h3 id="dynamic-environment-loading-env">Dynamic Environment Loading (.env)</h3>
 <p>The server automatically scans for and loads <code>.env</code> configuration files in the current working directory relative to execution, allowing credentials like <code>XOVIS_MCP_HOST</code> to be managed modularly.</p>
+<h3 id="tool-limits--execution-workaround">Tool Limits &amp; Execution Workaround</h3>
+<p>Some AI agents (like Claude or Cursor) impose a strict maximum on the number of tools they can consume (typically 40-100). The Xovis MCP Server natively provides over 260 tools. To prevent clients from rejecting the connection, the MCP Server uses an optional tool limit configurable via the <code>XOVIS_MCP_TOOL_LIMIT</code> environment variable (defaults to 90).</p>
+<p>When the limit is active, the server selectively exposes a subset of tools, prioritizing the following three meta-tools:
+1. <code>xovis_search_tools</code>: Search for hidden tools.
+2. <code>xovis_get_tool_schema</code>: Retrieve the JSON schema for a hidden tool.
+3. <code>xovis_execute_tool</code>: Execute any tool, even if it is not exposed in the limited list.</p>
+<p>To disable the limit entirely and expose all tools, set <code>XOVIS_MCP_TOOL_LIMIT=0</code>.</p>
 <h3 id="ide-integration-cursor--windsurf">IDE Integration (Cursor / Windsurf)</h3>
 <p>To enable native hardware control within your AI-native IDE, add the following to your configuration:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2049,7 +2106,8 @@
 <span class="w">        </span><span class="nt">&quot;XOVIS_MCP_USER&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;XOVIS_MCP_PASS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;XOVIS_HUB_CLIENT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Optional: For Cloud Hub&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;XOVIS_HUB_CLIENT_SECRET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Optional: For Cloud Hub&quot;</span>
+<span class="w">        </span><span class="nt">&quot;XOVIS_HUB_CLIENT_SECRET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Optional: For Cloud Hub&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;XOVIS_MCP_TOOL_LIMIT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;90&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -2064,7 +2122,8 @@
 <span class="w">      </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;XOVIS_MCP_HOST&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;XOVIS_MCP_USER&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;XOVIS_MCP_PASS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;password&quot;</span>
+<span class="w">        </span><span class="nt">&quot;XOVIS_MCP_PASS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;XOVIS_MCP_TOOL_LIMIT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;90&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>

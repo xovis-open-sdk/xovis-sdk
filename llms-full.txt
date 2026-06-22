@@ -23,12 +23,18 @@ xovis/
                 time_config.py
                 update.py
                 users.py
+            base.py
             cache.py
             client.py
             discovery.py
             models.py
+            network_discovery.py
             sync.py
             topology.py
+        fleet/
+            directory.py
+            group.py
+            models.py
         hub/
             resources/
                 base.py

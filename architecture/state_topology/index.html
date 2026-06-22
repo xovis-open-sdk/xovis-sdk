@@ -530,6 +530,18 @@
 </a>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="../../api/python/fleet/">
+<span class="md-ellipsis">
+    
+  
+    Fleet
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="../../api/python/hub/">
 <span class="md-ellipsis">
     
@@ -995,6 +1007,7 @@
 <h2 id="core-philosophy">Core Philosophy</h2>
 <p>A standard sensor is more than just a single IP address—it represents an entire network topology of physical sensors, stitched virtual environments, and configuration buckets. This plane manages these relationships seamlessly.</p>
 <ul>
+<li><strong>Rule - Logical Fleet Buckets vs. Physical Topology:</strong> The SDK differentiates between <em>physical topology</em> (managed by <code>HostStateBucket</code> and <code>ChildDevicesAccessor</code> for stitched multisensors) and <em>logical fleet grouping</em> (managed by <code>DeviceGroup</code> and <code>HubFleetDirectory</code>). Physical topology represents actual hardware connections, whereas <code>DeviceGroup</code> acts as an orchestration construct for bulk command execution across arbitrary independent nodes.</li>
 <li><strong>Rule - Context Isolation:</strong> A device IP is a "Host". A host runs isolated "Contexts". The <code>singlesensor</code> context applies strictly to physical lenses (and MUST gracefully raise <code>HardwareNotSupportedError</code> if the host is a lensless Spider NUC). The <code>multisensors</code> context applies to 0..N virtual stitched environments. Geometries and DataPushes are strictly partitioned by context.</li>
 <li><strong>Rule - Multisensor Cache Rooting:</strong> Virtual contexts discovered via <code>multisensors.sync()</code> MUST be rooted into the persistent <code>HostStateBucket</code> via the <code>@multisensors.setter</code>. This ensures that DataPush agents and connections persist across CRUD operations and are visible to the <code>REPLAccessor</code>.</li>
 <li><strong>Rule - String-Normalized Resolution:</strong> All resource managers MUST normalize context and resource IDs to strings when interacting with the stateful cache. Integer keys are strictly forbidden in the <code>multisensors</code> mapping to prevent resolution failures.</li>
@@ -1003,7 +1016,9 @@
 <li><strong>Rule - Smart Caching &amp; GC Trap:</strong> The SDK uses a <code>ConfigCacheManager</code> (Device) and <code>HubCacheManager</code> (Hub, with client-side <code>fleet_filter</code> mapping). <strong>CRITICAL:</strong> If <code>BACKGROUND_WATCHER</code> is active, the <code>asyncio.create_task</code> loop MUST be stored in a hard-referenced <code>Set</code> (to prevent Python 3.11+ GC mid-execution) and cleanly cancelled in <code>__aexit__</code>.</li>
 <li><strong>Rule - Offline-First Persistence:</strong> The <code>ConfigCacheManager</code> supports auto-persistence via <code>auto_persist_path</code>. Disk serialization/deserialization MUST be offloaded using <code>asyncio.to_thread</code> to ensure zero blocking of the async event loop.</li>
 <li><strong>Rule - Edge Topology Synthesis:</strong> The <code>TopologyManager</code> synthesizes directed graphs (<code>MSGraph</code>) by concurrently cross-referencing multisensor child clusters with physical local network nodes.</li>
-<li><strong>Rule - Multisensor Discovery Synthesis (Top-Down Only):</strong> Discovery MUST be synthesized Top-Down. Children are "ignorant" and return fake standalone status. You MUST scan all local nodes (<code>/discover/localnetwork</code>), query their <code>/multisensors/status</code>, and correlate <code>sensors[].mac_address</code> lists from Master nodes (where <code>enabled: true</code>) to build the hierarchy.</li>
+<li><strong>Rule - Network Probing (Hybrid First-Responder):</strong> Active L3 subnet scanning MUST utilize the pure-Python <strong>Hybrid First-Responder Strategy</strong>. The SDK aggressively sweeps the IP range concurrently but instantly aborts and hands off discovery to the very first responsive sensor found, using its <code>/discover/localnetwork</code> endpoint to extract the full L2 payload (MACs, Names, Groups) in one efficient request.</li>
+<li><strong>Rule - Multisensor Discovery Synthesis (Top-Down Only):</strong> Discovery MUST be synthesized Top-Down. Children are "ignorant" and return fake standalone status. You MUST utilize the <strong>3-Tier Discovery Fallback Strategy</strong> (1. Passive OS ARP Cache, 2. Active L2 Proxy Sensor Scan via <code>/discover/localnetwork</code>, 3. Active L3 Subnet Scan with Hybrid First-Responder) to discover nodes, query their <code>/multisensors/status</code>, and correlate <code>sensors[].mac_address</code> lists from Master nodes (where <code>enabled: true</code>) to build the hierarchy.</li>
+<li><strong>Rule - Robust Multisensor JSON Parsing:</strong> The <code>/api/v5/multisensors/status</code> endpoint inconsistently returns either a raw <code>list</code> or a <code>dict</code> (e.g., <code>{"multisensors_status": [...]}</code> or <code>{"multisensors": [...]}</code>). The SDK MUST use robust dictionary fallback parsing and avoid strict <code>isinstance(data, list)</code> checks to prevent silent cache initialization failures.</li>
 </ul>
 </article>
 </div>

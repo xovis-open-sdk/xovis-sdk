@@ -316,15 +316,6 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#graph-td-subgraph-application-layer-devcodedeveloper--sdk-scripts-end-subgraph-control-plane-core-subgraph-clients-hchubclient-dcdeviceclient-smartunifieddeviceclient-end-subgraph-core-utilities--safeguards-guardrailxovissafetyguardrail-pydanticpydantic-v2-model-validation-probeproactive-capability-cache-timenormxovistime-utility-end-end-subgraph-target-hardware--cloud-hubxovis-hub-cloud-edgeedge-sensor--rest-api-end-devcode---1-normalize-time-timenorm-devcode---2-serialize-payload-pydantic-pydantic---3-check-safety-guardrail-guardrail---4-probe-features-probe-probe---route-request-smart-smart---direct-lan-check-dc-smart---secure-fallback-tunnel-hc-dc---http-rest-api-v5--httpx-edge-hc---secure-tunnel-proxy--httpx-edge-hc---hub-apis--httpx-hub">
-<span class="md-ellipsis">
-      
-        graph TD subgraph "Application Layer" DevCode[Developer / SDK Scripts] end subgraph "Control Plane Core" subgraph "Clients" HC[HubClient] DC[DeviceClient] Smart[UnifiedDeviceClient] end subgraph "Core Utilities &amp; Safeguards" Guardrail[XovisSafetyGuardrail] Pydantic[Pydantic V2 Model Validation] Probe[Proactive Capability Cache] TimeNorm[XovisTime Utility] end end subgraph "Target Hardware / Cloud" Hub[Xovis HUB Cloud] Edge[Edge Sensor / REST API] end DevCode --&gt;|1. Normalize Time| TimeNorm DevCode --&gt;|2. Serialize Payload| Pydantic Pydantic --&gt;|3. Check Safety| Guardrail Guardrail --&gt;|4. Probe Features| Probe Probe --&gt;|Route Request| Smart Smart --&gt;|Direct LAN Check| DC Smart --&gt;|Secure Fallback Tunnel| HC DC --&gt;|HTTP REST API v5 / httpx| Edge HC --&gt;|Secure Tunnel Proxy / httpx| Edge HC --&gt;|Hub APIs / httpx| Hub
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
 <a class="md-nav__link" href="#core-philosophy">
 <span class="md-ellipsis">
       
@@ -501,6 +492,18 @@
     
   
     Device
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../api/python/fleet/">
+<span class="md-ellipsis">
+    
+  
+    Fleet
   
 
     
@@ -792,15 +795,6 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#graph-td-subgraph-application-layer-devcodedeveloper--sdk-scripts-end-subgraph-control-plane-core-subgraph-clients-hchubclient-dcdeviceclient-smartunifieddeviceclient-end-subgraph-core-utilities--safeguards-guardrailxovissafetyguardrail-pydanticpydantic-v2-model-validation-probeproactive-capability-cache-timenormxovistime-utility-end-end-subgraph-target-hardware--cloud-hubxovis-hub-cloud-edgeedge-sensor--rest-api-end-devcode---1-normalize-time-timenorm-devcode---2-serialize-payload-pydantic-pydantic---3-check-safety-guardrail-guardrail---4-probe-features-probe-probe---route-request-smart-smart---direct-lan-check-dc-smart---secure-fallback-tunnel-hc-dc---http-rest-api-v5--httpx-edge-hc---secure-tunnel-proxy--httpx-edge-hc---hub-apis--httpx-hub">
-<span class="md-ellipsis">
-      
-        graph TD subgraph "Application Layer" DevCode[Developer / SDK Scripts] end subgraph "Control Plane Core" subgraph "Clients" HC[HubClient] DC[DeviceClient] Smart[UnifiedDeviceClient] end subgraph "Core Utilities &amp; Safeguards" Guardrail[XovisSafetyGuardrail] Pydantic[Pydantic V2 Model Validation] Probe[Proactive Capability Cache] TimeNorm[XovisTime Utility] end end subgraph "Target Hardware / Cloud" Hub[Xovis HUB Cloud] Edge[Edge Sensor / REST API] end DevCode --&gt;|1. Normalize Time| TimeNorm DevCode --&gt;|2. Serialize Payload| Pydantic Pydantic --&gt;|3. Check Safety| Guardrail Guardrail --&gt;|4. Probe Features| Probe Probe --&gt;|Route Request| Smart Smart --&gt;|Direct LAN Check| DC Smart --&gt;|Secure Fallback Tunnel| HC DC --&gt;|HTTP REST API v5 / httpx| Edge HC --&gt;|Secure Tunnel Proxy / httpx| Edge HC --&gt;|Hub APIs / httpx| Hub
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
 <a class="md-nav__link" href="#core-philosophy">
 <span class="md-ellipsis">
       
@@ -819,16 +813,23 @@
 <h1 id="the-control-plane-configuration-management">The Control Plane (Configuration Management)</h1>
 <p>The Control Plane manages low-frequency REST API wrappers for configuring the Xovis HUB Cloud and local edge sensors.</p>
 <h2 id="unified-device-routing-layer-unifieddeviceclient">Unified Device Routing Layer (<code>UnifiedDeviceClient</code>)</h2>
-<p>To solve issues where the Xovis HUB does not contain real local LAN IPs (e.g., behind gateways or NAT), the SDK introduces a <strong>Multi-Plane Hybrid Routing Strategy</strong> via the <code>UnifiedDeviceClient</code>. </p>
-<p>When connecting to a device:</p>
+<p>To solve issues where the Xovis HUB does not contain real local LAN IPs (the <strong>Gateway Proxy IP Quirk</strong>, where the Hub proxies connections via Gateway IPs), the SDK introduces an <strong>Intelligent MAC/IP Routing Protocol</strong> via the <code>UnifiedDeviceClient</code>. </p>
+<p>When connecting to a device, the router evaluates the target and executes the following protocol:</p>
 <ol>
-<li><strong>Local Handshake Check:</strong> The client performs a fast TCP/HTTP probe of local IP addresses (either cached or discovered).</li>
-<li><strong>Direct LAN Execution:</strong> If reachable, a direct, low-latency <code>DeviceClient</code> connection is used.</li>
-<li><strong>HUB Proxy Fallback:</strong> If the local path is blocked or the device is remote, the SDK automatically falls back to spawning a secure connection routed through the Cloud HUB proxy tunnel (<code>HubClient.connect_device</code>).</li>
+<li><strong>IP Target Resolution:</strong><ul>
+<li><strong>Attempt Direct Local LAN:</strong> Immediately attempts a direct, low-latency <code>DeviceClient</code> connection on the local network.</li>
+<li><strong>Hub Quirk Guardrail &amp; Fallback:</strong> If local connection fails, it cross-references the Hub Cache to map the IP to a safe MAC address before attempting a Cloud Tunnel. It strictly prevents routing raw IPs through the Hub to avoid Gateway proxying instability.</li>
+</ul>
+</li>
+<li><strong>MAC Target Resolution:</strong><ul>
+<li><strong>Attempt Local LAN (Primary):</strong> Utilizes the 3-Tier Network Discovery (ARP Cache, Proxy Sensor, etc.) to resolve a local IP for a direct LAN connection (prioritizing local traffic).</li>
+<li><strong>HUB Proxy Fallback (Secondary):</strong> If local resolution fails (the device is remote), it falls back to a highly stable Hub MAC connection (<code>HubClient.connect_device</code>).</li>
+</ul>
+</li>
 </ol>
 <hr/>
 <h2 id="control-flow-and-router-diagram">Control Flow and Router Diagram</h2>
-<h2 id="graph-td-subgraph-application-layer-devcodedeveloper--sdk-scripts-end-subgraph-control-plane-core-subgraph-clients-hchubclient-dcdeviceclient-smartunifieddeviceclient-end-subgraph-core-utilities--safeguards-guardrailxovissafetyguardrail-pydanticpydantic-v2-model-validation-probeproactive-capability-cache-timenormxovistime-utility-end-end-subgraph-target-hardware--cloud-hubxovis-hub-cloud-edgeedge-sensor--rest-api-end-devcode---1-normalize-time-timenorm-devcode---2-serialize-payload-pydantic-pydantic---3-check-safety-guardrail-guardrail---4-probe-features-probe-probe---route-request-smart-smart---direct-lan-check-dc-smart---secure-fallback-tunnel-hc-dc---http-rest-api-v5--httpx-edge-hc---secure-tunnel-proxy--httpx-edge-hc---hub-apis--httpx-hub"><div class="mermaid">graph TD
+<div class="mermaid">graph TD
     subgraph "Application Layer"
         DevCode[Developer / SDK Scripts]
     end
@@ -865,7 +866,8 @@
     DC --&gt;|HTTP REST API v5 / httpx| Edge
     HC --&gt;|Secure Tunnel Proxy / httpx| Edge
     HC --&gt;|Hub APIs / httpx| Hub
-</div></h2>
+</div>
+<hr/>
 <h2 id="core-philosophy">Core Philosophy</h2>
 <p>While the Data Plane prioritizes high throughput and zero blocking, the Control Plane prioritizes structural robustness, strict schema validation, security, and networking resilience.</p>
 <ul>
@@ -881,7 +883,7 @@
 </ul>
 </li>
 <li><strong>Rule - Proactive Hardware Probing:</strong> Do not rely on brittle <code>try...except</code> blocks for missing hardware features. Use the lazy, asynchronous <code>_probe_capability</code> cache or license-aware checks. Note that Xovis sensors return 403 HTML (mapped to <code>EndpointNotFoundError</code>) for missing/restricted endpoints.</li>
-<li><strong>Rule - Hub Auth0:</strong> The Xovis Hub uses Auth0. Token requests MUST be sent as a form-encoded POST (<code>data={...}</code>, NOT <code>json={...}</code>) to <code>https://login.xovis.cloud/oauth/token</code> including the <code>"audience": "https://api.xovis.cloud/"</code> parameter. Tokens MUST be cached to disk to prevent 429 rate-limiting.</li>
+<li><strong>Rule - Hub Auth0:</strong> The Xovis Hub uses Auth0 for API access. The SDK automatically manages token requests, refresh cycles, and disk persistence to prevent 429 rate-limiting. Users MUST NOT manually request or cache tokens.</li>
 </ul>
 </article>
 </div>

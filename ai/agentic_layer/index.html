@@ -993,6 +993,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/python/fleet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fleet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/python/hub/" class="md-nav__link">
         
   
@@ -2026,6 +2054,7 @@
 <li><strong>Latest Anthropic Models Ready</strong>: Provides the flat <code>input_schema</code> format required by the Messages API via <code>get_anthropic_tools()</code>.</li>
 <li><strong>Callable Primitives</strong>: Exports direct references to async functions and their validation models for <strong>LangGraph</strong>, <strong>CrewAI</strong>, and <strong>Cursor/Windsurf</strong>.</li>
 <li><strong>Dynamic Adapter Registry</strong>: Allows custom or third-party framework adapters (e.g., LlamaIndex, AutoGen) to be registered via <code>toolkit.register_adapter(name, func)</code> and dynamically retrieved using <code>toolkit.get_tools(name)</code>. Standard built-in adapters (<code>langchain</code> and <code>crewai</code>) are pre-registered and lazy-loaded by default.</li>
+<li><strong>Tool Limit &amp; Meta-Tooling Engine</strong>: Automatically caps exposed tools (configurable via <code>XOVIS_MCP_TOOL_LIMIT</code>, default 90) to respect strict client constraints (e.g., Cursor, Claude Desktop), while providing meta-tools (<code>execute_tool</code>, <code>search_tools</code>, <code>get_tool_schema</code>) to dynamically access the full 260+ tool registry.</li>
 </ul>
 <h3 id="2-xovisagentmemory-state-observation">2. XovisAgentMemory (State Observation)</h3>
 <p>Autonomous agents require environmental context without the high-frequency Live-Push overhead. By wrapping the <code>HostStateBucket</code>, this plane allows for the injection of minified, JSON-serialized hardware "memories" directly into the System Prompt.</p>
