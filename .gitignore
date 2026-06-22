@@ -106,3 +106,4 @@ Thumbs.db
 /scripts/run_mcp_inspector.py
 /mcp_daemon.log
 /tests/mcp/test_mcp_quality.py
+/scripts/bump_version.py
