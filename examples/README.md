@@ -1,4 +1,4 @@
-# Xovis SDK - Implementation Examples
+﻿# Xovis SDK - Implementation Examples
 
 This directory contains a progressive sequence of examples designed to demonstrate the architectural layers of the `xovis-sdk`. 
 
@@ -46,7 +46,7 @@ Demonstrates how to generate directed stitch graphs bridging MAC addresses to lo
 ### [04_fleet_orchestration.py](./04_fleet_orchestration.py)
 
 **Focus:** Fleet Orchestration & Cloud Tunneling.
-Demonstrates how to connect to the Xovis HUB, apply client-side filtering to target specific sites, and utilize `bulk_execute` to concurrently map configuration logic across hundreds of sensors using fault-isolated secure proxy tunnels.
+Demonstrates how to connect to the Xovis HUB, build an offline-first IDE-autosuggested HubFleetDirectory, target specific groups, and utilize SDK-native Fleet Buckets (DeviceGroup) to concurrently map configuration logic across hundreds of sensors using fault-isolated secure proxy tunnels.
 
 ## Execution
 
@@ -56,4 +56,5 @@ Ensure you are operating within your virtual environment with the SDK installed.
 python examples/01_edge_basics.py
 
 ```
+
 

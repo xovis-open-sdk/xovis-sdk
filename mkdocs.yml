@@ -105,6 +105,7 @@ nav:
       - Python SDK:
           - Core: api/python/core.md
           - Device: api/python/device.md
+          - Fleet: api/python/fleet.md
           - Hub: api/python/hub.md
           - DataPush: api/python/datapush.md
           - Skills: api/python/skills.md
