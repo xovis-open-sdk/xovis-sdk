@@ -3,6 +3,7 @@ Tier 2: Stateful Configuration Tests (Live Hardware) for DeviceGroup via Hub.
 """
 
 import asyncio
+import os
 
 import pytest
 
@@ -11,9 +12,14 @@ from xovis.api.fleet.group import DeviceGroup
 from xovis.api.fleet.models import BulkOperationResult
 from xovis.api.hub.client import HubClient
 
+requires_hub_credentials = pytest.mark.skipif(
+    not os.getenv("XOVIS_HUB_TOKEN") and not (os.getenv("XOVIS_HUB_CLIENT_ID") and os.getenv("XOVIS_HUB_CLIENT_SECRET")),
+    reason="Missing Xovis HUB credentials in environment variables."
+)
 
 @pytest.mark.asyncio
 @pytest.mark.destructive
+@requires_hub_credentials
 async def test_device_group_live_hub_devices() -> None:
     """
     Live test to create a DeviceGroup from devices in the Hub and perform operations.

@@ -10,7 +10,7 @@ import asyncio
 import logging
 import os
 
-from xovis.api.fleet import HubFleetDirectory, DeviceGroup
+from xovis.api.fleet import DeviceGroup, HubFleetDirectory
 from xovis.api.hub.client import HubClient
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
