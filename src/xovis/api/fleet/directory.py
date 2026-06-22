@@ -9,22 +9,24 @@ from typing import Any, Generic, TypeVar
 
 T = TypeVar("T")
 
+
 class DictAccessor(Generic[T]):
     """Dynamic accessor exposing dictionary keys as properties for IDE autocomplete."""
-    
+
     def __init__(self, items: dict[str, T]):
         self._items = items
-        
+
     def __getattr__(self, name: str) -> T:
         if name in self._items:
             return self._items[name]
         raise AttributeError(f"Resource '{name}' not found. Available: {list(self._items.keys())}")
-        
+
     def __dir__(self) -> list[str]:
         return super().__dir__() + list(self._items.keys())
-        
+
     def __getitem__(self, key: str) -> T:
         return self._items[key]
+
 
 class HubFleetDirectory:
     """Parses the Hub fleet state and provides IDE-autosuggested device accessors."""
@@ -64,21 +66,21 @@ class HubFleetDirectory:
 
         Returns:
             HubFleetDirectory: A fully indexed directory of devices.
-            
+
         Raises:
             FileNotFoundError: If the specified state file does not exist.
         """
         file_path = Path(path)
         if not file_path.exists():
             raise FileNotFoundError(f"Hub state file not found at: {file_path}")
-            
+
         with file_path.open("r", encoding="utf-8") as f:
             data = json.load(f)
-            
+
         devices = data.get("devices", []) if isinstance(data, dict) else data
         if not isinstance(devices, list):
             devices = []
-            
+
         return cls(devices)
 
     @classmethod
@@ -95,9 +97,9 @@ class HubFleetDirectory:
         """
         if sync_cache:
             await hub_client.cache.sync()
-            
+
         devices = getattr(hub_client.cache._state, "devices", [])
-        
+
         # Convert Pydantic models to dicts if necessary
         raw_devices = []
         for dev in devices:
@@ -105,7 +107,7 @@ class HubFleetDirectory:
                 raw_devices.append(dev.model_dump())
             elif isinstance(dev, dict):
                 raw_devices.append(dev)
-                
+
         return cls(raw_devices)
 
     def _sanitize(self, val: str) -> str:

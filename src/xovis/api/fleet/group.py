@@ -116,7 +116,7 @@ class DeviceGroup(BaseControlPlane):
         """
         self.name = name
         self._clients = clients
-        
+
         # Warn if BACKGROUND strategy is used for large groups
         if len(self._clients) > 10:
             for c in self._clients:
@@ -125,34 +125,29 @@ class DeviceGroup(BaseControlPlane):
                         "CacheStrategy.BACKGROUND_WATCHER is not recommended for large DeviceGroups. "
                         "Use MANUAL or LAZY_TTL to avoid overwhelming the event loop and network."
                     )
-                    
+
         self.by_name = REPLAccessor(self._clients, key_attr="name")
         self._semaphore = asyncio.Semaphore(10)
 
     @classmethod
     def from_directory_nodes(
-        cls,
-        name: str,
-        nodes: list[dict],
-        username: str = "admin",
-        password: str = "pass",
-        hub_client: Any = None
+        cls, name: str, nodes: list[dict], username: str = "admin", password: str = "pass", hub_client: Any = None
     ) -> "DeviceGroup":
         """
         Enterprise Factory: Safely converts HubFleetDirectory nodes into a DeviceGroup.
-        
+
         Args:
             name (str): Logical name of the group.
             nodes (list[dict]): List of device dictionaries from HubFleetDirectory.
             username (str): Local authentication username.
             password (str): Local authentication password.
             hub_client (Any): Optional HubClient instance for proxy routing if LAN IP is unreachable.
-            
+
         Returns:
             DeviceGroup: A populated device group with properly authenticated clients.
         """
         from xovis.api.device.client import DeviceClient, UnifiedDeviceClient
-        
+
         clients = []
         for d in nodes:
             ip = d.get("ip")
@@ -163,16 +158,12 @@ class DeviceGroup(BaseControlPlane):
                 mac = str(mac.root).replace(":", "")
             else:
                 mac = str(mac).replace(":", "")
-                
+
             dev_name = d.get("device_name", f"sensor_{ip.replace('.', '_')}" if ip else "sensor_unknown")
 
             # Create un-entered explicit clients
             host = ip if not hub_client else ip
-            client = DeviceClient(
-                host=host,
-                username=username,
-                password=password
-            )
+            client = DeviceClient(host=host, username=username, password=password)
             client.name = dev_name
             clients.append(client)
 
@@ -217,7 +208,7 @@ class DeviceGroup(BaseControlPlane):
             mac = ""
             if hasattr(c, "info") and c.info:
                 mac = str(c.info.get("mac_address", ""))
-            
+
             host = ""
             if hasattr(c, "_http_client"):
                 # Use string matching on base_url for IP match
@@ -226,7 +217,7 @@ class DeviceGroup(BaseControlPlane):
 
             if identifier not in (name, mac) and identifier not in host:
                 retained.append(c)
-                
+
         self._clients = retained
         self.by_name = REPLAccessor(self._clients, key_attr="name")
 
@@ -263,7 +254,7 @@ class DeviceGroup(BaseControlPlane):
             "topology",
             "users",
             "itxpt",
-            "multisensors"
+            "multisensors",
         }
         if name in standard_managers:
             return BulkDeviceFacade(self._clients, (name,), self._semaphore)
@@ -276,18 +267,21 @@ class DeviceGroup(BaseControlPlane):
         Returns:
             list[str]: The standard properties and methods.
         """
-        return list(set(super().__dir__()) | {
-            "datapush",
-            "scene",
-            "analytics",
-            "system",
-            "time",
-            "network",
-            "itxpt",
-            "update",
-            "users",
-            "privacy",
-            "history",
-            "topology",
-            "multisensors"
-        })
+        return list(
+            set(super().__dir__())
+            | {
+                "datapush",
+                "scene",
+                "analytics",
+                "system",
+                "time",
+                "network",
+                "itxpt",
+                "update",
+                "users",
+                "privacy",
+                "history",
+                "topology",
+                "multisensors",
+            }
+        )

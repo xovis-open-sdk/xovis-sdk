@@ -23,13 +23,14 @@ class NetworkDiscoveryService:
             ip = await NetworkDiscoveryService._proxy_sensor_scan(mac_address, known_proxy_ip)
             if ip:
                 return ip
-            
+
         # 3. Future: Add active UDP/mDNS probe here as absolute last resort
         return None
 
     @staticmethod
     async def _check_arp_cache(mac_address: str) -> Optional[str]:
         loop = asyncio.get_running_loop()
+
         def _arp():
             try:
                 cmd = ["arp", "-a"] if platform.system() == "Windows" else ["arp", "-n"]
@@ -43,16 +44,18 @@ class NetworkDiscoveryService:
             except Exception:
                 pass
             return None
+
         return await loop.run_in_executor(None, _arp)
 
     @staticmethod
     async def _proxy_sensor_scan(target_mac: str, proxy_ip: str) -> Optional[str]:
         from xovis.api.device.client import DeviceClient
+
         try:
             async with DeviceClient(proxy_ip, "admin", "pass") as client:
                 nodes = await client.topology.localnetwork()
                 for node in nodes:
-                    if hasattr(node, 'host') and node.host.endswith(target_mac):
+                    if hasattr(node, "host") and node.host.endswith(target_mac):
                         host_part = node.host.split("://")[-1].split(":")[0]
                         return host_part
         except Exception:
@@ -80,11 +83,11 @@ class NetworkDiscoveryService:
 
         start_ip_obj = ipaddress.IPv4Address(first_ip)
         sem = asyncio.Semaphore(max_concurrency)
-        
+
         username = os.getenv("XOVIS_DEVICE_USERNAME", "admin")
         password = os.getenv("XOVIS_DEVICE_PASSWORD", "pass")
         auth = DeviceAuth(username, password)
-        
+
         proxy_ip = None
 
         async def _find_proxy(ip: str) -> Optional[str]:
@@ -119,7 +122,7 @@ class NetworkDiscoveryService:
         for t in tasks:
             if not t.done():
                 t.cancel()
-        
+
         # Yield to let cancellations process
         await asyncio.sleep(0)
 
@@ -131,17 +134,19 @@ class NetworkDiscoveryService:
             async with XovisHTTPClient(base_url=f"http://{proxy_ip}", auth=auth) as hc:
                 resp = await hc.get("/api/v5/discover/localnetwork", timeout=5.0, max_retries=1)
                 net_data = resp.json()
-                
+
                 devices = []
                 for sensor in net_data.get("sensors", []):
-                    devices.append({
-                        "mac_address": sensor.get("mac", "00:00:00:00:00:00"),
-                        "ip_address": sensor.get("ip", ""),
-                        "name": sensor.get("name", "New Local Sensor"),
-                        "group": sensor.get("group", "LAN"),
-                        "type": sensor.get("model", "Unknown"),
-                        "fw_version": sensor.get("fw_version", "Unknown")
-                    })
+                    devices.append(
+                        {
+                            "mac_address": sensor.get("mac", "00:00:00:00:00:00"),
+                            "ip_address": sensor.get("ip", ""),
+                            "name": sensor.get("name", "New Local Sensor"),
+                            "group": sensor.get("group", "LAN"),
+                            "type": sensor.get("model", "Unknown"),
+                            "fw_version": sensor.get("fw_version", "Unknown"),
+                        }
+                    )
                 return devices
         except Exception:
             return []

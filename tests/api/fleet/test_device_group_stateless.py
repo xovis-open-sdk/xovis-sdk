@@ -15,8 +15,8 @@ from xovis.api.fleet.models import BulkOperationResult
 def mock_clients() -> list[DeviceClient]:
     clients = []
     for i in range(5):
-        c = DeviceClient(host=f"10.0.0.{i+10}", username="admin", password="password")
-        c.name = f"Sensor_{i+10}"
+        c = DeviceClient(host=f"10.0.0.{i + 10}", username="admin", password="password")
+        c.name = f"Sensor_{i + 10}"
         clients.append(c)
     return clients
 
@@ -31,34 +31,16 @@ async def test_device_group_cache_sync(mock_clients: list[DeviceClient]) -> None
     group = DeviceGroup(name="TestGroup", clients=mock_clients)
 
     for i, c in enumerate(mock_clients):
-        host = f"10.0.0.{i+10}"
-        respx.get(f"http://{host}/api/v5/multisensors/status").respond(
-            200, json={"multisensors_status": []}
-        )
-        respx.get(f"http://{host}/api/v5/singlesensor/data/push/agents").respond(
-            200, json={"agents": [{"id": 1, "name": "Agent1"}]}
-        )
-        respx.get(f"http://{host}/api/v5/singlesensor/data/push/connections").respond(
-            200, json={"connections": []}
-        )
-        respx.get(f"http://{host}/api/v5/singlesensor/scene/geometries").respond(
-            200, json={"geometries": []}
-        )
-        respx.get(f"http://{host}/api/v5/singlesensor/analysis/logics").respond(
-            200, json={"logics": []}
-        )
-        respx.get(f"http://{host}/api/v5/singlesensor/analysis/modifiers").respond(
-            200, json={"modifiers": []}
-        )
-        respx.get(f"http://{host}/api/v5/singlesensor/analysis/counters").respond(
-            200, json={"counters": []}
-        )
-        respx.get(f"http://{host}/api/v5/singlesensor/scene/masks").respond(
-            200, json={"scene_masks": []}
-        )
-        respx.get(f"http://{host}/api/v5/singlesensor/scene/layers").respond(
-            200, json={"layers": []}
-        )
+        host = f"10.0.0.{i + 10}"
+        respx.get(f"http://{host}/api/v5/multisensors/status").respond(200, json={"multisensors_status": []})
+        respx.get(f"http://{host}/api/v5/singlesensor/data/push/agents").respond(200, json={"agents": [{"id": 1, "name": "Agent1"}]})
+        respx.get(f"http://{host}/api/v5/singlesensor/data/push/connections").respond(200, json={"connections": []})
+        respx.get(f"http://{host}/api/v5/singlesensor/scene/geometries").respond(200, json={"geometries": []})
+        respx.get(f"http://{host}/api/v5/singlesensor/analysis/logics").respond(200, json={"logics": []})
+        respx.get(f"http://{host}/api/v5/singlesensor/analysis/modifiers").respond(200, json={"modifiers": []})
+        respx.get(f"http://{host}/api/v5/singlesensor/analysis/counters").respond(200, json={"counters": []})
+        respx.get(f"http://{host}/api/v5/singlesensor/scene/masks").respond(200, json={"scene_masks": []})
+        respx.get(f"http://{host}/api/v5/singlesensor/scene/layers").respond(200, json={"layers": []})
 
     result = await group.caches.sync()
 
@@ -83,15 +65,11 @@ async def test_device_group_time_get_stamp(mock_clients: list[DeviceClient]) -> 
     group = DeviceGroup(name="TestGroup", clients=mock_clients)
 
     for i, c in enumerate(mock_clients):
-        host = f"10.0.0.{i+10}"
+        host = f"10.0.0.{i + 10}"
         if i == 2:
-            respx.get(f"http://{host}/api/v5/time/stamp").respond(
-                403, text="<html><body>Forbidden</body></html>"
-            )
+            respx.get(f"http://{host}/api/v5/time/stamp").respond(403, text="<html><body>Forbidden</body></html>")
         else:
-            respx.get(f"http://{host}/api/v5/time/stamp").respond(
-                200, json={"stamp": 123456789}
-            )
+            respx.get(f"http://{host}/api/v5/time/stamp").respond(200, json={"stamp": 123456789})
 
     result = await group.time.get_stamp()
 
