@@ -15,14 +15,17 @@ if TYPE_CHECKING:
     from xovis.api.device.resources.users import UsersManager
     from xovis.api.device.topology import MultisensorsManager, TopologyManager
 
+
 class BaseControlPlane:
     """
     A DRY mixin that provides explicitly typed Control Plane endpoint properties
     for IDE autosuggestions. At runtime, subclasses (like DeviceGroup and
-    ChildDevicesAccessor) implement these dynamically via __getattr__, 
+    ChildDevicesAccessor) implement these dynamically via __getattr__,
     while DeviceClient provides concrete property implementations.
     """
+
     if TYPE_CHECKING:
+
         @property
         def datapush(self) -> Union["DataPushManager", "BulkDeviceFacade"]: ...
         @property

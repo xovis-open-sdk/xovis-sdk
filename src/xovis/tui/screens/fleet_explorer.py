@@ -277,7 +277,7 @@ class XovisFleetTable(Screen):
             cache_file = res_dir / f"{lan_device.mac_address.replace(':', '-')}.state.json"
             if cache_file.exists():
                 lan_device.is_cached = True
-                
+
             if lan_device.mac_address in hub_macs:
                 hub_macs[lan_device.mac_address].source = "Both"
                 hub_macs[lan_device.mac_address].ip_address = lan_device.ip_address
@@ -549,9 +549,7 @@ class XovisFleetTable(Screen):
         try:
             from xovis.api.device.network_discovery import NetworkDiscoveryService
 
-            discovered_devices = await NetworkDiscoveryService.scan_subnet(
-                first_ip=start_ip, count=count, timeout=1.5
-            )
+            discovered_devices = await NetworkDiscoveryService.scan_subnet(first_ip=start_ip, count=count, timeout=1.5)
 
             for info in discovered_devices:
                 try:
@@ -720,9 +718,10 @@ class XovisFleetTable(Screen):
                             # Cache device state to local resources
                             await device.cache.sync()
                             from pathlib import Path
+
                             res_dir = Path("_local_resources") / "states"
                             res_dir.mkdir(parents=True, exist_ok=True)
-                            
+
                             cache_file = res_dir / f"{mac.replace(':', '-')}.state.json"
                             device.cache.export_to_file(str(cache_file.resolve()))
 

@@ -877,7 +877,7 @@ class XovisAIToolkit:
     async def execute_tool(self, tool_name: str, arguments: dict) -> str:
         if tool_name == "execute_tool":
             return await self.execute_tool(arguments["tool_name"], arguments.get("arguments", {}))
-            
+
         if tool_name not in self._tools_map:
             raise ValueError(f"Tool '{tool_name}' not found.")
         tool_config = self._tools_map[tool_name]

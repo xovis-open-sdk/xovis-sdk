@@ -331,7 +331,9 @@ class TopologyManager:
         payload = DiscoveryScanResult.model_validate(response.json())
         return self._instantiate_clients(payload.sensors)
 
-    async def scan(self, first_ip: str = "10.0.0.1", count: int = 255, timeout: float = 30.0, chunk_size: int = 16, max_concurrency: int = 8) -> list[Any]:
+    async def scan(
+        self, first_ip: str = "10.0.0.1", count: int = 255, timeout: float = 30.0, chunk_size: int = 16, max_concurrency: int = 8
+    ) -> list[Any]:
         """
         Performs active Layer 3 network scanning concurrently in chunks to ensure it is fast and snappy.
 
@@ -373,6 +375,7 @@ class TopologyManager:
         for resp in responses:
             if isinstance(resp, Exception):
                 import logging
+
                 logging.warning(f"Scan chunk failed: {resp}")
             else:
                 all_sensors.extend(resp)

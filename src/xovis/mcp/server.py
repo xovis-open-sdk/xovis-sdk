@@ -261,13 +261,13 @@ async def handle_list_tools() -> list[Tool]:
                 annotations=ToolAnnotations(readOnlyHint=read_only, destructiveHint=destructive),
             )
         )
-        
+
     limit = int(os.getenv("XOVIS_MCP_TOOL_LIMIT", "90"))
     if limit > 0 and len(mcp_tools) > limit:
         meta_tools = ["xovis_search_tools", "xovis_get_tool_schema", "xovis_execute_tool"]
         prioritized = [t for t in mcp_tools if t.name in meta_tools]
         others = [t for t in mcp_tools if t.name not in meta_tools]
-        mcp_tools = prioritized + others[:max(0, limit - len(prioritized))]
+        mcp_tools = prioritized + others[: max(0, limit - len(prioritized))]
 
     return mcp_tools
 

@@ -182,7 +182,7 @@ def generate_types(source_path: str, output_path: str, dry_run: bool = False, de
 
         from xovis.api.device.client import DeviceClient
         from xovis.api.hub.client import HubClient
-        
+
         def is_ip_address(val: str) -> bool:
             try:
                 ipaddress.ip_address(val)
@@ -211,12 +211,13 @@ def generate_types(source_path: str, output_path: str, dry_run: bool = False, de
                 else:
                     # Local LAN connection via MAC discovery
                     from xovis.api.device.network_discovery import NetworkDiscoveryService
+
                     logger.info(f"Discovering local IP for MAC {device}...")
                     local_ip = await NetworkDiscoveryService.resolve_mac_to_ip(device)
-                    
+
                     if not local_ip:
                         raise ValueError(f"Could not discover device with MAC {device} on the local network. Ensure it is powered on and reachable.")
-                        
+
                     logger.info(f"Resolved MAC {device} to IP {local_ip}. Connecting to fetch live state...")
                     async with DeviceClient(local_ip, "admin", "pass") as client:
                         await client.cache.sync()
@@ -573,17 +574,10 @@ def start_mcp(log_file: str | None = None, daemon: bool = False, tool_limit: int
                     stdin=subprocess.DEVNULL,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
-                    env=env
+                    env=env,
                 )
             else:
-                subprocess.Popen(
-                    cmd,
-                    start_new_session=True,
-                    stdin=subprocess.DEVNULL,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    env=env
-                )
+                subprocess.Popen(cmd, start_new_session=True, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env)
             sys.stderr.write("MCP Server detached and running in background.\n")
         else:
             subprocess.run(cmd, env=env)

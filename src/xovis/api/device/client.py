@@ -632,6 +632,7 @@ class DeviceClient(BaseControlPlane):
 
         # Model Versioning Selection
         from xovis.models import device_auto
+
         self.models = device_auto
 
         if "5.9.2" in self.fw_version:
@@ -818,6 +819,7 @@ class UnifiedDeviceClient:
         # Path 1: Target is a MAC Address (or was resolved to a MAC)
         if resolved_mac:
             from xovis.api.device.network_discovery import NetworkDiscoveryService
+
             local_ip = await NetworkDiscoveryService.resolve_mac_to_ip(resolved_mac)
 
             if local_ip and local_ip != resolved_host:
@@ -849,9 +851,7 @@ class UnifiedDeviceClient:
                     await self._client.__aenter__()
                     return self._client
                 except Exception as e:
-                    raise ConnectionError(
-                        f"Could not connect to device {resolved_mac} via LAN or via Cloud Hub Tunnel: {e}"
-                    ) from e
+                    raise ConnectionError(f"Could not connect to device {resolved_mac} via LAN or via Cloud Hub Tunnel: {e}") from e
 
         desc = resolved_mac or resolved_host or self.name or "unknown"
         raise ConnectionError(f"Device {desc} offline/unreachable on LAN and no HubClient/MAC is available for fallback.")

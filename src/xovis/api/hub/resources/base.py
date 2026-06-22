@@ -48,6 +48,7 @@ class HubResourceManager:
             MultipleResourcesFoundError: If the name is ambiguous.
         """
         import ipaddress
+
         try:
             ipaddress.ip_address(id_or_name)
             raise ValueError(

@@ -181,17 +181,18 @@ def test_cli_gen_types_device_routing() -> None:
             assert kwargs.get("device") == "192.168.1.50"
             assert kwargs.get("via_hub") is True
 
+
 @pytest.mark.asyncio
 async def test_discover_device_ip_by_mac_windows_arp() -> None:
     """Verifies ARP resolution logic works for MAC discovery."""
     import platform
 
     from xovis.api.device.network_discovery import NetworkDiscoveryService
-    
+
     with patch("platform.system", return_value="Windows"):
         with patch("subprocess.check_output") as mock_run:
             mock_run.return_value = "  192.168.178.38        00-6e-02-02-7e-64     dynamisch\n"
-            
+
             ip = await NetworkDiscoveryService.resolve_mac_to_ip("00:6e:02:02:7e:64")
             assert ip == "192.168.178.38"
             mock_run.assert_called_once_with(["arp", "-a"], text=True)

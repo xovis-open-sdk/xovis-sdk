@@ -519,7 +519,7 @@ class ChildDevicesAccessor(BaseControlPlane):
             "users",
             "itxpt",
             "multisensors",
-            "images"
+            "images",
         }
         if name in standard_managers:
             return BulkDeviceFacade(self._child_clients, (name,))
@@ -529,22 +529,25 @@ class ChildDevicesAccessor(BaseControlPlane):
         """
         Provides IDE autocomplete for standard managers.
         """
-        return list(set(super().__dir__()) | {
-            "datapush",
-            "system",
-            "network",
-            "time",
-            "update",
-            "analytics",
-            "scene",
-            "history",
-            "privacy",
-            "topology",
-            "users",
-            "itxpt",
-            "multisensors",
-            "images"
-        })
+        return list(
+            set(super().__dir__())
+            | {
+                "datapush",
+                "system",
+                "network",
+                "time",
+                "update",
+                "analytics",
+                "scene",
+                "history",
+                "privacy",
+                "topology",
+                "users",
+                "itxpt",
+                "multisensors",
+                "images",
+            }
+        )
 
 
 class ContextAccessor:
