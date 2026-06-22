@@ -49,6 +49,17 @@ To ensure seamless cross-platform execution on Windows, macOS, and Linux, the MC
 
 The server automatically scans for and loads `.env` configuration files in the current working directory relative to execution, allowing credentials like `XOVIS_MCP_HOST` to be managed modularly.
 
+### Tool Limits & Execution Workaround
+
+Some AI agents (like Claude or Cursor) impose a strict maximum on the number of tools they can consume (typically 40-100). The Xovis MCP Server natively provides over 260 tools. To prevent clients from rejecting the connection, the MCP Server uses an optional tool limit configurable via the `XOVIS_MCP_TOOL_LIMIT` environment variable (defaults to 90).
+
+When the limit is active, the server selectively exposes a subset of tools, prioritizing the following three meta-tools:
+1. `xovis_search_tools`: Search for hidden tools.
+2. `xovis_get_tool_schema`: Retrieve the JSON schema for a hidden tool.
+3. `xovis_execute_tool`: Execute any tool, even if it is not exposed in the limited list.
+
+To disable the limit entirely and expose all tools, set `XOVIS_MCP_TOOL_LIMIT=0`.
+
 ### IDE Integration (Cursor / Windsurf)
 To enable native hardware control within your AI-native IDE, add the following to your configuration:
 
@@ -63,7 +74,8 @@ To enable native hardware control within your AI-native IDE, add the following t
         "XOVIS_MCP_USER": "admin",
         "XOVIS_MCP_PASS": "password",
         "XOVIS_HUB_CLIENT_ID": "Optional: For Cloud Hub",
-        "XOVIS_HUB_CLIENT_SECRET": "Optional: For Cloud Hub"
+        "XOVIS_HUB_CLIENT_SECRET": "Optional: For Cloud Hub",
+        "XOVIS_MCP_TOOL_LIMIT": "90"
       }
     }
   }
@@ -81,7 +93,8 @@ Add the Xovis MCP server to your `claude_desktop_config.json`:
       "env": {
         "XOVIS_MCP_HOST": "127.0.0.1",
         "XOVIS_MCP_USER": "admin",
-        "XOVIS_MCP_PASS": "password"
+        "XOVIS_MCP_PASS": "password",
+        "XOVIS_MCP_TOOL_LIMIT": "90"
       }
     }
   }

@@ -113,6 +113,8 @@ The SDK is strictly quadrifurcated into four distinct planes to prevent blocking
 | **Path Traversal & Routing** | Manually probing LAN hosts, checking availability, juggling ports, and resolving proxy tunnels to reach remote sensors. | Automatic hybrid network probing via `UnifiedDeviceClient` which resolves direct LAN, VPN, and secure HUB cloud-proxy tunnels. |
 | **State Persistence** | Silently failing or throwing hard errors when running in read-only environments (e.g., Docker, AWS Lambda) without writable workspaces. | Resilient **3-Tier Caching System** automatically trying Local CWD workspace, falling back to System Cache, and defaulting to RAM-only. |
 | **Multisensor Topologies** | Complex recursive queries to map master Spider controllers, stitched sensor contexts, and child lens hierarchies. | Dynamic `child_devices` & `child_caches` accessors with merged bulk collection aggregation and concurrent group broadcasting facades. |
+
+| **Logical Fleet Grouping** | Managing thousands of non-stitched sensors via manual IP loops and separate authentication flows. | SDK-native `DeviceGroup` and `HubFleetDirectory` for dynamic, IDE-autosuggested bulk execution across independent networks. |
 | **API Code Autocompletion** | Parsing raw JSON/YAML payloads, navigating untyped dictionaries, and crashing on resource names containing spaces. | Regex-based dynamic namespace sanitization (dot-notation autocomplete) combined with raw name index bracket-notation fallback. |
 | **AI Agent Orchestration** | Creating unsafe custom scripts or exposing raw, unvalidated hardware APIs to autonomous LLM reasoning loops. | Safe-by-design Model Context Protocol (MCP) server and `XovisAIToolkit` wrapping operations in strict security guardrails. |
 
@@ -133,9 +135,9 @@ async def main():
     # Connect via HUB to manage Local, VPN, and Cloud-Proxy Tunnel connections
     async with HubClient() as hub:
         # Unified clients automatically probe and resolve different connection paths
-        device_lan = UnifiedDeviceClient(host="192.168.1.10")
-        device_vpn = UnifiedDeviceClient(host="10.8.0.5")
-        device_hub = UnifiedDeviceClient(mac_address="00:26:8c:12:34:56", hub_client=hub)
+        device_lan = UnifiedDeviceClient("192.168.1.10")
+        device_vpn = UnifiedDeviceClient("10.8.0.5")
+        device_hub = UnifiedDeviceClient("00:26:8c:12:34:56", hub_client=hub)
         
         # Concurrently synchronize and cache configurations for offline-first operations
         async with device_lan, device_vpn, device_hub:
@@ -173,7 +175,7 @@ async def main():
     await asyncio.gather(server_1.start(), server_2.start())
     
     # Connect to device, mutate local ports on the connection agent to prevent conflicts
-    async with UnifiedDeviceClient(host="10.8.0.5") as device:
+    async with UnifiedDeviceClient("10.8.0.5") as device:
         await device.cache.load_from_disk()
         
         # Fetch configurations safely via autocomplete-friendly dot-notation
@@ -189,31 +191,41 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-#### Tier 3: Stitched Multisensor Orchestration & Child Broadcasting
-For master Spider NUCs or master PC/PF-series devices, automatically resolve the stitched multisensor topology. Concurrently synchronize child lens configurations, query merged child collections, and broadcast live tasks across all child nodes simultaneously.
+#### Tier 3: Multisensor & Fleet Orchestration
+Whether resolving stitched physical multisensor topologies or grouping independent sensors across your entire network into logical fleet buckets, the SDK provides concurrent broadcasting facades and offline-first IDE autosuggestions.
 
 ```python
 import asyncio
 from xovis import UnifiedDeviceClient, HubClient
+from xovis.api.fleet import HubFleetDirectory, DeviceGroup
 
 async def main():
+    # --- Example A: Physical Stitched Multisensor Topology ---
     async with HubClient() as hub:
         # Connect to master Spider or PC sensor to traverse the stitched multisensor topology
-        # Enable recursive child-device configuration caching with a simple flag
         async with UnifiedDeviceClient("00:26:8c:12:34:56", hub_client=hub, cache_child_devices=True) as master:
             await master.cache.sync()
             
-            # 1. Retrieve the stitched multisensor context
+            # Broadcast live diagnostic actions concurrently across all child sensors in one go
             context = master.cache.multisensors.by_name.Stitched_Context
-            print(f"Orchestrating stitched multisensor: {context.name}")
-            
-            # 2. Access merged child configurations across all physical child lenses (zero guesswork!)
-            child_conn = context.child_devices.connections.by_name.my_child_connection
-            print(f"Discovered merged child connection on port: {child_conn.port}")
-            
-            # 3. Broadcast live diagnostic actions concurrently across all child sensors in one go
             bulk_results = await context.child_devices.images.get_raw_left()
-            print(f"Captured live diagnostic frames. Successes: {len(bulk_results.successes)}")
+            print(f"Captured child diagnostic frames. Successes: {len(bulk_results.successes)}")
+
+    # --- Example B: Logical Fleet Orchestration & Bulk Execution ---
+    # Load the fleet directory (from Hub JSON export or live Hub API)
+    directory = HubFleetDirectory.from_file()
+    
+    # Group independent sensors by category using offline-first IDE autosuggestions
+    grp = DeviceGroup.from_directory_nodes(
+        name="Office_Rollout",
+        nodes=directory.by_category.Xovis_Office,
+        password="SuperSecureFleetPassword123"
+    )
+    
+    # Broadcast concurrent commands across the fleet with full IDE autosuggestions
+    # Returns a resilient BulkOperationResult mapping successes and exceptions
+    fleet_result = await grp.network.get_hostname()
+    print(f"Successfully reached {len(fleet_result.successes)} independent devices.")
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -251,8 +263,9 @@ xovis-cli warmup 192.168.1.10 --user admin --pass secret_pass
 # Warm up entire cloud fleet state and cloud schemas from Xovis HUB
 xovis-cli warmup-hub --client-id MY_ID --client-secret MY_SECRET
 
-# Generate static types from local state cache files for perfect autocomplete
-xovis-cli generate-types --source ./_local_resources/states/device_state.json
+# Generate static types from a device (local IP or MAC via Hub tunnel) for perfect autocomplete
+xovis-cli generate-types --device 192.168.1.10
+xovis-cli generate-types --device 00:11:22:33:44:55 --via-hub
 
 # Launch Xovis Open SDK Mission Control TUI
 xovis-cli ui

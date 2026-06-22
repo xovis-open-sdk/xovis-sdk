@@ -13,15 +13,30 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Generic, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, Optional, TypeVar, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from xovis.api.core.exceptions import XovisClientError
 from xovis.api.core.http import XovisHTTPClient
+from xovis.api.device.base import BaseControlPlane
 from xovis.api.device.discovery import discovery_manager
 from xovis.api.device.models import CacheStrategy, TopologyNodeInfo
 from xovis.config import config
+
+if TYPE_CHECKING:
+    from xovis.api.device.resources.analytics import AnalyticsManager
+    from xovis.api.device.resources.datapush import DataPushManager
+    from xovis.api.device.resources.history import HistoryManager
+    from xovis.api.device.resources.itxpt import ITxPTManager
+    from xovis.api.device.resources.network import NetworkManager
+    from xovis.api.device.resources.privacy import PrivacyManager
+    from xovis.api.device.resources.scene import SceneManager
+    from xovis.api.device.resources.system import SystemManager
+    from xovis.api.device.resources.time_config import TimeManager
+    from xovis.api.device.resources.update import UpdateManager
+    from xovis.api.device.resources.users import UsersManager
+    from xovis.api.device.topology import TopologyManager
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -312,50 +327,51 @@ class HostStateBucket(BaseModel):
 class BulkDeviceFacade:
     """Dynamic broadcasting facade that executes operations concurrently across child managers."""
 
-    def __init__(self, child_clients: list[Any], manager_attr: str):
+    def __init__(self, child_clients: list[Any], path: tuple[str, ...] = ()):
         """Initializes the BulkDeviceFacade.
 
         Args:
             child_clients (list[Any]): List of child DeviceClient instances.
-            manager_attr (str): The name of the manager attribute.
+            path (tuple[str, ...]): The property path to traverse on each client.
         """
         self._child_clients = child_clients
-        self._manager_attr = manager_attr
+        self._path = path
 
-    def __getattr__(self, name: str) -> Any:
-        """Intercepts method calls and broadcasts them concurrently to all child managers.
+    def __getattr__(self, name: str) -> "BulkDeviceFacade":
+        """Intercepts method calls and builds the attribute chain.
 
         Args:
-            name (str): The method name to execute.
+            name (str): The method or attribute name to traverse.
 
         Returns:
-            Callable[..., Coroutine]: The broadcasting async method wrapper.
+            BulkDeviceFacade: A new facade wrapping the updated path.
         """
+        return BulkDeviceFacade(self._child_clients, self._path + (name,))
 
-        async def broadcast_call(*args: Any, **kwargs: Any) -> Any:
-            from xovis.api.device.topology import BulkResult
+    async def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        """Executes the method concurrently across all clients."""
+        from xovis.api.device.topology import BulkResult
 
-            async def single_call(client: Any) -> Any:
-                async with client as c:
-                    manager = getattr(c, self._manager_attr)
-                    method = getattr(manager, name)
-                    return await method(*args, **kwargs)
+        async def single_call(client: Any) -> Any:
+            async with client as c:
+                obj = c
+                for attr in self._path:
+                    obj = getattr(obj, attr)
+                return await obj(*args, **kwargs)
 
-            tasks = [asyncio.create_task(single_call(c)) for c in self._child_clients]
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+        tasks = [asyncio.create_task(single_call(c)) for c in self._child_clients]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            bulk = BulkResult()
-            for res in results:
-                if isinstance(res, Exception):
-                    bulk.exceptions.append(res)
-                else:
-                    bulk.successes.append(res)
-            return bulk
-
-        return broadcast_call
+        bulk = BulkResult()
+        for res in results:
+            if isinstance(res, Exception):
+                bulk.exceptions.append(res)
+            else:
+                bulk.successes.append(res)
+        return bulk
 
 
-class ChildDevicesAccessor:
+class ChildDevicesAccessor(BaseControlPlane):
     """Smart accessor bridging individual child lookups with grouped/bulk execution."""
 
     def __init__(self, parent_context: Any, child_clients: list[Any]):
@@ -490,22 +506,45 @@ class ChildDevicesAccessor:
             AttributeError: If the manager is not a standard supported device manager.
         """
         standard_managers = {
-            "images",
-            "privacy",
-            "scene",
             "datapush",
             "analytics",
-            "history",
-            "update",
             "system",
             "network",
             "time",
-            "itxpt",
+            "update",
+            "scene",
+            "history",
+            "privacy",
+            "topology",
             "users",
+            "itxpt",
+            "multisensors",
+            "images"
         }
         if name in standard_managers:
-            return BulkDeviceFacade(self._child_clients, name)
+            return BulkDeviceFacade(self._child_clients, (name,))
         raise AttributeError(f"Attribute '{name}' not found on ChildDevicesAccessor.")
+
+    def __dir__(self) -> list[str]:
+        """
+        Provides IDE autocomplete for standard managers.
+        """
+        return list(set(super().__dir__()) | {
+            "datapush",
+            "system",
+            "network",
+            "time",
+            "update",
+            "analytics",
+            "scene",
+            "history",
+            "privacy",
+            "topology",
+            "users",
+            "itxpt",
+            "multisensors",
+            "images"
+        })
 
 
 class ContextAccessor:
@@ -966,11 +1005,18 @@ class ConfigCacheManager:
             contexts_to_sync = ["singlesensor"]
             try:
                 ms_resp = await self._http_client.get("/api/v5/multisensors/status")
-                ms_status = ms_resp.json()
-                if isinstance(ms_status, list):
-                    for ms in ms_status:
-                        if "id" in ms:
-                            contexts_to_sync.append(str(ms["id"]))
+                data = ms_resp.json()
+                if isinstance(data, list):
+                    ms_list = data
+                else:
+                    ms_list = data.get("multisensors_status") or data.get("multisensors")
+                    if ms_list is None and isinstance(data, dict) and "multisensor_id" in data:
+                        ms_list = [data]
+                if isinstance(ms_list, list):
+                    for ms in ms_list:
+                        ms_id = ms.get("multisensor_id") or ms.get("id") or ms.get("custom_id")
+                        if ms_id is not None:
+                            contexts_to_sync.append(str(ms_id))
             except (XovisClientError, Exception) as e:
                 logger.debug(f"Multisensor discovery skipped: {e}")
 

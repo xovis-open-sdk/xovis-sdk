@@ -36,6 +36,7 @@ The primary entry point for both single-device and fleet-wide orchestration. It 
 *   **Latest Anthropic Models Ready**: Provides the flat `input_schema` format required by the Messages API via `get_anthropic_tools()`.
 *   **Callable Primitives**: Exports direct references to async functions and their validation models for **LangGraph**, **CrewAI**, and **Cursor/Windsurf**.
 *   **Dynamic Adapter Registry**: Allows custom or third-party framework adapters (e.g., LlamaIndex, AutoGen) to be registered via `toolkit.register_adapter(name, func)` and dynamically retrieved using `toolkit.get_tools(name)`. Standard built-in adapters (`langchain` and `crewai`) are pre-registered and lazy-loaded by default.
+*   **Tool Limit & Meta-Tooling Engine**: Automatically caps exposed tools (configurable via `XOVIS_MCP_TOOL_LIMIT`, default 90) to respect strict client constraints (e.g., Cursor, Claude Desktop), while providing meta-tools (`execute_tool`, `search_tools`, `get_tool_schema`) to dynamically access the full 260+ tool registry.
 
 ### 2. XovisAgentMemory (State Observation)
 Autonomous agents require environmental context without the high-frequency Live-Push overhead. By wrapping the `HostStateBucket`, this plane allows for the injection of minified, JSON-serialized hardware "memories" directly into the System Prompt.

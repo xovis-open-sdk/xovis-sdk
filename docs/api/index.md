@@ -21,6 +21,7 @@ The Python SDK is organized according to the **quadrifurcated architecture**.
 ### Planes
 - [**The Data Plane**](python/datapush.md): High-frequency telemetry ingestion.
 - [**The Control Plane**](python/device.md): Low-frequency REST API wrappers for edge sensors.
+- [**The Fleet Plane**](python/fleet.md): Managing logical device groups and directories.
 - [**The Hub Plane**](python/hub.md): Cloud-scale fleet management.
 - [**The Agentic Layer**](python/skills.md): AI Skillsets and MCP toolkits.
 

@@ -168,6 +168,35 @@ def test_cli_path_resolution_order(tmp_path, monkeypatch) -> None:
     assert get_resolved_source() == str(hub_state)
 
 
+def test_cli_gen_types_device_routing() -> None:
+    """Verifies that gen-types parses --device and --via-hub correctly."""
+    with patch.object(sys, "argv", ["xovis-cli", "gen-types", "--device", "192.168.1.50", "--via-hub", "--dry-run"]):
+        with patch("xovis.cli.generate_types") as mock_gen:
+            try:
+                main()
+            except SystemExit:
+                pass
+            assert mock_gen.called
+            kwargs = mock_gen.call_args[1]
+            assert kwargs.get("device") == "192.168.1.50"
+            assert kwargs.get("via_hub") is True
+
+@pytest.mark.asyncio
+async def test_discover_device_ip_by_mac_windows_arp() -> None:
+    """Verifies ARP resolution logic works for MAC discovery."""
+    import platform
+
+    from xovis.api.device.network_discovery import NetworkDiscoveryService
+    
+    with patch("platform.system", return_value="Windows"):
+        with patch("subprocess.check_output") as mock_run:
+            mock_run.return_value = "  192.168.178.38        00-6e-02-02-7e-64     dynamisch\n"
+            
+            ip = await NetworkDiscoveryService.resolve_mac_to_ip("00:6e:02:02:7e:64")
+            assert ip == "192.168.178.38"
+            mock_run.assert_called_once_with(["arp", "-a"], text=True)
+
+
 def test_cli_docs_check_docstrings_routing() -> None:
     """Verifies that docs check-docstrings subcommand maps to check_doc_coverage."""
 

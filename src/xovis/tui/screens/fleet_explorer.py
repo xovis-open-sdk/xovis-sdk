@@ -244,10 +244,13 @@ class XovisFleetTable(Screen):
 
             existing_is_selected, existing_is_cached = current_states.get(mac_address, (False, False))
 
+            res_dir = Path("_local_resources") / "states"
+            cache_file = res_dir / f"{mac_address.replace(':', '-')}.state.json"
+
             if ms_role != "Unknown":
                 logging.info(f"UI Rebuild: Device {mac_address} has role {ms_role}, marking as cached.")
                 existing_is_cached = True
-            elif device_state.get("cache"):
+            elif device_state.get("cache") or cache_file.exists():
                 existing_is_cached = True
 
             device_entry = FleetDevice(
@@ -270,9 +273,15 @@ class XovisFleetTable(Screen):
 
         hub_macs = {d.mac_address: d for d in fetched_devices}
         for lan_device in self._lan_devices.values():
+            res_dir = Path("_local_resources") / "states"
+            cache_file = res_dir / f"{lan_device.mac_address.replace(':', '-')}.state.json"
+            if cache_file.exists():
+                lan_device.is_cached = True
+                
             if lan_device.mac_address in hub_macs:
                 hub_macs[lan_device.mac_address].source = "Both"
                 hub_macs[lan_device.mac_address].ip_address = lan_device.ip_address
+                hub_macs[lan_device.mac_address].is_cached = hub_macs[lan_device.mac_address].is_cached or lan_device.is_cached
             else:
                 fetched_devices.append(lan_device)
 
@@ -478,10 +487,10 @@ class XovisFleetTable(Screen):
             )
             return
 
-        online_macs = [d.mac_address for d in self._fleet_data if d.mac_address in target_macs and "ONLINE" in d.status]
+        online_macs = [d.mac_address for d in self._fleet_data if d.mac_address in target_macs and ("ONLINE" in d.status or "LOCAL" in d.status)]
 
         if not online_macs:
-            self.notify("No online devices selected for Deep Dive", severity="warning")
+            self.notify("No online or local devices selected for Deep Dive", severity="warning")
             return
 
         target_desc = f"{len(online_macs)} SELECTED" if selected_macs else f"ALL {len(online_macs)} VISIBLE"
@@ -538,57 +547,37 @@ class XovisFleetTable(Screen):
         await asyncio.sleep(1.5)
 
         try:
-            from xovis.api.device.client import UnifiedDeviceClient
+            from xovis.api.device.network_discovery import NetworkDiscoveryService
 
-            discovery_master = None
-            for dev in self._fleet_data:
-                if dev.status == "🟢 ONLINE":
-                    discovery_master = dev
-                    break
+            discovered_devices = await NetworkDiscoveryService.scan_subnet(
+                first_ip=start_ip, count=count, timeout=1.5
+            )
 
-            if not discovery_master:
-                self.notify("No online Hub devices available to act as Discovery Proxy.", severity="warning")
-                table.loading = False
-                return
-
-            async with UnifiedDeviceClient(
-                mac_address=discovery_master.mac_address,
-                host=discovery_master.ip_address,
-                hub_client=self._hub_client,
-                username=os.getenv("XOVIS_DEVICE_USERNAME", "admin"),
-                password=os.getenv("XOVIS_DEVICE_PASSWORD", "pass"),
-            ) as client:
-                discovered_clients = await client.topology.scan(first_ip=start_ip, count=count)
-
-                for d_client in discovered_clients:
-                    try:
-                        info = await d_client.info()
-                        if not info:
-                            continue
-
-                        mac = info.get("mac_address", "00:00:00:00:00:00")
-                        new_device = FleetDevice(
-                            mac_address=mac,
-                            status="🟢 LOCAL",
-                            customer="Local Discovery",
-                            group="LAN",
-                            name=info.get("name", "New Local Sensor"),
-                            model=info.get("type", "Unknown"),
-                            firmware=info.get("fw_version", "Unknown"),
-                            ms_role="Standalone",
-                            ms_parent_mac="",
-                            source="LAN",
-                            ip_address=d_client._http_client.base_url.split("//")[-1].split(":")[0],
-                        )
-                        self._lan_devices[mac] = new_device
-                    except Exception as e:
-                        logging.error(f"Failed to probe discovered device: {e}")
-                        continue
+            for info in discovered_devices:
+                try:
+                    mac = info.get("mac_address") or info.get("serial", "00:00:00:00:00:00")
+                    new_device = FleetDevice(
+                        mac_address=mac,
+                        status="🟢 LOCAL",
+                        customer="Local Discovery",
+                        group=info.get("group", "LAN"),
+                        name=info.get("name", "New Local Sensor"),
+                        model=info.get("type", "Unknown"),
+                        firmware=info.get("fw_version", "Unknown"),
+                        ms_role="Standalone",
+                        ms_parent_mac="",
+                        source="LAN",
+                        ip_address=info.get("ip_address"),
+                    )
+                    self._lan_devices[mac] = new_device
+                except Exception as e:
+                    logging.error(f"Failed to process discovered device: {e}")
+                    continue
 
             self._rebuild_fleet_data_from_cache()
             table.loading = False
             self.notify(
-                f"Local scan completed. Discovered {len(discovered_clients)} devices.",
+                f"Local scan completed. Discovered {len(discovered_devices)} devices.",
                 severity="success",
             )
 
@@ -727,6 +716,15 @@ class XovisFleetTable(Screen):
                             password=os.getenv("XOVIS_DEVICE_PASSWORD", "pass"),
                         ) as device:
                             graph = await device.topology.get_ms_graph()
+
+                            # Cache device state to local resources
+                            await device.cache.sync()
+                            from pathlib import Path
+                            res_dir = Path("_local_resources") / "states"
+                            res_dir.mkdir(parents=True, exist_ok=True)
+                            
+                            cache_file = res_dir / f"{mac.replace(':', '-')}.state.json"
+                            device.cache.export_to_file(str(cache_file.resolve()))
 
                             is_master = False
                             if (graph.master_mac and graph.master_mac.upper() == mac) or any(

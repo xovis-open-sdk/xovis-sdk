@@ -33,7 +33,8 @@ class HubResourceManager:
         Resolves a device's MAC address from either a name or the address itself.
 
         Prioritizes exact MAC address matching. Falls back to the HubCacheManager
-        for name lookups.
+        for name lookups. Strictly rejects IP addresses as they cannot be reliably
+        routed through the Hub due to Gateway proxying.
 
         Args:
             id_or_name (str): The MAC address or human-readable device name.
@@ -42,10 +43,22 @@ class HubResourceManager:
             str: The resolved MAC address.
 
         Raises:
+            ValueError: If an IP address is provided.
             ResourceNotFoundError: If the name cannot be resolved.
             MultipleResourcesFoundError: If the name is ambiguous.
         """
-        is_mac = re.match(r"^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$", id_or_name)
+        import ipaddress
+        try:
+            ipaddress.ip_address(id_or_name)
+            raise ValueError(
+                f"Hub routing requires a MAC address or Device Name, not an IP address '{id_or_name}'. "
+                "IP addresses cannot be reliably routed through the Hub due to Gateway proxying."
+            )
+        except ValueError as e:
+            if "Hub routing requires" in str(e):
+                raise
+
+        is_mac = re.match(r"^([0-9A-Fa-f]{2}[:.-]){5}([0-9A-Fa-f]{2})$", id_or_name)
 
         if not self._cache:
             return id_or_name
